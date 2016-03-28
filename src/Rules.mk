@@ -4,8 +4,9 @@ DEBUG					?=1
 MODEL					?=PiCAM
 VERSION					:=0.1
 CORES					:= $(shell cat /proc/cpuinfo | grep process | wc -l)
+BUILDDIR				:= $(BASEDIR)/../build
 
 #------------------------------------------------------------------------------
 
-include $(BASEDIR)/build/Rules.$(MODEL)
-include $(BASEDIR)/build/Rules.head
+include $(BUILDDIR)/Rules.$(MODEL)
+include $(BUILDDIR)/Rules.head

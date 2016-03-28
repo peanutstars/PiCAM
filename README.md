@@ -1,4 +1,4 @@
-### PiCam
+### PiCAM
 
 Raspberry Pi with Web-Cam.
 

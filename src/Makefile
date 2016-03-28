@@ -14,7 +14,7 @@ SUBDIRS			:= \
 						
 #------------------------------------------------------------------------------
 
-include $(BASEDIR)/build/Rules.common
+include $(BUILDDIR)/Rules.common
 
 remove-target:
 	@rm -rf $(PF_OUTPUT_DIR)

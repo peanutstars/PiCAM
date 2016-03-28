@@ -18,4 +18,4 @@ EXTRA_LDFLAGS	+=-lrt
 
 #------------------------------------------------------------------------------
 
-include $(BASEDIR)/build/Rules.common
+include $(BUILDDIR)/Rules.common

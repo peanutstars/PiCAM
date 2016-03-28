@@ -9,15 +9,15 @@ OBJDUMP			:=$(CROSS_COMPILE)objdump
 export CC AS LD STRIP OBJDUMP KERNEL_DIR
 
 ifdef	SUBDIRS
-	include $(BASEDIR)/build/Rules.dir
+	include $(BUILDDIR)/Rules.dir
 else
 	ifdef	TARGET
-		include $(BASEDIR)/build/Rules.flags
-		include $(BASEDIR)/build/Rules.file
+		include $(BUILDDIR)/Rules.flags
+		include $(BUILDDIR)/Rules.file
 	else ifdef CXXTARGET
-		include $(BASEDIR)/build/Rules.flags
-		include $(BASEDIR)/build/Rules.cxxfile
+		include $(BUILDDIR)/Rules.flags
+		include $(BUILDDIR)/Rules.cxxfile
 	else
-		include $(BASEDIR)/build/Rules.dummy
+		include $(BUILDDIR)/Rules.dummy
 	endif
 endif

@@ -11,4 +11,4 @@ SUBDIRS		:= vcapture
 
 #------------------------------------------------------------------------------
 
-include $(BASEDIR)/build/Rules.common
+include $(BUILDDIR)/Rules.common
