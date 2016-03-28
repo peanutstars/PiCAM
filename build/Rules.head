@@ -1,6 +1,6 @@
 
 ifndef	PF_OUTPUT_DIR
-PF_OUTPUT_DIR	:=$(BASEDIR)/target
+PF_OUTPUT_DIR	:=$(BASEDIR)/../target
 endif
 
 TARGETDIR		:=$(PF_OUTPUT_DIR)/$(MODEL)/

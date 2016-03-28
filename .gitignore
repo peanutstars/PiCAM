@@ -1,2 +1,5 @@
 .*.swp
+*.o
 target
+src/utils/vcapture/vcapture
+
