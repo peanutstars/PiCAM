@@ -1,0 +1,21 @@
+
+CFLAGS		:=-Wall
+LFLAGS		:=
+
+ifdef	DEBUG
+CFLAGS		+=-DDEBUG -g
+endif
+
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+
+.PHONY: install clean distclean
+
+all:
+
+install:
+
+clean:
+
+distclean:	clean

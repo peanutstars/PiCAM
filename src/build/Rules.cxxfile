@@ -1,0 +1,27 @@
+
+.PHONY: install clean distclean
+
+all:    $(CXXTARGET)
+
+$(CXXTARGET):  $(OBJS)
+	$(CXX) -o $@ $^ $(LFLAGS)
+
+ifeq		($(DEBUG), 1)
+install:    $(CXXTARGET)
+	if [ z$(INSTALLDIR) != z ]; then install -d $(INSTALLDIR) $(INSTALLDIR2); fi
+	if [ z$(INSTALLDIR) != z ]; then install $(CXXTARGET) $(INSTALLDIR); fi
+	if [ z$(INSTALLDIR2) != z ]; then install $(CXXTARGET) $(INSTALLDIR2); fi
+
+else
+install:    $(CXXTARGET)
+	if [ z$(INSTALLDIR) != z ]; then install -d $(INSTALLDIR) $(INSTALLDIR2); fi
+	if [ z$(INSTALLDIR) != z ]; then install -s --strip-program=$(CROSS_COMPILE)strip $(CXXTARGET) $(INSTALLDIR); fi
+	if [ z$(INSTALLDIR2) != z ]; then install --strip-program=$(CROSS_COMPILE)strip $(CXXTARGET) $(INSTALLDIR2); fi
+
+endif
+
+clean:
+	rm -rf $(CXXTARGET) $(OBJS)
+
+distclean:	clean
+	rm -rf $(CXXTARGET) $(OBJS) $(INSTALLDIR)/$(CXXTARGET)

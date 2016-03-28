@@ -1,0 +1,37 @@
+
+CFLAGS		:=-Wall
+CFLAGS		+=-pipe
+CFLAGS		+=-D_FILE_OFFSET_BITS=64
+CPPFLAGS	:=
+
+LFLAGS		:=
+
+ifeq		($(DEBUG), 1)
+CFLAGS		+=-DDEBUG -g
+else
+CFLAGS		+=-O2
+endif
+
+ifeq		($(SUPPORT_SYNC_GROUP), 1)
+CFLAGS		+=-DSUPPORT_SYNC_GROUP
+endif
+
+CFLAGS		+=-DARCH_$(ARCH)
+CFLAGS		+=-DMODEL_$(MODEL)
+
+#------------------------------------------------------------------------------
+
+EXTRA_CFLAGS	+=-I$(BASEDIR)/include
+EXTRA_CFLAGS	+=-I$(BASEDIR)/drivers/vmq
+EXTRA_CFLAGS	+=-I$(BASEDIR)/drivers/vmshm
+EXTRA_CFLAGS	+=-I$(BASEDIR)/external/include
+
+LFLAGS			+=-L$(BASEDIR)/external/lib
+LFLAGS			+=-L$(TARGETDIR)/system/lib
+
+#------------------------------------------------------------------------------
+
+CFLAGS		+=$(EXTRA_CFLAGS)
+LFLAGS		+=$(EXTRA_LFLAGS)
+
+CPPFLAGS	+=$(EXTRA_CPPFLAGS)

@@ -1,0 +1,39 @@
+
+.PHONY: install clean distclean
+
+all:    $(TARGET)
+
+$(TARGET):  $(OBJS)
+	$(CC) -o $@ $^ $(LFLAGS)
+
+ifeq		($(DEBUG), 1)
+ifeq		($(EXTRA_INSTALL), 1)
+install:    $(TARGET) _install extra_install
+else
+install:    $(TARGET) _install
+endif	# EXTRA_INSTALL
+
+_install:
+	if [ z$(INSTALLDIR) != z ]; then install -d $(INSTALLDIR) $(INSTALLDIR2); fi
+	if [ z$(INSTALLDIR) != z ]; then install $(TARGET) $(INSTALLDIR); fi
+	if [ z$(INSTALLDIR2) != z ]; then install $(TARGET) $(INSTALLDIR2); fi
+
+else	# DEBUG
+ifeq		($(EXTRA_INSTALL), 1)
+install:    $(TARGET) _install extra_install
+else
+install:    $(TARGET) _install
+endif	# EXTRA_INSTALL
+
+_install
+	if [ z$(INSTALLDIR) != z ]; then install -d $(INSTALLDIR) $(INSTALLDIR2); fi
+	if [ z$(INSTALLDIR) != z ]; then install -s --strip-program=$(CROSS_COMPILE)strip $(TARGET) $(INSTALLDIR); fi
+	if [ z$(INSTALLDIR2) != z ]; then install --strip-program=$(CROSS_COMPILE)strip $(TARGET) $(INSTALLDIR2); fi
+
+endif	# DEBUG
+
+clean:
+	rm -rf $(TARGET) $(OBJS)
+
+distclean:	clean
+	rm -rf $(TARGET) $(OBJS) $(INSTALLDIR)/$(TARGET)

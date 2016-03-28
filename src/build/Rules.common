@@ -1,0 +1,23 @@
+
+CC				:=$(CROSS_COMPILE)gcc
+CXX				:=$(CROSS_COMPILE)g++
+AS				:=$(CROSS_COMPILE)as
+LD				:=$(CROSS_COMPILE)ld
+STRIP			:=$(CROSS_COMPILE)strip
+OBJDUMP			:=$(CROSS_COMPILE)objdump
+
+export CC AS LD STRIP OBJDUMP KERNEL_DIR
+
+ifdef	SUBDIRS
+	include $(BASEDIR)/build/Rules.dir
+else
+	ifdef	TARGET
+		include $(BASEDIR)/build/Rules.flags
+		include $(BASEDIR)/build/Rules.file
+	else ifdef CXXTARGET
+		include $(BASEDIR)/build/Rules.flags
+		include $(BASEDIR)/build/Rules.cxxfile
+	else
+		include $(BASEDIR)/build/Rules.dummy
+	endif
+endif
