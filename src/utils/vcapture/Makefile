@@ -9,7 +9,8 @@ include $(BASEDIR)/Rules.mk
 #------------------------------------------------------------------------------
 
 TARGET			:= vcapture
-OBJS			:= capture.o
+OBJS			:= capture.o \
+				   uvch264.o
 
 INSTALLDIR		:=$(TARGETDIR)/system/bin
 
