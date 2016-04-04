@@ -17,11 +17,11 @@ FYEL="\[\033[33m\]"
 FGRN="\[\033[32m\]"
 RS="\[\033[0m\]"
 
-PS1="( ${FGRN}[\u ${FYEL}\# \t] \w ${RS}) \n$ "
+PS1="( \${FGRN}[\u \${FYEL}\# \t] \w \${RS}) \n$ "
 PS2='more input >'
 
 export VISUAL=vim
-export EDITOR="$VISUAL"
+export EDITOR="\$VISUAL"
 
 alias ll='ls -al'
 EOF
