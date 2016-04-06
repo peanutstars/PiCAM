@@ -10,7 +10,7 @@ include $(BASEDIR)/Rules.mk
 
 TARGET			:= vcapture
 OBJS			:= capture.o \
-				   uvch264.o
+				   v4l2-h264.o
 
 INSTALLDIR		:=$(TARGETDIR)/system/bin
 

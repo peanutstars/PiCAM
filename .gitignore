@@ -3,4 +3,5 @@
 target
 src/utils/vcapture/vcapture
 src/include/version.h
+tags
 
