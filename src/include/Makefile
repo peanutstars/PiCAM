@@ -29,4 +29,4 @@ version:
 	" > $(FILE_VERSION)
 
 clean:
-	@rm -rf $(FILE_VERSION)
+	

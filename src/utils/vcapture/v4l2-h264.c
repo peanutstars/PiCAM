@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <string.h>
 
 #include <linux/videodev2.h>
 #include <linux/uvcvideo.h>
@@ -485,21 +486,35 @@ static v4l2_op_t v4l2Op = {
 
 static void configForH264 (v4l2_info_t *info)
 {
-	uvcx_video_config_probe_commit_t *cfg = info->h264.selector[UVCX_VIDEO_CONFIG_PROBE];
-	uvcx_bitrate_layers_t *bitrate = info->h264.selector[UVCX_BITRATE_LAYERS] ;
+	uvcx_video_config_probe_commit_t *uvcx_cfg = info->h264.selector[UVCX_VIDEO_CONFIG_PROBE];
+	uvcx_rate_control_mode_t *uvcx_rate = info->h264.selector[UVCX_RATE_CONTROL_MODE] ;
+	uvcx_framerate_config_t *uvcx_framerate = info->h264.selector[UVCX_FRAMERATE_CONFIG] ;
+	uvcx_bitrate_layers_t *uvcx_bitrate = info->h264.selector[UVCX_BITRATE_LAYERS] ;
 
-	cfg->wIFramePeriod = 1000;	// IDR Frame: 1/sec,  Unit: msec
-	cfg->dwBitRate = 4000000 ;
+	uvcx_cfg->dwFrameInterval = (int)((1.0/info->param.fps)*10000000.0) ;
+	uvcx_cfg->wWidth = info->param.width ;
+	uvcx_cfg->wHeight = info->param.height ;
+	uvcx_cfg->wIFramePeriod = info->param.iFramePeriod;	// IDR Frame: 1/sec,  Unit: msec
+	uvcx_cfg->dwBitRate = info->param.averageBitrate ;
+	uvcx_cfg->bRateControlMode = info->param.rateControl ;
+	uvcx_cfg->bEntropyCABAC = info->param.entropy ;
+	uvcx_cfg->bTimestamp = info->param.timestamp ;
 
-	bitrate->dwPeakBitrate = 5000000 ;
-	bitrate->dwAverageBitrate = 3000000 ;
+	uvcx_rate->bRateControlMode = info->param.rateControl ;
 
-	info->op->xu_h264_set (info, UVCX_VIDEO_CONFIG_PROBE);
-	info->op->xu_h264_set (info, UVCX_VIDEO_CONFIG_COMMIT);
+	uvcx_framerate->dwFrameInterval = uvcx_cfg->dwFrameInterval ;
+
+	uvcx_bitrate->dwPeakBitrate = info->param.peakBitrate ;
+	uvcx_bitrate->dwAverageBitrate = info->param.averageBitrate ;
+
+	info->op->xu_h264_set (info, UVCX_VIDEO_CONFIG_PROBE) ;
+	info->op->xu_h264_set (info, UVCX_VIDEO_CONFIG_COMMIT) ;
+	info->op->xu_h264_set (info, UVCX_RATE_CONTROL_MODE) ;
+	info->op->xu_h264_set (info, UVCX_FRAMERATE_CONFIG) ;
 	info->op->xu_h264_set (info, UVCX_BITRATE_LAYERS) ;
 }
 
-v4l2_info_t *v4l2_create (int vfd)
+v4l2_info_t *v4l2_create (V4l2Param* param)
 {
 	v4l2_info_t *info;
 
@@ -510,12 +525,10 @@ v4l2_info_t *v4l2_create (int vfd)
 	}
 	memset (info, 0, sizeof(*info));
 
-	cond_init (info);
-	mutex_init (info);
-
 	do
 	{
-		info->vfd		= vfd ;
+		memcpy(&info->param, param, sizeof(*param)) ;
+		info->vfd		= param->vfd ;
 		info->op		= &v4l2Op ;
 		info->ctlCnt	= info->op->get_ctrl_list(info);
 		info->ctlList	= malloc (sizeof(v4l2_ctrl_list_t) * info->ctlCnt);
@@ -563,9 +576,6 @@ void v4l2_destroy (v4l2_info_t *info)
 		
 		free (info->ctlList);
 	}
-
-	cond_destroy (info);
-	mutex_destroy (info);
 
 	free (info);
 }

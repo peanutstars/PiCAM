@@ -26,12 +26,14 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include <signal.h>
+#include <stdlib.h>
 
 #include <linux/videodev2.h>
 
 #include "v4l2-h264.h"
 #include "pidebug.h"
 #include "pithread.h"
+#include "ver.h"
 
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
 
@@ -51,8 +53,9 @@ struct buffer {
 };
 
 struct CaptureHandler {
-	int		run ;
-	int		done ;
+	int			run ;
+	int			done ;
+	V4l2Param	option ;
 } ;
 typedef struct CaptureHandler CaptureHandler ;
 
@@ -60,6 +63,18 @@ static CaptureHandler gCapHdr =
 {
 	.run		= 1 ,
 	.done		= 0 ,
+	.option		= {
+		.vfd			= -1 ,
+		.width			= 1280 ,
+		.height			= 720 ,
+		.fps			= 7 ,
+		.rateControl	= RATECONTROL_CBR ,
+		.iFramePeriod	= 1000 ,
+		.peakBitrate	= 3000000 ,
+		.averageBitrate = 3000000 ,
+		.entropy		= ENTROPY_CAVLC ,
+		.timestamp		= 0 ,
+	} ,
 } ;
 
 static char            *dev_name;
@@ -68,7 +83,6 @@ static int              fd = -1;
 struct buffer          *buffers;
 static unsigned int     n_buffers;
 static int              out_buf;
-static int              force_format;
 static int              frame_number = 0;
 static v4l2_info_t     *v4l2Info = NULL ;
 
@@ -442,13 +456,16 @@ static void init_userp(unsigned int buffer_size)
         }
 }
 
-static void init_device(void)
+static void init_device(V4l2Param* option)
 {
         struct v4l2_capability cap;
         struct v4l2_cropcap cropcap;
         struct v4l2_crop crop;
         struct v4l2_format fmt;
+		struct v4l2_streamparm parm ;
         unsigned int min;
+
+		option->vfd = fd ;
 
         if (-1 == xioctl(fd, VIDIOC_QUERYCAP, &cap)) {
                 if (EINVAL == errno) {
@@ -515,35 +532,16 @@ static void init_device(void)
         CLEAR(fmt);
 
         fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-#if 0
-        if (force_format) {
-	fprintf(stderr, "Set H264\r\n");
-                fmt.fmt.pix.width       = 1920; //replace
-                fmt.fmt.pix.height      = 1080; //replace
-                fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_H264; //replace
-                fmt.fmt.pix.field       = V4L2_FIELD_ANY;
 
-                if (-1 == xioctl(fd, VIDIOC_S_FMT, &fmt))
-                        errno_exit("VIDIOC_S_FMT");
-
-                /* Note VIDIOC_S_FMT may change width and height. */
-        } else {
-                /* Preserve original settings as set by v4l2-ctl for example */
-                if (-1 == xioctl(fd, VIDIOC_G_FMT, &fmt))
-                        errno_exit("VIDIOC_G_FMT");
-        }
-#else
-		fmt.fmt.pix.width       = 1920; //replace
-		fmt.fmt.pix.height      = 1080; //replace
+		/* H264 */
+		fmt.fmt.pix.width       = option->width ;
+		fmt.fmt.pix.height      = option->height ;
 		fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_H264; //replace
 		fmt.fmt.pix.field       = V4L2_FIELD_ANY;
 
 		if (-1 == xioctl(fd, VIDIOC_S_FMT, &fmt)) {
 			errno_exit("VIDIOC_S_FMT");
 		}
-
-		v4l2Info = v4l2_create(fd) ;
-#endif
 
         /* Buggy driver paranoia. */
         min = fmt.fmt.pix.width * 2;
@@ -566,6 +564,27 @@ static void init_device(void)
                 init_userp(fmt.fmt.pix.sizeimage);
                 break;
         }
+
+
+		/* Set FPS */
+		CLEAR(parm) ;
+
+		parm.type = V4L2_BUF_TYPE_VIDEO_CAPTURE ;
+		parm.parm.capture.timeperframe.numerator = 1000 ;
+		parm.parm.capture.timeperframe.denominator =
+			option->fps * parm.parm.capture.timeperframe.numerator ;
+		if (-1 == xioctl(fd, VIDIOC_S_PARM, &parm)) {
+			errno_exit("VIDIOC_S_FMT");
+		} else {
+			struct v4l2_fract *tf = &parm.parm.capture.timeperframe;
+			if ( ! tf->denominator || ! tf->numerator)
+				printf("Invalid frame rate\n") ;
+			else
+				printf("Frame rate set to %.3f fps\n", 1.0 * tf->denominator / tf->numerator) ;
+		}
+
+
+		v4l2Info = v4l2_create(option) ;
 }
 
 static void close_device(void)
@@ -625,10 +644,9 @@ static void initSignal (void)
 	}
 }
 
-static void mainLoop (void)
+static void mainLoop (CaptureHandler* capHdr)
 {
 	pthread_t thid ;
-	CaptureHandler* capHdr = &gCapHdr ;
 
 	initSignal() ;
 	CREATE_THREAD(thid, captureLoop, 0x1000, capHdr, ETP_MODE_DETACHED) ;
@@ -638,97 +656,200 @@ static void mainLoop (void)
 	}
 }
 
-static void usage(FILE *fp, int argc, char **argv)
+static void dumpV4l2Param (FILE* fp, V4l2Param* param)
 {
-        fprintf(fp,
-                 "Usage: %s [options]\n\n"
-                 "Version 1.3\n"
-                 "Options:\n"
-                 "-d | --device name   Video device name [%s]\n"
-                 "-h | --help          Print this message\n"
-                 "-m | --mmap          Use memory mapped buffers [default]\n"
-                 "-r | --read          Use read() calls\n"
-                 "-u | --userp         Use application allocated buffers\n"
-                 "-o | --output        Outputs stream to stdout\n"
-                 "-f | --format        Force format to 640x480 YUYV\n"
-                 "",
-                 argv[0], dev_name);
+	fprintf(fp,	"Picture Size       : %d x %d @ %d fps\n", param->width, param->height, param->fps) ;
+	fprintf(fp, "Rate-control       : %s\n", param->rateControl == RATECONTROL_CBR ? "CBR" : "VBR") ;
+	fprintf(fp, "I Frame Period     : %d msec\n", param->iFramePeriod) ;
+	fprintf(fp, "Peak Bitrate       : %d bps\n", param->peakBitrate) ;
+	fprintf(fp, "Average Bitrate    : %d bps\n", param->averageBitrate) ;
+	fprintf(fp, "Entropy Method     : %s\n", param->entropy == ENTROPY_CAVLC ? "CAVLC" : "CABAC") ;
+	fprintf(fp, "Picture timing SEI : %s\n", param->timestamp ? "Enabled" : "Disabled") ;
 }
 
-static const char short_options[] = "d:hmruofc:";
+static void usage(FILE *fp, int argc, char **argv)
+{
+	fprintf(fp,
+		"Usage: %s [options]\n\n"
+		"It is utility for capturing H264 streams from UVC interface and other formats are not supported.\n"
+		"Version " VER_STRING "\n"
+		"Options:\n"
+		"-d | --dev name              Video device name [%s]\n"
+		"-h | --help                  Print this message\n"
+		"-m | --mmap                  Use memory mapped buffers [default]\n"
+		"-r | --read                  Use read() calls\n"
+		"-u | --userp                 Use application allocated buffers\n"
+		"-o | --output                Outputs stream to stdout\n"
+		"--width <size>               Set a width of picture, default is 1280\n"
+		"                                1920, 1280, 1024, 864, 800, 640\n"
+		"--height <size>              Set a height of picture, default is 720\n"
+		"                                1080,  720,  576, 480, 448, 360\n" 
+		"--frame-rate <fps>           Set a frame-rate, default is 15 fps\n"
+		"                                30, 24, 20, 15, 10, 7(like as 7.5)\n"
+//		"--rate-control <cbr|vbr>     Set a rate-control, default is cbr mode.\n"
+		"--iframe-period <sec>        Set a iframe-peroid value, default is 3 sec.\n"
+		"                                Range is from 1 to 10 second.\n"
+//		"--peak-bitrate <bitrate>     Set a peak-bitrate value, default is 3000000.\n"
+		"--average-bitrate <bitrate>  Set a average-bitrate value, default is 3000000.\n"
+		"                                Range is from 1000000 to 5000000 bps.\n"
+//		"--entropy <CAVLC|CABAC>      Set a entropy, default is CAVLC.\n"
+//		"--timestamp <enable|disable> Set picture timing SEI enable or disable.\n"
+		, argv[0], dev_name);
+}
+
+static const char short_options[] = "d:hmru";
 
 static const struct option
 long_options[] = {
-        { "device", required_argument, NULL, 'd' },
-        { "help",   no_argument,       NULL, 'h' },
-        { "mmap",   no_argument,       NULL, 'm' },
-        { "read",   no_argument,       NULL, 'r' },
-        { "userp",  no_argument,       NULL, 'u' },
-        { "output", no_argument,       NULL, 'o' },
-        { "format", no_argument,       NULL, 'f' },
-        { "count",  required_argument, NULL, 'c' },
+		{ "width" ,				required_argument, NULL, 0 } ,
+		{ "height" ,			required_argument, NULL, 0 } ,
+		{ "frame-rate" ,		required_argument, NULL, 0 } ,
+		{ "rate-control" ,		required_argument, NULL, 0 } ,
+		{ "iframe-period" ,		required_argument, NULL, 0 } ,
+		{ "peak-bitrate" ,		required_argument, NULL, 0 } ,
+		{ "average-bitrate" ,	required_argument, NULL, 0 } ,
+		{ "entropy" ,			required_argument, NULL, 0 } ,
+		{ "timestamp" ,			required_argument, NULL, 0 } ,
+        { "dev",				required_argument, NULL, 'd' },
+        { "help",   			no_argument,       NULL, 'h' },
+        { "mmap",   			no_argument,       NULL, 'm' },
+        { "read",   			no_argument,       NULL, 'r' },
+        { "userp",  			no_argument,       NULL, 'u' },
+        { "output", 			no_argument,       NULL, 'o' },
         { 0, 0, 0, 0 }
 };
 
+static void parseOptions (CaptureHandler* capHdr, int argc, char* argv[])
+{
+	const int allowWidth[] =  { 1920, 1280, 1024, 864, 800, 640 } ;
+	const int allowHeight[] = { 1080,  720,  576, 480, 448, 360 } ;
+	int i ;
+
+	for (;;)
+	{
+		int idx;
+		int c;
+		int fgFound ;
+
+		c = getopt_long(argc, argv,
+				short_options, long_options, &idx);
+
+		if (-1 == c)
+			break;
+
+		switch (c) {
+			case 0: /* getopt_long() flag */
+				fgFound = 0 ;
+				if ( ! strcmp(long_options[idx].name, "width")) {
+					capHdr->option.width = strtoul(optarg, NULL, 0) ;
+					for (i=0; i<sizeof(allowWidth)/sizeof(int); i++) {
+						if (allowWidth[i] == capHdr->option.width) {
+							fgFound = 1 ;
+							break ;
+						}
+					}
+				}
+				if ( ! strcmp(long_options[idx].name, "height")) {
+					capHdr->option.height = strtoul(optarg, NULL, 0) ;
+					for (i=0; i<sizeof(allowHeight)/sizeof(int); i++) {
+						if (allowHeight[i] == capHdr->option.height) {
+							fgFound = 1 ;
+							break ;
+						}
+					}
+				}
+				if ( ! strcmp(long_options[idx].name, "frame-rate")) {
+					const int allowFps[] = { 30, 24, 20, 15, 10, 7 } ;
+					capHdr->option.fps = strtoul(optarg, NULL, 0) ;
+					for (i=0; i<sizeof(allowFps)/sizeof(int); i++) {
+						if (allowFps[i] == capHdr->option.fps) {
+							fgFound = 1 ;
+							break ;
+						}
+					}
+				}
+				if ( ! strcmp(long_options[idx].name, "iframe-period")) {
+					int period = strtoul(optarg, NULL, 0) ;
+					if (1 <= period && period <= 10) {
+						capHdr->option.iFramePeriod = period * 1000;
+						fgFound = 1 ;
+					}
+				}
+				if ( ! strcmp(long_options[idx].name, "average-bitrate")) {
+					int bitrate = strtoul(optarg, NULL, 0) ;
+					if (1000000 <= bitrate && bitrate <= 5000000) {
+						capHdr->option.averageBitrate = bitrate ;
+						fgFound = 1 ;
+					}
+				}
+				if ( ! fgFound) {
+					fprintf(stderr, "Invalid option %s %s\n\n", long_options[idx].name, optarg ? : "") ;
+					usage(stderr, argc, argv);
+					exit(EXIT_FAILURE);
+				}
+				break;
+
+			case 'd':
+				dev_name = optarg;
+				break;
+
+			case 'h':
+				usage(stdout, argc, argv);
+				exit(EXIT_SUCCESS);
+
+			case 'm':
+				io = IO_METHOD_MMAP;
+				break;
+
+			case 'r':
+				io = IO_METHOD_READ;
+				break;
+
+			case 'u':
+				io = IO_METHOD_USERPTR;
+				break;
+
+			case 'o':
+				out_buf++;
+				break;
+
+			default:
+				usage(stderr, argc, argv);
+				exit(EXIT_FAILURE);
+		}
+	}
+	
+	for(i=0; i<sizeof(allowWidth)/sizeof(int); i++) {
+		if (allowWidth[i] == capHdr->option.width) {
+			if (allowHeight[i] == capHdr->option.height) {
+				break ;
+			}
+			else {
+				fprintf(stderr, "The resolution is wrong, I recommended the following : %dx%d\n\n",
+					allowWidth[i] , allowHeight[i]) ;
+				usage(stderr, argc, argv);
+				exit(EXIT_FAILURE);
+			}
+		}
+	}
+	
+	dumpV4l2Param(stderr, &capHdr->option) ;
+}
+
 int main(int argc, char **argv)
 {
-        dev_name = "/dev/video0";
+	CaptureHandler* capHdr = &gCapHdr ;
+	dev_name = "/dev/video0";
 
-        for (;;) {
-                int idx;
-                int c;
+	parseOptions(capHdr, argc, argv) ;
 
-                c = getopt_long(argc, argv,
-                                short_options, long_options, &idx);
-
-                if (-1 == c)
-                        break;
-
-                switch (c) {
-                case 0: /* getopt_long() flag */
-                        break;
-
-                case 'd':
-                        dev_name = optarg;
-                        break;
-
-                case 'h':
-                        usage(stdout, argc, argv);
-                        exit(EXIT_SUCCESS);
-
-                case 'm':
-                        io = IO_METHOD_MMAP;
-                        break;
-
-                case 'r':
-                        io = IO_METHOD_READ;
-                        break;
-
-                case 'u':
-                        io = IO_METHOD_USERPTR;
-                        break;
-
-                case 'o':
-                        out_buf++;
-                        break;
-
-                case 'f':
-                        force_format++;
-                        break;
-
-                default:
-                        usage(stderr, argc, argv);
-                        exit(EXIT_FAILURE);
-                }
-        }
-
-        open_device();
-        init_device();
-        start_capturing();
-		mainLoop() ;
-        stop_capturing();
-        uninit_device();
-        close_device();
-        fprintf(stderr, "\n");
-        return 0;
+	open_device();
+	init_device(&capHdr->option) ;
+	start_capturing();
+	mainLoop(capHdr) ;
+	stop_capturing();
+	uninit_device();
+	close_device();
+	fprintf(stderr, "\n");
+	return 0;
 }
