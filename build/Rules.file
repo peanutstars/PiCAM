@@ -4,7 +4,7 @@
 all:    $(TARGET)
 
 $(TARGET):  $(OBJS)
-	$(CC) -o $@ $^ $(LFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 ifeq		($(DEBUG), 1)
 ifeq		($(EXTRA_INSTALL), 1)

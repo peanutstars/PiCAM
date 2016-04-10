@@ -1,6 +1,6 @@
 
 CFLAGS		:=-Wall
-LFLAGS		:=
+LDFLAGS		:=
 
 ifdef	DEBUG
 CFLAGS		+=-DDEBUG -g

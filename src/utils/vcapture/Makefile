@@ -14,7 +14,6 @@ OBJS			:= capture.o \
 
 INSTALLDIR		:=$(TARGETDIR)/system/bin
 
-EXTRA_CFLAGS	+=-D_REENTRANT -DLINUX_2_X=0
 EXTRA_LDFLAGS	+=-lpthread
 EXTRA_LDFLAGS	+=-lrt
 

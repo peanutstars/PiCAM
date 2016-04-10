@@ -4,7 +4,7 @@ CFLAGS		+=-pipe
 CFLAGS		+=-D_FILE_OFFSET_BITS=64
 CPPFLAGS	:=
 
-LFLAGS		:=
+LDFLAGS		:=
 
 ifeq		($(DEBUG), 1)
 CFLAGS		+=-DDEBUG -g
@@ -26,12 +26,12 @@ EXTRA_CFLAGS	+=-I$(BASEDIR)/drivers/vmq
 EXTRA_CFLAGS	+=-I$(BASEDIR)/drivers/vmshm
 EXTRA_CFLAGS	+=-I$(BASEDIR)/external/include
 
-LFLAGS			+=-L$(BASEDIR)/external/lib
-LFLAGS			+=-L$(TARGETDIR)/system/lib
+LDFLAGS			+=-L$(BASEDIR)/external/lib
+LDFLAGS			+=-L$(TARGETDIR)/system/lib
 
 #------------------------------------------------------------------------------
 
 CFLAGS		+=$(EXTRA_CFLAGS)
-LFLAGS		+=$(EXTRA_LFLAGS)
+LDFLAGS		+=$(EXTRA_LDFLAGS)
 
 CPPFLAGS	+=$(EXTRA_CPPFLAGS)

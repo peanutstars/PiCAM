@@ -1,3 +1,8 @@
+/*
+	It could be supported kernel 3.0 or later.
+ */
+
+
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/stat.h>

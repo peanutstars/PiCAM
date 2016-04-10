@@ -25,11 +25,13 @@
 #include <sys/time.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
+#include <signal.h>
 
 #include <linux/videodev2.h>
 
 #include "v4l2-h264.h"
 #include "pidebug.h"
+#include "pithread.h"
 
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
 
@@ -48,6 +50,18 @@ struct buffer {
 	size_t  length;
 };
 
+struct CaptureHandler {
+	int		run ;
+	int		done ;
+} ;
+typedef struct CaptureHandler CaptureHandler ;
+
+static CaptureHandler gCapHdr =
+{
+	.run		= 1 ,
+	.done		= 0 ,
+} ;
+
 static char            *dev_name;
 static enum io_method   io = IO_METHOD_MMAP;
 static int              fd = -1;
@@ -55,7 +69,6 @@ struct buffer          *buffers;
 static unsigned int     n_buffers;
 static int              out_buf;
 static int              force_format;
-static int              frame_count = 200;
 static int              frame_number = 0;
 static v4l2_info_t     *v4l2Info = NULL ;
 
@@ -183,43 +196,44 @@ static int read_frame(void)
         return 1;
 }
 
-static void mainloop(void)
+static void* captureLoop(void* arg)
 {
-        unsigned int count;
+	CaptureHandler* capHdr = (CaptureHandler *)arg ;
 
-        count = frame_count;
+	while (capHdr->run)
+	{
+		for (;;) {
+			fd_set fds;
+			struct timeval tv;
+			int r;
 
-        while (count-- > 0) {
-                for (;;) {
-                        fd_set fds;
-                        struct timeval tv;
-                        int r;
+			FD_ZERO(&fds);
+			FD_SET(fd, &fds);
 
-                        FD_ZERO(&fds);
-                        FD_SET(fd, &fds);
+			/* Timeout. */
+			tv.tv_sec = 2;
+			tv.tv_usec = 0;
 
-                        /* Timeout. */
-                        tv.tv_sec = 2;
-                        tv.tv_usec = 0;
+			r = select(fd + 1, &fds, NULL, NULL, &tv);
 
-                        r = select(fd + 1, &fds, NULL, NULL, &tv);
+			if (-1 == r) {
+				if (EINTR == errno)
+					continue;
+				errno_exit("select");
+			}
 
-                        if (-1 == r) {
-                                if (EINTR == errno)
-                                        continue;
-                                errno_exit("select");
-                        }
+			if (0 == r) {
+				fprintf(stderr, "select timeout\n");
+				exit(EXIT_FAILURE);
+			}
 
-                        if (0 == r) {
-                                fprintf(stderr, "select timeout\n");
-                                exit(EXIT_FAILURE);
-                        }
-
-                        if (read_frame())
-                                break;
-                        /* EAGAIN - continue select loop. */
-                }
-        }
+			if (read_frame())
+				break;
+			/* EAGAIN - continue select loop. */
+		}
+	}
+	capHdr->done = 1 ;
+	return NULL ;
 }
 
 static void stop_capturing(void)
@@ -586,6 +600,44 @@ static void open_device(void)
         }
 }
 
+static void commonSigHandler(int signum)
+{
+	if (signum == SIGTERM || signum == SIGINT) {
+		gCapHdr.run = 0 ;
+	}
+	else {
+		ERR("Occured a unhandled signal, %d.\n", signum) ;
+	}
+}
+
+static void initSignal (void)
+{
+	const int handledSignals[] = { SIGTERM, SIGINT } ;
+	struct sigaction sa ;
+	int i ;
+
+	for (i=0; i<sizeof(handledSignals)/sizeof(int); i++)
+	{
+		memset (&sa, 0, sizeof(sa)) ;
+		sa.sa_handler = commonSigHandler ;
+		sigemptyset(&sa.sa_mask) ;
+		sigaction(handledSignals[i], &sa, 0) ;
+	}
+}
+
+static void mainLoop (void)
+{
+	pthread_t thid ;
+	CaptureHandler* capHdr = &gCapHdr ;
+
+	initSignal() ;
+	CREATE_THREAD(thid, captureLoop, 0x1000, capHdr, ETP_MODE_DETACHED) ;
+
+	while ( ! capHdr->done) {
+		usleep(500000) ;
+	}
+}
+
 static void usage(FILE *fp, int argc, char **argv)
 {
         fprintf(fp,
@@ -599,9 +651,8 @@ static void usage(FILE *fp, int argc, char **argv)
                  "-u | --userp         Use application allocated buffers\n"
                  "-o | --output        Outputs stream to stdout\n"
                  "-f | --format        Force format to 640x480 YUYV\n"
-                 "-c | --count         Number of frames to grab [%i]\n"
                  "",
-                 argv[0], dev_name, frame_count);
+                 argv[0], dev_name);
 }
 
 static const char short_options[] = "d:hmruofc:";
@@ -665,13 +716,6 @@ int main(int argc, char **argv)
                         force_format++;
                         break;
 
-                case 'c':
-                        errno = 0;
-                        frame_count = strtol(optarg, NULL, 0);
-                        if (errno)
-                                errno_exit(optarg);
-                        break;
-
                 default:
                         usage(stderr, argc, argv);
                         exit(EXIT_FAILURE);
@@ -681,7 +725,7 @@ int main(int argc, char **argv)
         open_device();
         init_device();
         start_capturing();
-        mainloop();
+		mainLoop() ;
         stop_capturing();
         uninit_device();
         close_device();
