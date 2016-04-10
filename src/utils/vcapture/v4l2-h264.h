@@ -9,6 +9,8 @@ enum EV4l2Ret
 {
 	EV4L2RV_OK			= 0 ,
 	EV4L2RV_ERR_IOCTL ,
+	EV4L2RV_ERR_FRAME ,
+	EV4L2RV_ERR_SYSETM ,
 } ;
 typedef enum EV4l2Ret EV4l2Ret ;
 
@@ -58,5 +60,10 @@ typedef struct v4l2_info
 
 } v4l2_info_t;
 
+
+
+//int xioctl (int fd, int request, void *arg) ;
+v4l2_info_t *v4l2_create (int vfd) ;
+void v4l2_destroy (v4l2_info_t *info) ;
 
 #endif /* __V4L2_H264_H__ */

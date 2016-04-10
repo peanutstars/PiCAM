@@ -28,6 +28,9 @@
 
 #include <linux/videodev2.h>
 
+#include "v4l2-h264.h"
+#include "pidebug.h"
+
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
 
 #ifndef V4L2_PIX_FMT_H264
@@ -35,14 +38,14 @@
 #endif
 
 enum io_method {
-        IO_METHOD_READ,
-        IO_METHOD_MMAP,
-        IO_METHOD_USERPTR,
+	IO_METHOD_READ = 0,
+	IO_METHOD_MMAP,
+	IO_METHOD_USERPTR,
 };
 
 struct buffer {
-        void   *start;
-        size_t  length;
+	void   *start;
+	size_t  length;
 };
 
 static char            *dev_name;
@@ -54,6 +57,7 @@ static int              out_buf;
 static int              force_format;
 static int              frame_count = 200;
 static int              frame_number = 0;
+static v4l2_info_t     *v4l2Info = NULL ;
 
 static void errno_exit(const char *s)
 {
@@ -79,6 +83,7 @@ static void process_image(const void *p, int size)
         sprintf(filename, "frame-%d.raw", frame_number);
         FILE *fp=fopen(filename,"wb");
         
+		DBG("fp = %p, size = %d\n", fp, size) ;
         if (out_buf)
                 fwrite(p, size, 1, fp);
 
@@ -305,6 +310,8 @@ static void uninit_device(void)
         }
 
         free(buffers);
+
+//		v4l2_destroy(v4l2Info) ;
 }
 
 static void init_read(unsigned int buffer_size)
@@ -331,7 +338,7 @@ static void init_mmap(void)
 
         CLEAR(req);
 
-        req.count = 4;
+        req.count = 16;
         req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
         req.memory = V4L2_MEMORY_MMAP;
 
@@ -494,6 +501,7 @@ static void init_device(void)
         CLEAR(fmt);
 
         fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+#if 0
         if (force_format) {
 	fprintf(stderr, "Set H264\r\n");
                 fmt.fmt.pix.width       = 1920; //replace
@@ -510,6 +518,18 @@ static void init_device(void)
                 if (-1 == xioctl(fd, VIDIOC_G_FMT, &fmt))
                         errno_exit("VIDIOC_G_FMT");
         }
+#else
+		fmt.fmt.pix.width       = 1920; //replace
+		fmt.fmt.pix.height      = 1080; //replace
+		fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_H264; //replace
+		fmt.fmt.pix.field       = V4L2_FIELD_ANY;
+
+		if (-1 == xioctl(fd, VIDIOC_S_FMT, &fmt)) {
+			errno_exit("VIDIOC_S_FMT");
+		}
+
+		v4l2Info = v4l2_create(fd) ;
+#endif
 
         /* Buggy driver paranoia. */
         min = fmt.fmt.pix.width * 2;

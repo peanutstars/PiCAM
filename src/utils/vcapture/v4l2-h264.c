@@ -113,7 +113,7 @@ static int get_ctrl_list (v4l2_info_t *info)
 				if ( ! info->ctlList[count].menu )
 				{
 					ERR("malloc ( v4l2->ctlList[%d].menu )\n", count);
-					ASSERT(0) ;
+//					ASSERT(0) ;
 				}
 				memset (info->ctlList[count].menu, 0, sizeof(querymenu) * queryctrl.maximum);
 			}
@@ -147,6 +147,7 @@ next_control:
 		queryctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
 	}
 
+	DBG("### ctlcount = %d\n", count) ;
 	return count;
 }
 
@@ -287,7 +288,7 @@ static void xu_h264_init_buf (v4l2_info_t *info)
 			info->h264.selector[i] = malloc (info->h264.size[i]);
 			if ( ! info->h264.selector[i] ) {
 				ERR ("malloc ( XU[%d]-%d )\n", i, info->h264.size[i]) ;
-				ASSERT(0) ;
+//				ASSERT(0) ;
 			}
 			memset (info->h264.selector[i], 0, info->h264.size[i]);
 		}
@@ -493,7 +494,7 @@ static void configForH264 (v4l2_info_t *info)
 	info->op->xu_h264_set (info, UVCX_BITRATE_LAYERS) ;
 }
 
-v4l2_info_t *v4l2_create (void)
+v4l2_info_t *v4l2_create (int vfd)
 {
 	v4l2_info_t *info;
 
@@ -509,6 +510,7 @@ v4l2_info_t *v4l2_create (void)
 
 	do
 	{
+		info->vfd		= vfd ;
 		info->op		= &v4l2Op ;
 		info->ctlCnt	= info->op->get_ctrl_list(info);
 		info->ctlList	= malloc (sizeof(v4l2_ctrl_list_t) * info->ctlCnt);
