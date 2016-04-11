@@ -55,6 +55,7 @@ struct buffer {
 struct CaptureHandler {
 	int			run ;
 	int			done ;
+	int			fgStdOut : 1 ;
 	V4l2Param	option ;
 } ;
 typedef struct CaptureHandler CaptureHandler ;
@@ -63,6 +64,7 @@ static CaptureHandler gCapHdr =
 {
 	.run		= 1 ,
 	.done		= 0 ,
+	.fgStdOut	= 0 ,
 	.option		= {
 		.vfd			= -1 ,
 		.width			= 1280 ,
@@ -82,7 +84,6 @@ static enum io_method   io = IO_METHOD_MMAP;
 static int              fd = -1;
 struct buffer          *buffers;
 static unsigned int     n_buffers;
-static int              out_buf;
 static int              frame_number = 0;
 static v4l2_info_t     *v4l2Info = NULL ;
 
@@ -103,22 +104,26 @@ static int xioctl(int fh, int request, void *arg)
         return r;
 }
 
-static void process_image(const void *p, int size)
+static void process_image(CaptureHandler* capHdr, const void *p, int size)
 {
+	if (capHdr->fgStdOut) {
+		fwrite(p, size, 1, stdout) ;
+	}
+	else {
         frame_number++;
         char filename[15];
         sprintf(filename, "frame-%d.raw", frame_number);
         FILE *fp=fopen(filename,"wb");
         
 		DBG("fp = %p, size = %d\n", fp, size) ;
-        if (out_buf)
-                fwrite(p, size, 1, fp);
+        fwrite(p, size, 1, fp);
 
         fflush(fp);
         fclose(fp);
+	}
 }
 
-static int read_frame(void)
+static int read_frame(CaptureHandler* capHdr)
 {
         struct v4l2_buffer buf;
         unsigned int i;
@@ -140,7 +145,7 @@ static int read_frame(void)
                         }
                 }
 
-                process_image(buffers[0].start, buffers[0].length);
+                process_image(capHdr, buffers[0].start, buffers[0].length);
                 break;
 
         case IO_METHOD_MMAP:
@@ -166,7 +171,7 @@ static int read_frame(void)
 
                 assert(buf.index < n_buffers);
 
-                process_image(buffers[buf.index].start, buf.bytesused);
+                process_image(capHdr, buffers[buf.index].start, buf.bytesused);
 
                 if (-1 == xioctl(fd, VIDIOC_QBUF, &buf))
                         errno_exit("VIDIOC_QBUF");
@@ -200,7 +205,7 @@ static int read_frame(void)
 
                 assert(i < n_buffers);
 
-                process_image((void *)buf.m.userptr, buf.bytesused);
+                process_image(capHdr, (void *)buf.m.userptr, buf.bytesused);
 
                 if (-1 == xioctl(fd, VIDIOC_QBUF, &buf))
                         errno_exit("VIDIOC_QBUF");
@@ -241,7 +246,7 @@ static void* captureLoop(void* arg)
 				exit(EXIT_FAILURE);
 			}
 
-			if (read_frame())
+			if (read_frame(capHdr))
 				break;
 			/* EAGAIN - continue select loop. */
 		}
@@ -578,9 +583,9 @@ static void init_device(V4l2Param* option)
 		} else {
 			struct v4l2_fract *tf = &parm.parm.capture.timeperframe;
 			if ( ! tf->denominator || ! tf->numerator)
-				printf("Invalid frame rate\n") ;
+				fprintf(stderr, "Invalid frame rate\n") ;
 			else
-				printf("Frame rate set to %.3f fps\n", 1.0 * tf->denominator / tf->numerator) ;
+				fprintf(stderr, "Frame rate set to %.3f fps\n", 1.0 * tf->denominator / tf->numerator) ;
 		}
 
 
@@ -671,7 +676,7 @@ static void usage(FILE *fp, int argc, char **argv)
 {
 	fprintf(fp,
 		"Usage: %s [options]\n\n"
-		"It is utility for capturing H264 streams from UVC interface and other formats are not supported.\n"
+		"It is utility for capturing H264 streams from UVC interface and other formats are not supported.\n\n"
 		"Version " VER_STRING "\n"
 		"Options:\n"
 		"-d | --dev name              Video device name [%s]\n"
@@ -697,7 +702,7 @@ static void usage(FILE *fp, int argc, char **argv)
 		, argv[0], dev_name);
 }
 
-static const char short_options[] = "d:hmru";
+static const char short_options[] = "d:hmruo";
 
 static const struct option
 long_options[] = {
@@ -810,7 +815,7 @@ static void parseOptions (CaptureHandler* capHdr, int argc, char* argv[])
 				break;
 
 			case 'o':
-				out_buf++;
+				capHdr->fgStdOut = 1 ;
 				break;
 
 			default:

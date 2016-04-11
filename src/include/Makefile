@@ -30,3 +30,5 @@ version:
 
 clean:
 	
+install:
+
