@@ -494,6 +494,7 @@ static void configForH264 (v4l2_info_t *info)
 	uvcx_cfg->dwFrameInterval = (int)((1.0/info->param.fps)*10000000.0) ;
 	uvcx_cfg->wWidth = info->param.width ;
 	uvcx_cfg->wHeight = info->param.height ;
+	uvcx_cfg->wSliceUnits = info->param.sliceUnits ;
 	uvcx_cfg->wIFramePeriod = info->param.iFramePeriod;	// IDR Frame: 1/sec,  Unit: msec
 	uvcx_cfg->dwBitRate = info->param.averageBitrate ;
 	uvcx_cfg->bRateControlMode = info->param.rateControl ;

@@ -75,6 +75,7 @@ static CaptureHandler gCapHdr =
 		.vfd			= -1 ,
 		.width			= 1280 ,
 		.height			= 720 ,
+		.sliceUnits		= 1 ,
 		.fps			= 7 ,
 		.rateControl	= RATECONTROL_CBR ,
 		.iFramePeriod	= 1000 ,
@@ -725,6 +726,8 @@ static void usage(FILE *fp, int argc, char **argv)
 		"                                1920, 1280, 1024, 864, 800, 640\n"
 		"--height <size>              Set a height of picture, default is 720\n"
 		"                                1080,  720,  576, 480, 448, 360\n" 
+		"--slice-units <num>          Set a value of slice units, default is 1\n"
+		"                                Range is from 1 to 8.\n"
 		"--frame-rate <fps>           Set a frame-rate, default is 15 fps\n"
 		"                                30, 24, 20, 15, 10, 7(like as 7.5)\n"
 //		"--rate-control <cbr|vbr>     Set a rate-control, default is cbr mode.\n"
@@ -744,6 +747,7 @@ static const struct option
 long_options[] = {
 		{ "width" ,				required_argument, NULL, 0 } ,
 		{ "height" ,			required_argument, NULL, 0 } ,
+		{ "slice-units" ,		required_argument, NULL, 0 } ,
 		{ "frame-rate" ,		required_argument, NULL, 0 } ,
 		{ "rate-control" ,		required_argument, NULL, 0 } ,
 		{ "iframe-period" ,		required_argument, NULL, 0 } ,
@@ -799,6 +803,13 @@ static void parseOptions (CaptureHandler* capHdr, int argc, char* argv[])
 							fgFound = 1 ;
 							break ;
 						}
+					}
+				}
+				if ( ! strcmp(long_options[idx].name, "slice-units")) {
+					int unit = strtoul(optarg, NULL, 0) ;
+					if (1 <= unit && unit <= 8) {
+						capHdr->option.sliceUnits = unit ;
+						fgFound = 1 ;
 					}
 				}
 				if ( ! strcmp(long_options[idx].name, "frame-rate")) {

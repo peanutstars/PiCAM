@@ -50,6 +50,7 @@ struct v4l2_param
 	int vfd ;
 	int width ;
 	int height ;
+	int sliceUnits ;
 	int fps ;
 	int rateControl ;
 	int iFramePeriod ;
