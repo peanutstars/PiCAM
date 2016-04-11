@@ -55,7 +55,10 @@ struct buffer {
 struct CaptureHandler {
 	int			run ;
 	int			done ;
-	int			fgStdOut : 1 ;
+	int			fgStdOut	: 1 ,
+				fgFrame		: 1 ;
+	char*		streamPath ;
+	int			sfd ;
 	V4l2Param	option ;
 } ;
 typedef struct CaptureHandler CaptureHandler ;
@@ -65,6 +68,9 @@ static CaptureHandler gCapHdr =
 	.run		= 1 ,
 	.done		= 0 ,
 	.fgStdOut	= 0 ,
+	.fgFrame	= 0 ,
+	.streamPath = NULL ,
+	.sfd		= -1 ,
 	.option		= {
 		.vfd			= -1 ,
 		.width			= 1280 ,
@@ -106,20 +112,46 @@ static int xioctl(int fh, int request, void *arg)
 
 static void process_image(CaptureHandler* capHdr, const void *p, int size)
 {
+    frame_number++;
+
 	if (capHdr->fgStdOut) {
 		fwrite(p, size, 1, stdout) ;
 	}
-	else {
-        frame_number++;
-        char filename[15];
-        sprintf(filename, "frame-%d.raw", frame_number);
-        FILE *fp=fopen(filename,"wb");
-        
-		DBG("fp = %p, size = %d\n", fp, size) ;
-        fwrite(p, size, 1, fp);
-
-        fflush(fp);
-        fclose(fp);
+	if (capHdr->sfd >= 0) {
+		int left = size ;
+		int wcnt ;
+		const char *ptr = (const char *)p ;
+		do
+		{
+			wcnt = write(capHdr->sfd, p, left) ;
+			if (wcnt != left) {
+				if (wcnt < 0) {
+					if (errno == ENOSPC || errno == EIO) {
+						ERR2("Failed to write stream into file.\n") ;
+						kill (getpid(), SIGINT) ;
+					}
+					else if (errno == EINTR) {
+						continue ;
+					}
+					else {
+						ERR2("Occured a Unhandled Error.\n") ;
+						kill (getpid(), SIGINT) ;
+					}
+				}
+			}
+			left -= wcnt ;
+			ptr += wcnt ;
+		} while(left > 0) ;
+	}
+	if (capHdr->fgFrame) {
+        FILE *fp ;
+        char filename[32] ;
+        sprintf(filename, "frame-%06d.h264", frame_number) ;
+		fp = fopen(filename, "wb") ;
+		if (fp) {
+			fwrite(p, size, 1, fp);
+			fclose(fp);
+		}
 	}
 }
 
@@ -238,12 +270,14 @@ static void* captureLoop(void* arg)
 			if (-1 == r) {
 				if (EINTR == errno)
 					continue;
-				errno_exit("select");
+				ERR2("select\n") ;
+				capHdr->run = 0 ;
 			}
 
 			if (0 == r) {
 				fprintf(stderr, "select timeout\n");
-				exit(EXIT_FAILURE);
+				capHdr->run = 0 ;
+				break ;
 			}
 
 			if (read_frame(capHdr))
@@ -684,7 +718,9 @@ static void usage(FILE *fp, int argc, char **argv)
 		"-m | --mmap                  Use memory mapped buffers [default]\n"
 		"-r | --read                  Use read() calls\n"
 		"-u | --userp                 Use application allocated buffers\n"
-		"-o | --output                Outputs stream to stdout\n"
+		"-o | --output                Output stream to stdout\n"
+		"-s | --stream <file>         Output stream to file\n"
+		"-f | --frame                 Output stream to store each the frames\n"
 		"--width <size>               Set a width of picture, default is 1280\n"
 		"                                1920, 1280, 1024, 864, 800, 640\n"
 		"--height <size>              Set a height of picture, default is 720\n"
@@ -702,7 +738,7 @@ static void usage(FILE *fp, int argc, char **argv)
 		, argv[0], dev_name);
 }
 
-static const char short_options[] = "d:hmruo";
+static const char short_options[] = "d:hmruos:f";
 
 static const struct option
 long_options[] = {
@@ -721,6 +757,8 @@ long_options[] = {
         { "read",   			no_argument,       NULL, 'r' },
         { "userp",  			no_argument,       NULL, 'u' },
         { "output", 			no_argument,       NULL, 'o' },
+		{ "stream",				required_argument, NULL, 's' } ,
+		{ "frame",				no_argument,       NULL, 'f' } ,
         { 0, 0, 0, 0 }
 };
 
@@ -817,6 +855,19 @@ static void parseOptions (CaptureHandler* capHdr, int argc, char* argv[])
 			case 'o':
 				capHdr->fgStdOut = 1 ;
 				break;
+			
+			case 's' :
+				capHdr->streamPath = optarg ;
+				capHdr->sfd = open(optarg, O_WRONLY|O_CREAT|O_TRUNC, 0666) ;
+				if (capHdr->sfd < 0) {
+					ERR2("Failed to open %s.\n", optarg) ;
+					exit(EXIT_FAILURE) ;
+				}
+				break ;
+
+			case 'f' :
+				capHdr->fgFrame = 1 ;
+				break ;
 
 			default:
 				usage(stderr, argc, argv);
@@ -841,6 +892,13 @@ static void parseOptions (CaptureHandler* capHdr, int argc, char* argv[])
 	dumpV4l2Param(stderr, &capHdr->option) ;
 }
 
+static void clearOut (CaptureHandler* capHdr)
+{
+	if (capHdr->sfd >= 0) {
+		close(capHdr->sfd) ;
+	}
+}
+
 int main(int argc, char **argv)
 {
 	CaptureHandler* capHdr = &gCapHdr ;
@@ -855,6 +913,9 @@ int main(int argc, char **argv)
 	stop_capturing();
 	uninit_device();
 	close_device();
+
+	clearOut(capHdr) ;
+
 	fprintf(stderr, "\n");
 	return 0;
 }
