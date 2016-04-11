@@ -56,7 +56,8 @@ struct CaptureHandler {
 	int			run ;
 	int			done ;
 	int			fgStdOut	: 1 ,
-				fgFrame		: 1 ;
+				fgFrame		: 1 ,
+				fgVerbose	: 1 ; 
 	char*		streamPath ;
 	int			sfd ;
 	V4l2Param	option ;
@@ -69,6 +70,7 @@ static CaptureHandler gCapHdr =
 	.done		= 0 ,
 	.fgStdOut	= 0 ,
 	.fgFrame	= 0 ,
+	.fgVerbose	= 0 ,
 	.streamPath = NULL ,
 	.sfd		= -1 ,
 	.option		= {
@@ -114,6 +116,9 @@ static int xioctl(int fh, int request, void *arg)
 static void process_image(CaptureHandler* capHdr, const void *p, int size)
 {
     frame_number++;
+	if (capHdr->fgVerbose) {
+		fprintf(stderr, "%06d - %12d bytes\n", frame_number, size) ;
+	}
 
 	if (capHdr->fgStdOut) {
 		fwrite(p, size, 1, stdout) ;
@@ -714,6 +719,7 @@ static void usage(FILE *fp, int argc, char **argv)
 		"It is utility for capturing H264 streams from UVC interface and other formats are not supported.\n\n"
 		"Version " VER_STRING "\n"
 		"Options:\n"
+		"-v | --verbose               Display messages."
 		"-d | --dev name              Video device name [%s]\n"
 		"-h | --help                  Print this message\n"
 		"-m | --mmap                  Use memory mapped buffers [default]\n"
@@ -741,7 +747,7 @@ static void usage(FILE *fp, int argc, char **argv)
 		, argv[0], dev_name);
 }
 
-static const char short_options[] = "d:hmruos:f";
+static const char short_options[] = "vd:hmruos:f";
 
 static const struct option
 long_options[] = {
@@ -755,6 +761,7 @@ long_options[] = {
 		{ "average-bitrate" ,	required_argument, NULL, 0 } ,
 		{ "entropy" ,			required_argument, NULL, 0 } ,
 		{ "timestamp" ,			required_argument, NULL, 0 } ,
+		{ "verbose" ,			no_argument,       NULL, 'v' } ,
         { "dev",				required_argument, NULL, 'd' },
         { "help",   			no_argument,       NULL, 'h' },
         { "mmap",   			no_argument,       NULL, 'm' },
@@ -842,6 +849,10 @@ static void parseOptions (CaptureHandler* capHdr, int argc, char* argv[])
 					exit(EXIT_FAILURE);
 				}
 				break;
+
+			case 'v':
+				capHdr->fgVerbose = 1 ;
+				break ;
 
 			case 'd':
 				dev_name = optarg;
