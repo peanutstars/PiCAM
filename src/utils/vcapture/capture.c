@@ -113,41 +113,54 @@ static int xioctl(int fh, int request, void *arg)
         return r;
 }
 
+static int safeWrite(int fd, const char *ptr, int size)
+{
+	int left = size ;
+	int wcnt ;
+	do
+	{
+		wcnt = write(fd, ptr, left) ;
+		if (wcnt != left) {
+			if (wcnt < 0) {
+				if (errno == ENOSPC || errno == EIO) {
+					ERR2("Failed to write stream into file.\n") ;
+					kill (getpid(), SIGINT) ;
+				}
+				else if (errno == EINTR) {
+					continue ;
+				}
+				else {
+					ERR2("Occured a Unhandled Error.\n") ;
+					kill (getpid(), SIGINT) ;
+				}
+			}
+		}
+		left -= wcnt ;
+		ptr += wcnt ;
+	} while(left > 0) ;
+
+	return 0 ;
+}
+
 static void process_image(CaptureHandler* capHdr, const void *p, int size)
 {
+	/* Insert NAL AUD(Access Unit Delimiter).
+	   AUD must be exist to play on a mobile devcie. */
+
+	const char h264AUD[] = { 0x00, 0x00, 0x00, 0x01, 0x09, 0xf0 } ;
+
     frame_number++;
 	if (capHdr->fgVerbose) {
 		fprintf(stderr, "%06d - %12d bytes\n", frame_number, size) ;
 	}
 
 	if (capHdr->fgStdOut) {
+		fwrite(h264AUD, sizeof(h264AUD), 1, stdout) ;
 		fwrite(p, size, 1, stdout) ;
 	}
 	if (capHdr->sfd >= 0) {
-		int left = size ;
-		int wcnt ;
-		const char *ptr = (const char *)p ;
-		do
-		{
-			wcnt = write(capHdr->sfd, p, left) ;
-			if (wcnt != left) {
-				if (wcnt < 0) {
-					if (errno == ENOSPC || errno == EIO) {
-						ERR2("Failed to write stream into file.\n") ;
-						kill (getpid(), SIGINT) ;
-					}
-					else if (errno == EINTR) {
-						continue ;
-					}
-					else {
-						ERR2("Occured a Unhandled Error.\n") ;
-						kill (getpid(), SIGINT) ;
-					}
-				}
-			}
-			left -= wcnt ;
-			ptr += wcnt ;
-		} while(left > 0) ;
+		safeWrite(capHdr->sfd, h264AUD, sizeof(h264AUD)) ;
+		safeWrite(capHdr->sfd, (const char*)p, size) ;
 	}
 	if (capHdr->fgFrame) {
         FILE *fp ;
@@ -155,6 +168,7 @@ static void process_image(CaptureHandler* capHdr, const void *p, int size)
         sprintf(filename, "frame-%06d.h264", frame_number) ;
 		fp = fopen(filename, "wb") ;
 		if (fp) {
+			fwrite(h264AUD, sizeof(h264AUD), 1, fp) ;
 			fwrite(p, size, 1, fp);
 			fclose(fp);
 		}
