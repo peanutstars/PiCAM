@@ -7,7 +7,8 @@ include $(BASEDIR)/Rules.mk
 #------------------------------------------------------------------------------
 
 #SUBDIRS	:= hello.c hello.cpp
-SUBDIRS		:= vcapture
+SUBDIRS		:=	vcapture \
+				rtspserver
 
 #------------------------------------------------------------------------------
 

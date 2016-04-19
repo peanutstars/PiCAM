@@ -24,8 +24,11 @@ CFLAGS		+=-DMODEL_$(MODEL)
 EXTRA_CFLAGS	+=-I$(BASEDIR)/include
 EXTRA_CFLAGS	+=-I$(BASEDIR)/external/install/usr/local/include
 
+EXTRA_CPPFLAGS	+=-I$(BASEDIR)/include
+EXTRA_CPPFLAGS	+=-I$(BASEDIR)/external/install/usr/local/include
+
 LDFLAGS			+=-L$(TARGETDIR)/system/lib
-LDFLAGS			+=-L$(BASEDIR)/external/install/usr/local/lib
+LDFLAGS			+=-L$(BASEDIR)/external/install/usr/local/lib/.
 
 #------------------------------------------------------------------------------
 
