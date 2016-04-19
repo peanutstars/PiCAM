@@ -22,12 +22,10 @@ CFLAGS		+=-DMODEL_$(MODEL)
 #------------------------------------------------------------------------------
 
 EXTRA_CFLAGS	+=-I$(BASEDIR)/include
-EXTRA_CFLAGS	+=-I$(BASEDIR)/drivers/vmq
-EXTRA_CFLAGS	+=-I$(BASEDIR)/drivers/vmshm
-EXTRA_CFLAGS	+=-I$(BASEDIR)/external/include
+EXTRA_CFLAGS	+=-I$(BASEDIR)/external/install/usr/local/include
 
-LDFLAGS			+=-L$(BASEDIR)/external/lib
 LDFLAGS			+=-L$(TARGETDIR)/system/lib
+LDFLAGS			+=-L$(BASEDIR)/external/install/usr/local/lib
 
 #------------------------------------------------------------------------------
 
