@@ -15,6 +15,7 @@ INSTALLDIR		:=$(TARGETDIR)/system/bin
 LIVEINCDIR		:=$(BASEDIR)/external/install/usr/local/include
 LIVELIBDIR		:=$(BASEDIR)/external/install/usr/local/lib
 
+#EXTRA_CPPFLAGS	+=-std=c++11
 EXTRA_CPPFLAGS  +=-D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 EXTRA_CPPFLAGS	+=-I$(LIVEINCDIR)/UsageEnvironment
 EXTRA_CPPFLAGS	+=-I$(LIVEINCDIR)/groupsock

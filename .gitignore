@@ -1,7 +1,8 @@
 .*.swp
 *.o
-target
-src/utils/vcapture/vcapture
-src/include/version.h
 tags
+target
+src/include/version.h
+src/utils/rtspserver/rtspsvr
+src/utils/vcapture/vcapture
 

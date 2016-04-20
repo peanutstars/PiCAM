@@ -1,0 +1,58 @@
+#!/bin/bash
+
+PIPE_VIDEO_PREFIX="/tmp/video"
+
+BINPATH=`pwd`
+export PATH=$BINPATH:$PATH
+
+RTSPSERVER=rtspsvr
+VCAPTURE=vcapture
+
+PCMD=$1
+
+fInit() {
+
+	for N in $(seq 0 3)
+	do
+		pipe_video=${PIPE_VIDEO_PREFIX}${N}.264
+		[ -e "$pipe_video" ] && rm -rf $pipe_video
+		mkfifo $pipe_video
+	done
+}
+
+fStart() {
+	$RTSPSERVER &
+	for N in $(seq 0 3)
+	do
+		dev_video="/dev/video$N"
+		pipe_video=${PIPE_VIDEO_PREFIX}${N}.264
+		[ -e "$dev_video" ] && $VCAPTURE --dev=$dev_video -o --width=1280 --height=720 --slice-units=4 --frame-rate=15 --iframe-period=3 --average-bitrate=3500000 > $pipe_video &
+	done
+}
+
+fStop() {
+	killall -9 $RTSPSERVER $VCAPTURE
+	sleep 1.5
+}
+
+
+### main
+
+case "$PCMD" in
+	start)
+		fInit
+		fStart
+		;;
+	stop)
+		fStop
+		;;
+	restart)
+		fStop
+		fInit
+		fStart
+		;;
+	*)
+		echo -e "\nUsage: $0 {start|stop|restart}\n"
+		;;
+esac
+

@@ -11,122 +11,95 @@ more details.
 
 You should have received a copy of the GNU Lesser General Public License
 along with this library; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // Copyright (c) 1996-2016, Live Networks, Inc.  All rights reserved
-// A test program that reads a H.264 Elementary Stream video file
-// and streams it using RTP
+// A test program that demonstrates how to stream - via unicast RTP
+// - various kinds of file on demand, using a built-in RTSP server.
 // main program
-//
-// NOTE: For this application to work, the H.264 Elementary Stream video file *must* contain SPS and PPS NAL units,
-// ideally at or near the start of the file.  These SPS and PPS NAL units are used to specify 'configuration' information
-// that is set in the output stream's SDP description (by the RTSP server that is built in to this application).
-// Note also that - unlike some other "*Streamer" demo applications - the resulting stream can be received only using a
-// RTSP client (such as "openRTSP")
 
-#include <liveMedia.hh>
-#include <BasicUsageEnvironment.hh>
-#include <GroupsockHelper.hh>
+#include <string>
+#include "liveMedia.hh"
+#include "BasicUsageEnvironment.hh"
+
+#include "rtspsvr.h"
 
 UsageEnvironment* env;
-char const* inputFileName = "test.264";
-H264VideoStreamFramer* videoSource;
-RTPSink* videoSink;
 
-void play(); // forward
+// To make the second and subsequent client for each stream reuse the same
+// input stream as the first client (rather than playing the file from the
+// start for each client), change the following "False" to "True":
+Boolean reuseFirstSource = False;
+
+static void announceStream(RTSPServer* rtspServer, ServerMediaSession* sms, char const* streamName, char const* inputFileName); // fwd
+
 
 int main(int argc, char** argv) {
   // Begin by setting up our usage environment:
   TaskScheduler* scheduler = BasicTaskScheduler::createNew();
   env = BasicUsageEnvironment::createNew(*scheduler);
 
-  // Create 'groupsocks' for RTP and RTCP:
-  struct in_addr destinationAddress;
-  destinationAddress.s_addr = chooseRandomIPv4SSMAddress(*env);
-  // Note: This is a multicast address.  If you wish instead to stream
-  // using unicast, then you should use the "testOnDemandRTSPServer"
-  // test program - not this test program - as a model.
+  UserAuthenticationDatabase* authDB = NULL;
+#ifdef ACCESS_CONTROL
+  // To implement client access control to the RTSP server, do the following:
+  authDB = new UserAuthenticationDatabase;
+  authDB->addUserRecord("username1", "password1"); // replace these with real strings
+  // Repeat the above with each <username>, <password> that you wish to allow
+  // access to the server.
+#endif
 
-  const unsigned short rtpPortNum = 18888;
-  const unsigned short rtcpPortNum = rtpPortNum+1;
-  const unsigned char ttl = 255;
-
-  const Port rtpPort(rtpPortNum);
-  const Port rtcpPort(rtcpPortNum);
-
-  Groupsock rtpGroupsock(*env, destinationAddress, rtpPort, ttl);
-  rtpGroupsock.multicastSendOnly(); // we're a SSM source
-  Groupsock rtcpGroupsock(*env, destinationAddress, rtcpPort, ttl);
-  rtcpGroupsock.multicastSendOnly(); // we're a SSM source
-
-  // Create a 'H264 Video RTP' sink from the RTP 'groupsock':
-  OutPacketBuffer::maxSize = 100000;
-  videoSink = H264VideoRTPSink::createNew(*env, &rtpGroupsock, 96);
-
-  // Create (and start) a 'RTCP instance' for this RTP sink:
-  const unsigned estimatedSessionBandwidth = 500; // in kbps; for RTCP b/w share
-  const unsigned maxCNAMElen = 100;
-  unsigned char CNAME[maxCNAMElen+1];
-  gethostname((char*)CNAME, maxCNAMElen);
-  CNAME[maxCNAMElen] = '\0'; // just in case
-  RTCPInstance* rtcp
-  = RTCPInstance::createNew(*env, &rtcpGroupsock,
-			    estimatedSessionBandwidth, CNAME,
-			    videoSink, NULL /* we're a server */,
-			    True /* we're a SSM source */);
-  // Note: This starts RTCP running automatically
-
-  RTSPServer* rtspServer = RTSPServer::createNew(*env, 8554);
+  // Create the RTSP server:
+  RTSPServer* rtspServer = RTSPServer::createNew(*env, 8554, authDB);
   if (rtspServer == NULL) {
     *env << "Failed to create RTSP server: " << env->getResultMsg() << "\n";
     exit(1);
   }
-  ServerMediaSession* sms
-    = ServerMediaSession::createNew(*env, "testStream", inputFileName,
-		   "Session streamed by \"testH264VideoStreamer\"",
-					   True /*SSM*/);
-  sms->addSubsession(PassiveServerMediaSubsession::createNew(*videoSink, rtcp));
-  rtspServer->addServerMediaSession(sms);
 
-  char* url = rtspServer->rtspURL(sms);
-  *env << "Play this stream using the URL \"" << url << "\"\n";
-  delete[] url;
+  char const* descriptionString
+    = "Session streamed by \"testOnDemandRTSPServer\"";
 
-  // Start the streaming:
-  *env << "Beginning streaming...\n";
-  play();
+  // Set up each of the possible streams that can be served by the
+  // RTSP server.  Each such stream is implemented using a
+  // "ServerMediaSession" object, plus one or more
+  // "ServerMediaSubsession" objects for each audio/video substream.
+
+  // A H.264 video elementary stream #1:
+  for (int i=0; i<2; i++)
+  {
+	char streamName[64] ;
+	char inputFileName[64] ;
+
+	snprintf(streamName, sizeof(streamName), FORMAT_STREAM_NAME, i) ;
+	snprintf(inputFileName, sizeof(inputFileName), FORMAT_VIDEO_NAME, i) ;
+	
+    ServerMediaSession* sms = ServerMediaSession::createNew(*env, streamName, streamName, descriptionString);
+    sms->addSubsession(H264VideoFileServerMediaSubsession::createNew(*env, inputFileName, reuseFirstSource));
+    rtspServer->addServerMediaSession(sms);
+
+    announceStream(rtspServer, sms, streamName, inputFileName);
+  }
+
+  // Also, attempt to create a HTTP server for RTSP-over-HTTP tunneling.
+  // Try first with the default HTTP port (80), and then with the alternative HTTP
+  // port numbers (8000 and 8080).
+
+  if (rtspServer->setUpTunnelingOverHTTP(80) || rtspServer->setUpTunnelingOverHTTP(8000) || rtspServer->setUpTunnelingOverHTTP(8080)) {
+    *env << "\n(We use port " << rtspServer->httpServerPortNum() << " for optional RTSP-over-HTTP tunneling.)\n";
+  } else {
+    *env << "\n(RTSP-over-HTTP tunneling is not available.)\n";
+  }
 
   env->taskScheduler().doEventLoop(); // does not return
 
   return 0; // only to prevent compiler warning
 }
 
-void afterPlaying(void* /*clientData*/) {
-  *env << "...done reading from file\n";
-  videoSink->stopPlaying();
-  Medium::close(videoSource);
-  // Note that this also closes the input file that this source read from.
-
-  // Start playing once again:
-  play();
-}
-
-void play() {
-  // Open the input file as a 'byte-stream file source':
-  ByteStreamFileSource* fileSource
-    = ByteStreamFileSource::createNew(*env, inputFileName);
-  if (fileSource == NULL) {
-    *env << "Unable to open file \"" << inputFileName
-         << "\" as a byte-stream file source\n";
-    exit(1);
-  }
-
-  FramedSource* videoES = fileSource;
-
-  // Create a framer for the Video Elementary Stream:
-  videoSource = H264VideoStreamFramer::createNew(*env, videoES);
-
-  // Finally, start playing:
-  *env << "Beginning to read from file...\n";
-  videoSink->startPlaying(*videoSource, afterPlaying, videoSink);
+static void announceStream(RTSPServer* rtspServer, ServerMediaSession* sms, char const* streamName, char const* inputFileName)
+{
+  char* url = rtspServer->rtspURL(sms);
+  UsageEnvironment& env = rtspServer->envir();
+  env << "\n\"" << streamName << "\" stream, from the file \""
+      << inputFileName << "\"\n";
+  env << "Play this stream using the URL \"" << url << "\"\n";
+  delete[] url;
 }

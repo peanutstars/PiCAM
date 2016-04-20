@@ -733,7 +733,7 @@ static void usage(FILE *fp, int argc, char **argv)
 		"It is utility for capturing H264 streams from UVC interface and other formats are not supported.\n\n"
 		"Version " VER_STRING "\n"
 		"Options:\n"
-		"-v | --verbose               Display messages."
+		"-v | --verbose               Display messages.\n"
 		"-d | --dev name              Video device name [%s]\n"
 		"-h | --help                  Print this message\n"
 		"-m | --mmap                  Use memory mapped buffers [default]\n"
