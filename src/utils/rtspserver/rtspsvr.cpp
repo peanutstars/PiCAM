@@ -52,36 +52,43 @@ int main(int argc, char** argv)
 	env = BasicUsageEnvironment::createNew(*scheduler);
 
 	// Create 'groupsocks' for RTP and RTCP:
-	struct in_addr destinationAddress;
-	destinationAddress.s_addr = chooseRandomIPv4SSMAddress(*env);
+	struct in_addr destinationAddress0;
+	destinationAddress0.s_addr = chooseRandomIPv4SSMAddress(*env);
+	struct in_addr destinationAddress1;
+	destinationAddress1.s_addr = chooseRandomIPv4SSMAddress(*env);
+
 	// Note: This is a multicast address.  If you wish instead to stream
 	// using unicast, then you should use the "testOnDemandRTSPServer"
 	// test program - not this test program - as a model.
 
 	const unsigned short rtpPortNum = 18888;
-	const unsigned short rtcpPortNum = rtpPortNum+1;
 	const unsigned char ttl = 255;
 
-	const Port rtpPort(rtpPortNum);
-	const Port rtcpPort(rtcpPortNum);
+	const Port rtpPort0(rtpPortNum);
+	const Port rtcpPort0(rtpPortNum+1);
+	const Port rtpPort1(rtpPortNum+2);
+	const Port rtcpPort1(rtpPortNum+3);
 
-	Groupsock rtpGroupsock(*env, destinationAddress, rtpPort, ttl);
-	rtpGroupsock.multicastSendOnly(); // we're a SSM source
-	Groupsock rtcpGroupsock(*env, destinationAddress, rtcpPort, ttl);
-	rtcpGroupsock.multicastSendOnly(); // we're a SSM source
+	Groupsock rtpGroupsock0(*env, destinationAddress0, rtpPort0, ttl);
+	rtpGroupsock0.multicastSendOnly(); // we're a SSM source
+	Groupsock rtcpGroupsock0(*env, destinationAddress0, rtcpPort0, ttl);
+	rtcpGroupsock0.multicastSendOnly(); // we're a SSM source
+	Groupsock rtpGroupsock1(*env, destinationAddress1, rtpPort1, ttl);
+	rtpGroupsock1.multicastSendOnly(); // we're a SSM source
+	Groupsock rtcpGroupsock1(*env, destinationAddress1, rtcpPort1, ttl);
+	rtcpGroupsock1.multicastSendOnly(); // we're a SSM source
+
+	Groupsock* rtpGroupsock[2]  = { &rtpGroupsock0,  &rtpGroupsock1 } ;
+	Groupsock* rtcpGroupsock[2] = { &rtcpGroupsock0, &rtcpGroupsock1 } ;
+
 
 	// Create a 'H264 Video RTP' sink from the RTP 'groupsock':
-//	OutPacketBuffer::maxSize = 100000;
-	RTPSink* videoSink = H264VideoRTPSink::createNew(*env, &rtpGroupsock, 96);
-
 	// Create (and start) a 'RTCP instance' for this RTP sink:
 	const unsigned estimatedSessionBandwidth = 500; // in kbps; for RTCP b/w share
 	const unsigned maxCNAMElen = 100;
 	unsigned char CNAME[maxCNAMElen+1];
 	gethostname((char*)CNAME, maxCNAMElen);
 	CNAME[maxCNAMElen] = '\0'; // just in case
-	RTCPInstance* rtcp = RTCPInstance::createNew(*env, &rtcpGroupsock, estimatedSessionBandwidth, CNAME, 
-													videoSink, NULL /* we're a server */, True /* we're a SSM source */);
 	// Note: This starts RTCP running automatically
 
 	RTSPServer* rtspServer = RTSPServer::createNew(*env, 8554);
@@ -99,6 +106,9 @@ int main(int argc, char** argv)
 		snprintf(streamName, sizeof(streamName), FORMAT_STREAM_NAME, cam) ;
 		snprintf(inputFileName, sizeof(inputFileName), FORMAT_VIDEO_NAME, cam) ;
 
+		RTPSink* videoSink = H264VideoRTPSink::createNew(*env, rtpGroupsock[cam], 96);
+		RTCPInstance* rtcp = RTCPInstance::createNew(*env, rtcpGroupsock[cam], estimatedSessionBandwidth, CNAME, 
+													videoSink, NULL /* we're a server */, True /* we're a SSM source */);
 		ServerMediaSession* sms = ServerMediaSession::createNew(*env, streamName, inputFileName, descriptionString, True /*SSM*/);
 		sms->addSubsession(PassiveServerMediaSubsession::createNew(*videoSink, rtcp));
 		rtspServer->addServerMediaSession(sms);
