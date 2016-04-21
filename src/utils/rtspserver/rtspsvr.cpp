@@ -52,10 +52,8 @@ int main(int argc, char** argv)
 	env = BasicUsageEnvironment::createNew(*scheduler);
 
 	// Create 'groupsocks' for RTP and RTCP:
-	struct in_addr destinationAddress0;
-	destinationAddress0.s_addr = chooseRandomIPv4SSMAddress(*env);
-	struct in_addr destinationAddress1;
-	destinationAddress1.s_addr = chooseRandomIPv4SSMAddress(*env);
+	struct in_addr destinationAddress;
+	destinationAddress.s_addr = chooseRandomIPv4SSMAddress(*env);
 
 	// Note: This is a multicast address.  If you wish instead to stream
 	// using unicast, then you should use the "testOnDemandRTSPServer"
@@ -65,21 +63,14 @@ int main(int argc, char** argv)
 	const unsigned char ttl = 255;
 
 	const Port rtpPort0(rtpPortNum);
-	const Port rtcpPort0(rtpPortNum+1);
-	const Port rtpPort1(rtpPortNum+2);
-	const Port rtcpPort1(rtpPortNum+3);
+	const Port rtpPort1(rtpPortNum+1);
 
-	Groupsock rtpGroupsock0(*env, destinationAddress0, rtpPort0, ttl);
+	Groupsock rtpGroupsock0(*env, destinationAddress, rtpPort0, ttl);
+	Groupsock rtpGroupsock1(*env, destinationAddress, rtpPort1, ttl);
 	rtpGroupsock0.multicastSendOnly(); // we're a SSM source
-	Groupsock rtcpGroupsock0(*env, destinationAddress0, rtcpPort0, ttl);
-	rtcpGroupsock0.multicastSendOnly(); // we're a SSM source
-	Groupsock rtpGroupsock1(*env, destinationAddress1, rtpPort1, ttl);
 	rtpGroupsock1.multicastSendOnly(); // we're a SSM source
-	Groupsock rtcpGroupsock1(*env, destinationAddress1, rtcpPort1, ttl);
-	rtcpGroupsock1.multicastSendOnly(); // we're a SSM source
 
 	Groupsock* rtpGroupsock[2]  = { &rtpGroupsock0,  &rtpGroupsock1 } ;
-	Groupsock* rtcpGroupsock[2] = { &rtcpGroupsock0, &rtcpGroupsock1 } ;
 
 
 	// Create a 'H264 Video RTP' sink from the RTP 'groupsock':
@@ -107,10 +98,9 @@ int main(int argc, char** argv)
 		snprintf(inputFileName, sizeof(inputFileName), FORMAT_VIDEO_NAME, cam) ;
 
 		RTPSink* videoSink = H264VideoRTPSink::createNew(*env, rtpGroupsock[cam], 96);
-		RTCPInstance* rtcp = RTCPInstance::createNew(*env, rtcpGroupsock[cam], estimatedSessionBandwidth, CNAME, 
-													videoSink, NULL /* we're a server */, True /* we're a SSM source */);
 		ServerMediaSession* sms = ServerMediaSession::createNew(*env, streamName, inputFileName, descriptionString, True /*SSM*/);
-		sms->addSubsession(PassiveServerMediaSubsession::createNew(*videoSink, rtcp));
+//		sms->addSubsession(PassiveServerMediaSubsession::createNew(*videoSink, rtcp));
+		sms->addSubsession(PassiveServerMediaSubsession::createNew(*videoSink, NULL));
 		rtspServer->addServerMediaSession(sms);
 
 		announceStream(rtspServer, sms, streamName, inputFileName);
