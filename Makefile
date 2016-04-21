@@ -11,7 +11,6 @@ all:
 
 clean:
 	$(MAKE) -C $(SRCDIR) clean
-	@rm -rf $(PF_OUTPUT_DIR)
 
 install:
 	$(MAKE) -C $(SRCDIR) install

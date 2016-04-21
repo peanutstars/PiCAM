@@ -10,8 +10,12 @@ VCAPTURE=vcapture
 
 PCMD=$1
 
-fInit() {
+fMsg() {
+	echo -e "$1"
+}
 
+fInit() {
+	fMsg "Execute fInit"
 	for N in $(seq 0 3)
 	do
 		pipe_video=${PIPE_VIDEO_PREFIX}${N}.264
@@ -21,16 +25,22 @@ fInit() {
 }
 
 fStart() {
+	fMsg "Execute fStart"
+	echo "$RTSPSERVER &"
 	$RTSPSERVER &
 	for N in $(seq 0 3)
 	do
 		dev_video="/dev/video$N"
 		pipe_video=${PIPE_VIDEO_PREFIX}${N}.264
-		[ -e "$dev_video" ] && $VCAPTURE --dev=$dev_video -o --width=1280 --height=720 --slice-units=4 --frame-rate=15 --iframe-period=3 --average-bitrate=3500000 > $pipe_video &
+		if [ -e "$dev_video" ] ; then
+			echo "$VCAPTURE --dev=$dev_video -o --width=1280 --height=720 --slice-units=4 --frame-rate=15 --iframe-period=3 --average-bitrate=3500000 > $pipe_video &"
+			$VCAPTURE --dev=$dev_video -o --width=1280 --height=720 --slice-units=4 --frame-rate=15 --iframe-period=3 --average-bitrate=3500000 > $pipe_video &
+		fi
 	done
 }
 
 fStop() {
+	fMsg "Execute fStop"
 	killall -9 $RTSPSERVER $VCAPTURE
 	sleep 1.5
 }

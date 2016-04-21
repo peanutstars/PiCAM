@@ -10,7 +10,8 @@ include $(BASEDIR)/Rules.mk
 
 SUBDIRS			:= include \
 				   external \
-				   utils
+				   utils \
+				   scripts
 						
 #------------------------------------------------------------------------------
 
