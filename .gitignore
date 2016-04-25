@@ -1,5 +1,6 @@
 .*.swp
 *.o
+*.deb
 tags
 target
 src/include/version.h

@@ -11,7 +11,7 @@ include $(BASEDIR)/Rules.mk
 TARGET			:= helloc
 OBJS			:= hello.o
 
-INSTALLDIR		:=$(TARGETDIR)/system/bin
+INSTALLDIR		:=$(TBINDIR)
 
 EXTRA_LDFLAGS	+=-lpthread
 EXTRA_LDFLAGS	+=-lrt

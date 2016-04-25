@@ -11,7 +11,7 @@ include $(BASEDIR)/Rules.mk
 CXXTARGET		:= rtspsvr
 OBJS			:= rtspsvr.o
 
-INSTALLDIR		:=$(TARGETDIR)/system/bin
+INSTALLDIR		:=$(TBINDIR)
 LIVEINCDIR		:=$(BASEDIR)/external/install/usr/local/include
 LIVELIBDIR		:=$(BASEDIR)/external/install/usr/local/lib
 

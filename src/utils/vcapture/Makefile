@@ -12,7 +12,7 @@ TARGET			:= vcapture
 OBJS			:= capture.o \
 				   v4l2-h264.o
 
-INSTALLDIR		:=$(TARGETDIR)/system/bin
+INSTALLDIR		:=$(TBINDIR)
 
 EXTRA_LDFLAGS	+=-lpthread
 EXTRA_LDFLAGS	+=-lrt

@@ -8,7 +8,7 @@ include $(BASEDIR)/Rules.mk
 
 SCRIPT_FILES	:=	picam
 
-INSTALLDIR		:=$(TARGETDIR)/system/bin
+INSTALLDIR		:=$(TBINDIR)
 
 all:
 

@@ -1,6 +1,6 @@
 
-ifndef PF_ROOT_DIR
-$(error "YOU MUST DO 'export PF_ROOT_DIR=/absolute/path/to/root/dir/'.")
+ifndef PIC_ROOT_DIR
+$(error "YOU MUST DO 'export PIC_ROOT_DIR=/absolute/path/to/root/dir/'.")
 endif
 
 CROSS_COMPILE	:=

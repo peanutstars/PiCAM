@@ -17,7 +17,6 @@ CFLAGS		+=-DSUPPORT_SYNC_GROUP
 endif
 
 CFLAGS		+=-DARCH_$(ARCH)
-CFLAGS		+=-DMODEL_$(MODEL)
 
 #------------------------------------------------------------------------------
 
@@ -27,7 +26,7 @@ EXTRA_CFLAGS	+=-I$(BASEDIR)/external/install/usr/local/include
 EXTRA_CPPFLAGS	+=-I$(BASEDIR)/include
 EXTRA_CPPFLAGS	+=-I$(BASEDIR)/external/install/usr/local/include
 
-LDFLAGS			+=-L$(TARGETDIR)/system/lib
+LDFLAGS			+=-L$(TLIBDIR)
 LDFLAGS			+=-L$(BASEDIR)/external/install/usr/local/lib/.
 
 #------------------------------------------------------------------------------
