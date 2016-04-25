@@ -2,3 +2,5 @@
 
 DIR_TARGET=/PiCAM
 
+#
+echo "Executing preinst"

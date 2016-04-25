@@ -2,3 +2,6 @@
 
 DIR_TARGET=/PiCAM
 
+#
+echo "Executing postinst"
+

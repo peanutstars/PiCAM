@@ -6,24 +6,43 @@ DPKG_CONTROL_FILE=$DPKG_DIR/DEBIAN/control
 
 Version=`cat $VERSION_FILE | grep STRING | awk -F\" '{ print $2 }'`
 Package="picam"
+Architecture="unknown"
 
+
+checkArchitecture() {
+	Arch=`uname -m`
+	case "$Arch" in
+		x86_64)
+			Architecture="amd64"
+			;;
+		armv7l)
+			Architecture="armhf"
+			;;
+		*)
+			Architecture="unknown"
+			;;
+	esac
+	[ "$Architecture" == "unknown" ] && echo -e "\n\tArchitecture is unknown.\n" && exit 1
+}
 
 generateControl() {
 	cat >$DPKG_CONTROL_FILE <<EOF
 Package: $Package
 Version: $Version
+Depends: miniupnpc
 Priority: optional
-Architecture: all
-Section: Other
-Maintainer: HyunSuk-Lee <peanutstars.lee@gmail.com>
-Description: Raspberry Pi with Cameras
- .
+Architecture: $Architecture
+Section: Video
+Maintainer: peanutstars <peanutstars.lee@gmail.com>
+Description: Streaming Video with Web-Cameras(C920)
+ It is streaming video with web-cameras, currently supported only C920.
 EOF
 
 }
 
+checkArchitecture
 generateControl
 pushd $PIC_ROOT_DIR
-dpkg --build dpkg
+fakeroot dpkg --build dpkg
 mv dpkg.deb $Package-$Version.deb
 popd

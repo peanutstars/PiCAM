@@ -3,6 +3,8 @@
 *.deb
 tags
 target
+dpkg/PiCAM
+dpkg/DEBIAN/control
 src/include/version.h
 src/utils/rtspserver/rtspsvr
 src/utils/vcapture/vcapture
