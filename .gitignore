@@ -5,7 +5,9 @@ tags
 target
 dpkg/PiCAM
 dpkg/DEBIAN/control
+dpkg/usr
 src/include/version.h
+src/lib/libpy
 src/utils/rtspserver/rtspsvr
 src/utils/vcapture/vcapture
 

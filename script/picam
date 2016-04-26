@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# This script is entry for picam. 
+
+PICAM=/PiCAM
+SCRIPT=$PICAM/script
+
+export PATH=$PICAM/bin:$PATH
+export LD_LIBRARY_PATH=$PICAM/lib:$LD_LIBRARY_PATH
+
+
+CMD=$1
+
+msg() {
+	echo -e "$1"
+}
+
+usage() {
+	msg "Usage : picam <cmd> [...]"
+	msg "\t<cmd>"
+	msg "\tpicam <start|stop>           start/stop picam"
+	msg "\tscript initModule.sh         install modules"
+}
+
+shift
+case "$CMD" in
+	start)
+		picam start
+		;;
+	stop)
+		picam stop
+		;;
+	script)
+		$SCRIPT/$1
+		;;
+	*)
+		usage
+		;;
+esac

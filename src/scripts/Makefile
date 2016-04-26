@@ -16,7 +16,7 @@ clean:
 
 install: all
 	@install -d $(INSTALLDIR)
-	@cp -a $(SCRIPT_FILES) $(INSTALLDIR)
+	@install $(SCRIPT_FILES) $(INSTALLDIR)
 
 
 #------------------------------------------------------------------------------
