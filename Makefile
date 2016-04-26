@@ -26,7 +26,7 @@ install:
 	$(MAKE) -C $(SRCDIR) install
 	$(MAKE) -C $(SCRIPTSDIR) install
 
-dpkg:
+dpkg: install
 	@$(SCRIPTSDIR)/mkdpkg.sh
 
 

@@ -1,10 +1,14 @@
 #!/bin/bash
 
 DIR_TARGET=/PiCAM
+DIR_SCRIPT=$DIR_TARGET/script
 DIR_MODULES=$DIR_TARGET/modules
 
 #
 echo "Executing prerm"
 
-[ -e "$DIR_MODULES" ] && rm -rf $DIR_MODULES
+if [ -e "$DIR_MODULES" ] ; then
+	$DIR_SCRIPT/deinitModule.sh
+	rm -rf $DIR_MODULES
+fi
 
