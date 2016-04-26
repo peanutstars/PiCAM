@@ -1,0 +1,10 @@
+#!/bin/bash
+
+DIR_TARGET=/PiCAM
+DIR_MODULES=$DIR_TARGET/modules
+
+#
+echo "Executing prerm"
+
+[ -e "$DIR_MODULES" ] && rm -rf $DIR_MODULES
+

@@ -29,7 +29,7 @@ generateControl() {
 	cat >$DPKG_CONTROL_FILE <<EOF
 Package: $Package
 Version: $Version
-Depends: miniupnpc
+Depends: python-dev
 Priority: optional
 Architecture: $Architecture
 Section: Video

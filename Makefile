@@ -5,7 +5,7 @@ $(error "YOU MUST DO 'export PIC_ROOT_DIR=/absolute/path/to/root/dir/'.")
 endif
 
 SRCDIR		:= $(PIC_ROOT_DIR)/src
-SCRIPTSDIR  := $(PIC_ROOT_DIR)/scripts
+SCRIPTSDIR  := $(PIC_ROOT_DIR)/script
 
 ifndef	BASEDIR
 BASEDIR			:=$(SRCDIR)
@@ -24,6 +24,7 @@ clean:
 install:
 	@rm -rf $(TARGETDIR)
 	$(MAKE) -C $(SRCDIR) install
+	$(MAKE) -C $(SCRIPTSDIR) install
 
 dpkg:
 	@$(SCRIPTSDIR)/mkdpkg.sh
