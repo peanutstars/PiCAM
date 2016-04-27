@@ -7,7 +7,7 @@ dpkg/PiCAM
 dpkg/DEBIAN/control
 dpkg/usr
 src/include/version.h
-src/lib/libpy
+src/lib/python
 src/utils/rtspserver/rtspsvr
 src/utils/vcapture/vcapture
 

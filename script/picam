@@ -4,9 +4,12 @@
 
 PICAM=/PiCAM
 SCRIPT=$PICAM/script
+PYTHON=$PICAM/lib/python
 
 export PATH=$PICAM/bin:$PATH
 export LD_LIBRARY_PATH=$PICAM/lib:$LD_LIBRARY_PATH
+[[ ! "$PYTHONPATH" =~ "$PYTHON" ]] && export PYTHONPATH=$PYTHON:$PYTHONPATH
+
 
 
 CMD=$1
