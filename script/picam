@@ -2,9 +2,11 @@
 
 # This script is entry for picam. 
 
+DNULL=/dev/null
 PICAM=/PiCAM
 SCRIPT=$PICAM/script
 PYTHON=$PICAM/lib/python
+MODULES=$PICAM/modules
 
 export PATH=$PICAM/bin:$PATH
 export LD_LIBRARY_PATH=$PICAM/lib:$LD_LIBRARY_PATH
@@ -22,9 +24,24 @@ usage() {
 	msg "Usage : picam <cmd> [...]"
 	msg "\t<cmd>"
 	msg "\tpicam <start|stop>           start/stop picam"
-	msg "\tscript initModule.sh         install modules"
+	msg "\tscript <executable_file>     run a executable file on $SCRIPT/file folder"
 }
 
+init() {
+	IMMD5=$MODULES/initModule.sh.md5sum
+	for i in 1
+	do
+		[ ! -e "$IMMD5" ] && break
+		md5sum -c $IMMD5 > $DNULL
+		[ "$?" -eq "0" ] && return
+	done
+	msg "[[ Initialize PiCAM's Modules ]]"
+	$SCRIPT/initModule.sh
+	[ "$?" -eq "0" ] && md5sum /PiCAM/script/initModule.sh > $IMMD5
+}
+
+
+init
 shift
 case "$CMD" in
 	start)
