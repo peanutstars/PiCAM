@@ -3,7 +3,7 @@
 # This script is entry for picam. 
 
 DNULL=/dev/null
-PICAM=/PiCAM
+PICAM=/opt/picam
 SCRIPT=$PICAM/script
 PYTHON=$PICAM/lib/python
 MODULES=$PICAM/modules
@@ -37,7 +37,7 @@ init() {
 	done
 	msg "[[ Initialize PiCAM's Modules ]]"
 	$SCRIPT/initModule.sh
-	[ "$?" -eq "0" ] && md5sum /PiCAM/script/initModule.sh > $IMMD5
+	[ "$?" -eq "0" ] && md5sum $SCRIPT/initModule.sh > $IMMD5
 }
 
 

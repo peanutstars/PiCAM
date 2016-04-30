@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR_TARGET=/PiCAM
+DIR_TARGET=/opt/picam
 DIR_SCRIPT=$DIR_TARGET/script
 DIR_MODULES=$DIR_TARGET/modules
 

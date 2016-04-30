@@ -3,7 +3,7 @@
 *.deb
 tags
 target
-dpkg/PiCAM
+dpkg/opt/picam
 dpkg/DEBIAN/control
 dpkg/usr
 src/include/version.h

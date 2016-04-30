@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR_TARGET=/PiCAM
+DIR_TARGET=/opt/picam
 
 #
 echo "Executing preinst"

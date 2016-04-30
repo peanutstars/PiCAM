@@ -2,7 +2,7 @@
 
 # This is a deinitialize script for modules
 
-MOD_DIR=/PiCAM/modules
+MOD_DIR=/opt/picam/modules
 MOD_MINIUPNPC=$MOD_DIR/miniupnp
 
 mod_miniupnpc() {
