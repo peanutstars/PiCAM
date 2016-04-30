@@ -1,6 +1,8 @@
 .*.swp
 *.o
 *.deb
+*.sqlite3
+*.pyc
 tags
 target
 dpkg/opt/picam
