@@ -45,10 +45,12 @@ init
 shift
 case "$CMD" in
 	start)
+		picamportmap.py install
 		picam start
 		;;
 	stop)
 		picam stop
+		picamportmap.py remove
 		;;
 	script)
 		$SCRIPT/$1

@@ -1,15 +1,23 @@
 
 ifndef	BASEDIR
-BASEDIR		:=$(shell pwd)/..
+BASEDIR		:=$(shell pwd)/../..
 endif
 include $(BASEDIR)/Rules.mk
 
 #------------------------------------------------------------------------------
 
-#SUBDIRS	:= hello.c hello.cpp
-SUBDIRS		:=	vcapture \
-				rtspserver \
-				portmap
+SCRIPT_FILES	:=	picamportmap.py
+
+INSTALLDIR		:=$(TBINDIR)
+
+all:
+
+clean:
+
+install: all
+	@install -d $(INSTALLDIR)
+	@install $(SCRIPT_FILES) $(INSTALLDIR)
+
 
 #------------------------------------------------------------------------------
 

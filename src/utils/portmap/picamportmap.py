@@ -78,20 +78,37 @@ class PicamPortmap(Upnpc) :
                 if item[0] in PICAM_PORT_LIST :
                     self.doQueryDelPortmap(item[0], item[1]) ;
                     fgQuery = True ;
-            if fqQuery :
+            if fgQuery :
                 self.doQueryGetPortmap() ;
         return self ;
 
 
-def main() :
-        # PicamPortmap().delPortmapAll().dumpPortmap().setPortmap().dumpPortmap() ;
-        PicamPortmap().setPortmap().dumpPortmap() ;
+def main(option) :
+        if option == 'dumplist' :
+            PicamPortmap().dumpPortmap() ;
+        elif option == 'install' :
+            PicamPortmap().setPortmap().dumpPortmap() ;
+        elif option == 'remove' :
+            PicamPortmap().delPortmapAll() ;
+        else :
+            ERR('Notthing to do about %s.' % option) ;
+
+def usage(cmdName) :
+    strUsage = '''
+usage : %s [<install|remove|dumplist>]
+    options :
+        install     : set a port map of rtsp streaming for picam.
+        remove      : unset a port map of rtsp streaming.
+        dumplist    : print lists of port map.
+'''
+    print >> sys.stderr, strUsage % (cmdName) ;
 
 if __name__ == '__main__':
-    main()
-
-    # u.addportmapping(10554, 'TCP', u.lanaddr, 554, 'picam', '' ) ;
-
-#print u.addportmapping(64000, 'TCP',
-#                       '192.168.1.166', 63000, 'port mapping test', '')
-#print u.deleteportmapping(64000, 'TCP')
+    option = 'install'
+    validOptions = [ 'install', 'remove', 'dumplist' ] ;
+    if len(sys.argv) > 1 and sys.argv[1] not in validOptions :
+        usage(sys.argv[0]) ;
+    else :
+        if len(sys.argv) > 1 and sys.argv[1] :
+            option = sys.argv[1] ;
+    main(option)
