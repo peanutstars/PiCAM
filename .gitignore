@@ -11,5 +11,6 @@ dpkg/usr
 src/include/version.h
 src/lib/python
 src/utils/rtspserver/rtspsvr
+src/utils/rtspserver/rtspclient
 src/utils/vcapture/vcapture
 

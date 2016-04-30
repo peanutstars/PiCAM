@@ -42,7 +42,7 @@ class Upnpc :
             print item ;
         return self ;
 
-PICAM_PORT_LIST = [ 554, 10554, 20554, 30554, 40554, 50554, 60554 ] ;
+PICAM_PORT_LIST = [ 8554, 18554, 28554, 38554, 48554, 58554 ] ;
 PICAM_PROTO = 'TCP'
 class PicamPortmap(Upnpc) :
     def isPortmapped(self) :
@@ -64,7 +64,7 @@ class PicamPortmap(Upnpc) :
     def setPortmap(self) :
         if not self.isPortmapped() :
             port = self.getValidPort() ;
-            self.doQueryAddPortmap(self.getValidPort(), PICAM_PROTO, 554, 'picam') ;
+            self.doQueryAddPortmap(self.getValidPort(), PICAM_PROTO, 8554, 'picam') ;
             self.doQueryGetPortmap() ;
         return self ;
     def delPortmapAll(self) :

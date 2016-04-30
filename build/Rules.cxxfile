@@ -4,7 +4,7 @@
 all:    $(CXXTARGET)
 
 $(CXXTARGET):  $(OBJS)
-	$(CXX) -o $@ $^ $(LDFLAGS)
+	$(CXX) -o $@ $@.cpp $^ $(CPPFLAGS) $(LDFLAGS)
 
 ifeq		($(DEBUG), 1)
 install:    $(CXXTARGET)

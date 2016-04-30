@@ -6,6 +6,7 @@ BINPATH=`pwd`
 export PATH=$BINPATH:$PATH
 
 RTSPSERVER=rtspsvr
+RTSPCLIENT=rtspclient
 VCAPTURE=vcapture
 
 PCMD=$1
@@ -28,6 +29,7 @@ fStart() {
 	fMsg "Execute fStart"
 	echo "$RTSPSERVER &"
 	$RTSPSERVER &
+	args=''
 	for N in $(seq 0 3)
 	do
 		dev_video="/dev/video$N"
@@ -35,13 +37,15 @@ fStart() {
 		if [ -e "$dev_video" ] ; then
 			echo "$VCAPTURE --dev=$dev_video -o --width=1280 --height=720 --slice-units=4 --frame-rate=15 --iframe-period=3 --average-bitrate=3500000 > $pipe_video &"
 			$VCAPTURE --dev=$dev_video -o --width=1280 --height=720 --slice-units=4 --frame-rate=15 --iframe-period=3 --average-bitrate=3500000 > $pipe_video &
+			args="$args rtsp://localhost:8554/wcam$N"
 		fi
 	done
+	$RTSPCLIENT $args >/dev/null 2>&1 &
 }
 
 fStop() {
 	fMsg "Execute fStop"
-	killall -9 $RTSPSERVER $VCAPTURE
+	killall -9 $VCAPTURE $RTSPCLIENT $RTSPSERVER
 	sleep 1.5
 }
 

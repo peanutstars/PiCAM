@@ -4,6 +4,7 @@
 
 DNULL=/dev/null
 PICAM=/opt/picam
+BINARY=$PICAM/bin
 SCRIPT=$PICAM/script
 PYTHON=$PICAM/lib/python
 MODULES=$PICAM/modules
@@ -54,6 +55,9 @@ case "$CMD" in
 		;;
 	script)
 		$SCRIPT/$1
+		;;
+	bin)
+		$BINARY/$1
 		;;
 	*)
 		usage

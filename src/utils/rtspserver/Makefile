@@ -8,8 +8,8 @@ include $(BASEDIR)/Rules.mk
 
 #------------------------------------------------------------------------------
 
-CXXTARGET		:= rtspsvr
-OBJS			:= rtspsvr.o
+CXXTARGET		:= rtspsvr rtspclient
+#OBJS			:= rtspsvr.o
 
 INSTALLDIR		:=$(TBINDIR)
 LIVEINCDIR		:=$(BASEDIR)/external/install/usr/local/include
