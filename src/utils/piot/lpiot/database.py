@@ -5,8 +5,19 @@ from error import PiotDatabaseError ;
 
 PIOT_DB_PATH = 'piot.sqlite3'
 
-QUERY_ZB_DEVICE_TABLE   = 'CREATE TABLE IF NOT EXISTS zb_device (eui char(16), nodeId int, capability int, primary key (eui));'
-QUERY_ZB_CLUSTER_ATTRIBUTE_TABLE = 'CREATE TABLE IF NOT EXISTS zb_cl_attr (eui char(16), profileId int, endpointId int, clusterId int, direction int, attributeId int, attributeType int, attributeData varchar(64), primary key (eui, endpointId, clusterId, attributeId), foreign key (eui) references zb_device(eui) on delete cascade)'
+QUERY_FOREIGN_KEYS_ENABLE = 'PRAGMA foreign_keys = ON;' ;
+QUERY_JOURNAL_MODE = 'PRAGMA journal_mode = MEMORY' ;
+QUERY_ZB_DEVICE_TABLE = \
+'''CREATE TABLE IF NOT EXISTS zb_device (eui char(16), nodeId int, capability int,
+PRIMARY KEY (eui));'''
+QUERY_ZB_CLUSTER_TABLE = \
+'''CREATE TABLE IF NOT EXISTS zb_cluster (eui char(16), endpointId int, profileId int, clusterId int,
+PRIMARY KEY (eui, endpointId, clusterId), FOREIGN KEY (eui) REFERENCES zb_device(eui) ON DELETE CASCADE);'''
+QUERY_ZB_ATTRIBUTE_TABLE = \
+'''CREATE TABLE IF NOT EXISTS zb_attribute (eui char(16), endpointId int, clusterId int, attributeId int, attributeType int, attributeData varchar(64),
+PRIMARY KEY (eui, endpointId, clusterId, attributeId),
+FOREIGN KEY (eui) REFERENCES zb_device(eui) ON DELETE CASCADE,
+FOREIGN KEY (eui, endpointId, clusterId) REFERENCES zb_cluster(eui, endpointId, clusterId) ON DELETE CASCADE);'''
 
 
 class PiotDB :
@@ -39,8 +50,11 @@ class PiotDB :
             DBG('DB Error, %s: %s' % (e.args, query)) ;
         return None ;
     def queryCreateTable(self) :
-        self.queryUpdate([ QUERY_ZB_DEVICE_TABLE ,
-                           QUERY_ZB_CLUSTER_ATTRIBUTE_TABLE ]) ;
+        self.queryUpdate([  QUERY_JOURNAL_MODE,
+                            QUERY_FOREIGN_KEYS_ENABLE,
+                            QUERY_ZB_DEVICE_TABLE ,
+                            QUERY_ZB_CLUSTER_TABLE ,
+                            QUERY_ZB_ATTRIBUTE_TABLE ]) ;
     def queryDeleteTable(self, table) :
         query = [] ;
         if isinstance(table, list) :
@@ -70,19 +84,112 @@ class PiotDB :
                 self._dumpContentTable(t) ;
         else :
             self._dumpContentTable(table) ;
+
     # Functions for zb_device table.
     def zbIsExistDevice(self, eui) :
-        return len(self.queryScalar("SELECT * FROM zb_device WHERE eui='%s'" % eui).fetchall()) ;
+        return (len(self.queryScalar("SELECT * FROM zb_device WHERE eui='%s'" % eui).fetchall()) > 0) ;
     def zbAddDevice(self, eui, nodeId, capability) :
         query = [] ;
         if self.zbIsExistDevice(eui) :
             if capability != 0 :
-                query.append("UPDATE zb_device SET capability=%d WHERE eui='%s' AND capability!=%d" % (capability, eui, capability)) ;
-            query.append("UPDATE zb_device SET nodeId=%d WHERE eui='%s' AND nodeId!=%d" % (nodeId, eui, nodeId)) ;
+                query.append("UPDATE zb_device SET capability=%d WHERE eui='%s' AND capability!=%d;" % (capability, eui, capability)) ;
+            query.append("UPDATE zb_device SET nodeId=%d WHERE eui='%s' AND nodeId!=%d;" % (nodeId, eui, nodeId)) ;
         else :
-            query = "INSERT OR IGNORE INTO zb_device (eui, nodeId, capability) VALUES ('%s', %d, %d)" % (eui, nodeId, capability) ;
+            query = "INSERT OR IGNORE INTO zb_device (eui, nodeId, capability) VALUES ('%s', %d, %d);" % (eui, nodeId, capability) ;
         self.queryUpdate(query) ;
     def zbDelDevice(self, eui) :
-        self.queryUpdate("DELETE FROM zb_device where eui='%s'" % eui) ;
-    # Functions for zb_cl_attr table.
-    def zbIsExistClAttr(nodeId, endpointId, clusterId, )
+        self.queryUpdate("DELETE FROM zb_device WHERE eui='%s';" % eui) ;
+
+    # Functions for zb_cluster table.
+    def zbIsExistCluster(self, eui, endpointId, clusterId) :
+        return (len(self.queryScalar("SELECT * FROM zb_cluster WHERE eui='%s' AND endpointId=%d AND clusterId=%d;" % (eui, endpointId, clusterId)).fetchall()) > 0) ;
+    def zbAddCluster(self, eui, endpointId, profileId, clusterId) :
+        if not self.zbIsExistCluster(eui, endpointId, clusterId) :
+            query = "INSERT OR IGNORE INTO zb_cluster (eui, endpointId, profileId, clusterId) VALUES ('%s', %d, %d, %d);" % (eui, endpointId, profileId, clusterId) ;
+            self.queryUpdate(query) ;
+    def zbDelCluster(self, eui, endpointId, clusterId) :
+        self.queryUpdate("DELETE FROM zb_cluster WHERE eui='%s' AND endpointId=%d AND clusterId=%d;" % (eui, endpointId, clusterId)) ;
+
+    # Function for zb_attribute table.
+    def zbIsExistAttribute(self, eui, endpointId, clusterId, attributeId) :
+        return (len(self.queryScalar("SELECT * FROM zb_attribute WHERE eui='%s' AND endpointId=%d AND clusterId=%d AND attributeId=%d;" % (eui, endpointId, clusterId, attributeId)).fetchall()) > 0) ;
+    def zbAddAttribute(self, eui, endpointId, clusterId, attributeId, attributeType, attributeData) :
+        query = '' ;
+        if self.zbIsExistAttribute(eui, endpointId, clusterId, attributeId) :
+            query = "UPDATE zb_attribute SET attributeData='%s' WHERE eui='%s' AND endpointId=%d AND clusterId=%d AND attributeId=%d;" % (attributeData, eui, endpointId, clusterId, attributeId) ;
+        else :
+            query = "INSERT OR IGNORE INTO zb_attribute (eui, endpointId, clusterId, attributeId, attributeType, attributeData) " + \
+                    "VALUES ('%s', %d, %d, %d, %d, '%s');" % (eui, endpointId, clusterId, attributeId, attributeType, attributeData) ;
+        self.queryUpdate(query) ;
+    def zbDelAttribute(self, eui, endpointId, clusterId, attributeId) :
+        self.queryUpdate("DELETE FROM zb_attribute WHERE eui='%s' AND endpointId=%d AND clusterId=%d AND attributeId=%d;" % (eui, endpointId, clusterId, attributeId)) ;
+
+
+if __name__ == '__main__':
+    db = PiotDB() ;
+
+    # Test zb_device table.
+    db.zbAddDevice('FF0000', 0x64, 0) ;
+    db.zbAddDevice('FF0001', 0x64, 0) ;
+    db.zbAddDevice('FF0002', 0x64, 100) ;
+    db.zbAddDevice('FF0003', 0x400, 3) ;
+
+    db.zbAddDevice('FF0001', 0x100, 0) ;
+    db.zbAddDevice('FF0001', 0x200, 0) ;
+    db.zbAddDevice('FF0002', 0x300, 0) ;
+
+    db.zbDelDevice('000000') ;
+
+    # Test zb_cluster
+    db.zbAddCluster('FF0000', 1, 0x104, 0x0000) ;
+    db.zbAddCluster('FF0000', 1, 0x104, 0x0001) ;
+    db.zbAddCluster('FF0000', 1, 0x104, 0x0003) ;
+    db.zbAddCluster('FF0000', 1, 0x104, 0x0019) ;
+    db.zbAddCluster('FF0000', 1, 0x104, 0x0020) ;
+    db.zbAddCluster('FF0000', 1, 0x104, 0x0500) ;
+    db.zbAddCluster('FF0000', 1, 0x104, 0xFC00) ;
+
+    db.zbAddCluster('FF0001', 1, 0x104, 0x0000) ;
+    db.zbAddCluster('FF0001', 1, 0x104, 0x0001) ;
+    db.zbAddCluster('FF0001', 1, 0x104, 0x0003) ;
+    db.zbAddCluster('FF0001', 1, 0x104, 0x0019) ;
+    db.zbAddCluster('FF0001', 1, 0x104, 0x0500) ;
+
+    db.zbAddCluster('FF0002', 1, 0x104, 0x0000) ;
+    db.zbAddCluster('FF0002', 1, 0x104, 0x0001) ;
+    db.zbAddCluster('FF0002', 1, 0x104, 0x0003) ;
+    db.zbAddCluster('FF0002', 1, 0x104, 0x0019) ;
+    db.zbAddCluster('FF0002', 1, 0x104, 0x0500) ;
+
+    db.zbAddCluster('FF0003', 1, 0x104, 0x0000) ;
+    db.zbAddCluster('FF0003', 1, 0x104, 0x0001) ;
+    db.zbAddCluster('FF0003', 1, 0x104, 0x0003) ;
+    db.zbAddCluster('FF0003', 1, 0x104, 0x0019) ;
+    db.zbAddCluster('FF0003', 1, 0x104, 0x0500) ;
+
+    print '------------------------------------'
+    db.dumpTable(['zb_device', 'zb_cluster', 'zb_attribute']) ;
+
+    # Test zb_attribute
+    db.zbAddAttribute('FF0000', 1, 0x0000, 0x0002, 0x20, 'SmartThings') ;
+    db.zbAddAttribute('FF0000', 1, 0x0000, 0x0003, 0x20, 'Arrival') ;
+    db.zbAddAttribute('FF0001', 1, 0x0000, 0x0002, 0x20, 'SmartThings') ;
+    db.zbAddAttribute('FF0001', 1, 0x0000, 0x0003, 0x20, 'Motion') ;
+    db.zbAddAttribute('FF0002', 1, 0x0000, 0x0002, 0x20, 'SmartThings') ;
+    db.zbAddAttribute('FF0002', 1, 0x0000, 0x0003, 0x20, 'WaterLeak') ;
+    db.zbAddAttribute('FF0003', 1, 0x0000, 0x0002, 0x20, 'SmartThings') ;
+    db.zbAddAttribute('FF0003', 1, 0x0000, 0x0003, 0x20, 'Multi') ;
+
+    db.zbAddAttribute('FF0000', 1, 0x0001, 0x0020, 0x03, '2.5')
+    db.zbAddAttribute('FF0001', 1, 0x0001, 0x0020, 0x03, '3.1')
+    db.zbAddAttribute('FF0002', 1, 0x0001, 0x0020, 0x03, '2.9')
+    db.zbAddAttribute('FF0003', 1, 0x0001, 0x0020, 0x03, '2.0')
+
+    print '------------------------------------'
+    db.zbDelCluster('FF0003', 1, 0x0000) ;
+    db.dumpTable(['zb_device', 'zb_cluster', 'zb_attribute']) ;
+
+    # Test
+    print '------------------------------------'
+    db.zbDelDevice('FF0000') ;
+    db.dumpTable(['zb_device', 'zb_cluster', 'zb_attribute']) ;
