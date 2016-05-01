@@ -32,6 +32,9 @@
 #   "cd app/builder/zbember; make"
 #
 
+VPATH		= /work/project/zigbee/EmberZNet5.4.2-GA/app/builder/zbember
+EMBER_BASE	= /work/project/zigbee/EmberZNet5.4.2-GA/app/builder/zbember
+
 ifdef INCLUDE_MAKEFILE
   include $(INCLUDE_MAKEFILE)
 endif  
@@ -54,24 +57,24 @@ COMPILER_INCLUDES ?=
 
 INCLUDES= \
   $(COMPILER_INCLUDES) \
-  -I./../../.. \
-  -I./../../../app/builder/zbember \
-  -I./../../../app/ezsp-uart-host \
-  -I./../../../app/framework/cli \
-  -I./../../../app/framework/include \
+  -I$(EMBER_BASE)/../../.. \
+  -I$(EMBER_BASE)/../../../app/builder/zbember \
+  -I$(EMBER_BASE)/../../../app/ezsp-uart-host \
+  -I$(EMBER_BASE)/../../../app/framework/cli \
+  -I$(EMBER_BASE)/../../../app/framework/include \
  \
-  -I./../../../app/framework/security \
-  -I./../../../app/framework/util \
-  -I./../../../app/util \
-  -I./../../../app/util/common \
-  -I./../../../app/util/ezsp \
-  -I./../../../app/util/serial \
-  -I./../../../app/util/zigbee-framework \
-  -I./../../../hal/.. \
-  -I./../../../hal \
-  -I./../../../hal/micro/generic \
-  -I./../../../hal/micro/unix/host \
-  -I./../../../stack
+  -I$(EMBER_BASE)/../../../app/framework/security \
+  -I$(EMBER_BASE)/../../../app/framework/util \
+  -I$(EMBER_BASE)/../../../app/util \
+  -I$(EMBER_BASE)/../../../app/util/common \
+  -I$(EMBER_BASE)/../../../app/util/ezsp \
+  -I$(EMBER_BASE)/../../../app/util/serial \
+  -I$(EMBER_BASE)/../../../app/util/zigbee-framework \
+  -I$(EMBER_BASE)/../../../hal/.. \
+  -I$(EMBER_BASE)/../../../hal \
+  -I$(EMBER_BASE)/../../../hal/micro/generic \
+  -I$(EMBER_BASE)/../../../hal/micro/unix/host \
+  -I$(EMBER_BASE)/../../../stack
 
 APP_BUILDER_OUTPUT_DIRECTORY=.
 APP_BUILDER_CONFIG_HEADER=$(APP_BUILDER_OUTPUT_DIRECTORY)/zbember.h

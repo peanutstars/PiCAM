@@ -29,7 +29,7 @@ generateControl() {
 	cat >$DPKG_CONTROL_FILE <<EOF
 Package: $Package
 Version: $Version
-Depends: python-dev
+Depends: python, python-dev, libreadline-dev, libncurses-dev
 Priority: optional
 Architecture: $Architecture
 Section: Video
