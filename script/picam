@@ -54,10 +54,10 @@ case "$CMD" in
 		picamportmap.py remove
 		;;
 	script)
-		$SCRIPT/$1
+		$SCRIPT/$*
 		;;
 	bin)
-		$BINARY/$1
+		$BINARY/$*
 		;;
 	*)
 		usage

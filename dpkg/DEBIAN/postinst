@@ -2,6 +2,13 @@
 
 DIR_TARGET=/opt/picam
 
+SetUserMode() {
+	USER_ID=`cat /etc/passwd | grep 1000 | awk -F: '{ print $1 }'`
+	usermod -a -G dialout $USER_ID
+}
+
 #
 echo "Executing postinst"
+
+SetUserMode
 

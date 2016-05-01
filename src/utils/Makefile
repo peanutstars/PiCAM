@@ -9,7 +9,8 @@ include $(BASEDIR)/Rules.mk
 #SUBDIRS	:= hello.c hello.cpp
 SUBDIRS		:=	vcapture \
 				rtspserver \
-				portmap
+				portmap \
+				zbember
 
 #------------------------------------------------------------------------------
 

@@ -13,4 +13,5 @@ src/lib/python
 src/utils/rtspserver/rtspsvr
 src/utils/rtspserver/rtspclient
 src/utils/vcapture/vcapture
+src/utils/zbember/zbember/build
 
