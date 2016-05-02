@@ -32,8 +32,11 @@
 #   "cd app/builder/zbember; make"
 #
 
-VPATH		= /work/project/zigbee/EmberZNet5.4.2-GA/app/builder/zbember
-EMBER_BASE	= /work/project/zigbee/EmberZNet5.4.2-GA/app/builder/zbember
+ifdef EMBER_APP_BASE
+VPATH			= $(EMBER_APP_BASE)
+else
+EMBER_APP_BASE	=.
+endif
 
 ifdef INCLUDE_MAKEFILE
   include $(INCLUDE_MAKEFILE)
@@ -57,24 +60,24 @@ COMPILER_INCLUDES ?=
 
 INCLUDES= \
   $(COMPILER_INCLUDES) \
-  -I$(EMBER_BASE)/../../.. \
-  -I$(EMBER_BASE)/../../../app/builder/zbember \
-  -I$(EMBER_BASE)/../../../app/ezsp-uart-host \
-  -I$(EMBER_BASE)/../../../app/framework/cli \
-  -I$(EMBER_BASE)/../../../app/framework/include \
+  -I$(EMBER_APP_BASE)/../../.. \
+  -I$(EMBER_APP_BASE)/../../../app/builder/zbember \
+  -I$(EMBER_APP_BASE)/../../../app/ezsp-uart-host \
+  -I$(EMBER_APP_BASE)/../../../app/framework/cli \
+  -I$(EMBER_APP_BASE)/../../../app/framework/include \
  \
-  -I$(EMBER_BASE)/../../../app/framework/security \
-  -I$(EMBER_BASE)/../../../app/framework/util \
-  -I$(EMBER_BASE)/../../../app/util \
-  -I$(EMBER_BASE)/../../../app/util/common \
-  -I$(EMBER_BASE)/../../../app/util/ezsp \
-  -I$(EMBER_BASE)/../../../app/util/serial \
-  -I$(EMBER_BASE)/../../../app/util/zigbee-framework \
-  -I$(EMBER_BASE)/../../../hal/.. \
-  -I$(EMBER_BASE)/../../../hal \
-  -I$(EMBER_BASE)/../../../hal/micro/generic \
-  -I$(EMBER_BASE)/../../../hal/micro/unix/host \
-  -I$(EMBER_BASE)/../../../stack
+  -I$(EMBER_APP_BASE)/../../../app/framework/security \
+  -I$(EMBER_APP_BASE)/../../../app/framework/util \
+  -I$(EMBER_APP_BASE)/../../../app/util \
+  -I$(EMBER_APP_BASE)/../../../app/util/common \
+  -I$(EMBER_APP_BASE)/../../../app/util/ezsp \
+  -I$(EMBER_APP_BASE)/../../../app/util/serial \
+  -I$(EMBER_APP_BASE)/../../../app/util/zigbee-framework \
+  -I$(EMBER_APP_BASE)/../../../hal/.. \
+  -I$(EMBER_APP_BASE)/../../../hal \
+  -I$(EMBER_APP_BASE)/../../../hal/micro/generic \
+  -I$(EMBER_APP_BASE)/../../../hal/micro/unix/host \
+  -I$(EMBER_APP_BASE)/../../../stack
 
 APP_BUILDER_OUTPUT_DIRECTORY=.
 APP_BUILDER_CONFIG_HEADER=$(APP_BUILDER_OUTPUT_DIRECTORY)/zbember.h
