@@ -23,7 +23,7 @@ FOREIGN KEY (eui, endpointId, clusterId) REFERENCES zb_cluster(eui, endpointId, 
 class PiotDB :
     def __init__(self, pathDB=None) :
         fileDB = pathDB if pathDB else PIOT_DB_PATH ;
-        self.m_con = sqlite3.connect(fileDB) ;
+        self.m_con = sqlite3.connect(fileDB, check_same_thread=False) ;
         self.queryCreateTable() ;
     def __del__(self) :
         if self.m_con :
