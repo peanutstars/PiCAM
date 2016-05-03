@@ -49,7 +49,7 @@ class ZbEmber :
     def processMessage(self, msg) :
         RegxPool = (
             ( self.rxOnInfo,      r'EMBER_NETWORK_UP 0x0000' ) ,
-            ( self.rxOnJoinLeft,  r'emberAfTrustCenterJoinCallback@newNodeId<0x([0-9a-fA-F]+)> newNodeEui64<([0-9a-fA-F]+)> parentOfNewNode<0x([0-9a-fA-F]+)> EmberDeviceUpdate<(.*)> EmberJoinDecision<(.*)>') ,
+            ( self.rxOnNewJoin,   r'emberAfTrustCenterJoinCallback@newNodeId<0x([0-9a-fA-F]+)> newNodeEui64<([0-9a-fA-F]+)> parentOfNewNode<0x([0-9a-fA-F]+)> EmberDeviceUpdate<(.*)> EmberJoinDecision<(.*)>') ,
             ) ;
         # Remove prompt word
         if ZbEmber.PROMPT == msg[0:8] :
@@ -62,12 +62,17 @@ class ZbEmber :
     def rxOnInfo(self, mo) :
         self.sendMsg('info') ;
         return True ;
-    def rxOnJoinLeft(self, mo) :
+    def rxOnNewJoin(self, mo) :
         DBG('%s %s %s %s %s' % (mo.group(1), mo.group(2), mo.group(3), mo.group(4), mo.group(5))) ;
         if mo.group(4).find('left') >= 0 :
+            DBG('Device left, but keeping device data.) ;
+        elif mo.group(4).find(' rejoin') >= 0 :
+            # TODO :
+            # It should be to read basic cluster attributes for firmware version and others ...
+            # Or to write IAS Zone's CIB Address for Notification because some device could be forgot the coordinator's endpoint. But it is not mandotory.
             pass ;
-        elif mo.group(4).find('join') >= 0 :
+        elif mo.group(4).find(' join') >= 0 :
             pass ;
-        else
+        else :
             DBG(CliColor.RED + 'Unknown State' + CliColor.NONE) ;
         return True ;
