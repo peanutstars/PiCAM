@@ -6,6 +6,8 @@
 // will be used in the case where user defined implementations
 // of the callbacks have not been provided.
 #include "app/framework/include/af.h"
+#include "app/builder/zbember/zbember-debug.h"
+#include "app/builder/zbember/callback-stub-ext.c"
 
 /** @brief Add To Current App Tasks
  *
@@ -2065,6 +2067,8 @@ void emberAfTrustCenterJoinCallback(EmberNodeId newNodeId,
                                     EmberDeviceUpdate status,
                                     EmberJoinDecision decision)
 {
+	DBG("newNodeId<0x%X> newNodeEui64<%s> parentOfNewNode<0x%X> EmberDeviceUpdate<%s> EmberJoinDecision<%s>",
+		newNodeId, toStringEmberEUI64(newNodeEui64), parentOfNewNode, deviceUpdateText[status], joinDecisionText[decision]) ;
 }
 
 /** @brief Trust Center Keepalive Abort

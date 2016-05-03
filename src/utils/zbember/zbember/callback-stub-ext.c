@@ -1,0 +1,9 @@
+
+PGM_NO_CONST PGM_P joinDecisionText[] = {
+	EMBER_JOIN_DECISION_STRINGS
+};
+
+PGM_NO_CONST PGM_P deviceUpdateText[] = {
+	EMBER_DEVICE_UPDATE_STRINGS
+};
+

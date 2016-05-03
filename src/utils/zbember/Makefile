@@ -26,8 +26,8 @@ all: initember
 
 initember:
 	@(if [ -e "$(EMBER_BASE)" ] ; then \
-		if [ ! -e "$(EMBER_APP_BASE)" ] ; then cp -a $(TARGET) $(EMBER_APP_BASE); fi; \
-		if [ -e "$(EMBER_APP_BASE)/build" ] ; then rm -rf $(EMBER_APP_BASE)/build; echo "Exist"; fi; \
+		cp -a $(TARGET)/* $(EMBER_APP_BASE); \
+		if [ -e "$(EMBER_APP_BASE)/build" ] ; then rm -rf $(EMBER_APP_BASE)/build; fi; \
 	fi)
 
 clean:
