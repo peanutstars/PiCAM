@@ -5,6 +5,7 @@ import signal ;
 import sys ;
 import subprocess ;
 import threading ;
+from lpiot.zbmodel import ZbHandler ;
 from libps.psDebug import CliColor, DBG, ERR ;
 
 ENTER = '\n'
@@ -12,13 +13,12 @@ ENTER = '\n'
 class ZbEmber :
     PROMPT = 'zbember>' ;
     def __init__(self, db, cmd) :
-        self.m_db = db ;
         self.m_cmd = cmd ;
         self.m_fgRun = True ;
         self.m_sentMsg = None ;
         self.m_thid = threading.Thread(target=self.emberMain);
         self.m_thid.start() ;
-        self.m_nodeArray = [] ;
+        self.m_zbHandler = ZbHandler(db) ;
 
     def emberMain(self) :
         DBG(self.m_cmd) ;
@@ -28,7 +28,7 @@ class ZbEmber :
             if line == self.m_sentMsg :
                 self.m_sentMsg = None ;
                 continue ;
-            self.m_sentMsg = None ;
+            # self.m_sentMsg = None ;
             if self.processMessage(line) :
                 DBG(CliColor.GREEN + line + CliColor.NONE) ;
                 continue ;
@@ -40,16 +40,28 @@ class ZbEmber :
     def quit(self) :
         self.m_fgRun = False ;
         os.killpg(os.getpgid(self.m_proc.pid), signal.SIGTERM) ;
-
-    def sendMsg(self, msg) :
+    def dump(self) :
+        self.m_zbHandler.dumpNode() ;
+    def dbdump(self) :
+        pass ;
+    @staticmethod
+    def _sendMsg(param) :
+        zbem = param[0] ;
+        msg = param[1] ;
         DBG(CliColor.BLUE + msg + CliColor.NONE) ;
-        self.m_proc.stdin.write(msg + ENTER) ;
-        self.m_sentMsg = ZbEmber.PROMPT + msg ;
+        zbem.m_proc.stdin.write(msg + ENTER) ;
+        zbem.m_sentMsg = ZbEmber.PROMPT + msg ;
+    def sendMsg(self, msg, sec=0.0) :
+        if sec == 0.0 :
+            ZbEmber._sendMsg([self, msg]) ;
+        else :
+            threading.Timer(sec, ZbEmber._sendMsg, [[self, msg]]).start() ;
 
     def processMessage(self, msg) :
         RegxPool = (
             ( self.rxOnInfo,      r'EMBER_NETWORK_UP 0x0000' ) ,
             ( self.rxOnNewJoin,   r'emberAfTrustCenterJoinCallback@newNodeId<0x([0-9a-fA-F]+)> newNodeEui64<([0-9a-fA-F]+)> parentOfNewNode<0x([0-9a-fA-F]+)> EmberDeviceUpdate<(.*)> EmberJoinDecision<(.*)>') ,
+            ( self.rxOnSimple,    r'Device-Query-Service EP\[([0-9a-fA-F]+)\] : found for 0x([0-9a-fA-F]+)') ,
             ) ;
         # Remove prompt word
         if ZbEmber.PROMPT == msg[0:8] :
@@ -64,15 +76,27 @@ class ZbEmber :
         return True ;
     def rxOnNewJoin(self, mo) :
         DBG('%s %s %s %s %s' % (mo.group(1), mo.group(2), mo.group(3), mo.group(4), mo.group(5))) ;
-        if mo.group(4).find('left') >= 0 :
-            DBG('Device left, but keeping device data.) ;
+        rv = False ;
+        node = self.m_zbHandler.getNode(mo.group(2), mo.group(1)) ;
+        if mo.group(4).find(' left') >= 0 :
+            DBG('Device left, but keeping device data.') ;
+            if node :
+                node.setActivity(False) ;
+            self.sendMsg('plugin device-database device erase {%s}' % self.m_zbHandler.getSwapEUI64(mo.group(2))) ;
         elif mo.group(4).find(' rejoin') >= 0 :
             # TODO :
             # It should be to read basic cluster attributes for firmware version and others ...
             # Or to write IAS Zone's CIB Address for Notification because some device could be forgot the coordinator's endpoint. But it is not mandotory.
             pass ;
         elif mo.group(4).find(' join') >= 0 :
-            pass ;
+            rv = True ;
+            if node is None :
+                node = self.m_zbHandler.addChildNode(mo.group(2), mo.group(1)) ;
+            self.sendMsg('zdo active 0x%s' % node.m_nodeId, 0.01) ;
         else :
             DBG(CliColor.RED + 'Unknown State' + CliColor.NONE) ;
+        return rv ;
+    def rxOnSimple(self, mo) :
+        DBG('%s %s' % (mo.group(1), mo.group(2))) ;
+        self.sendMsg('zdo simple 0x%s %s' % (mo.group(2), mo.group(1)), 0.01) ;
         return True ;

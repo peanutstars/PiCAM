@@ -8,7 +8,8 @@ class Cli :
     PROMPT = 'picam >'
     CT_ZB = 'zb' ;
     CT_DB = 'db' ;
-    CT_PAIR = 'pair'
+    CT_PAIR = 'pair' ;
+    CT_PRINT = 'print' ;
     def __init__(self, zbem) :
         self.m_zbem = zbem ;
         self.m_fgRun = True ;
@@ -30,5 +31,10 @@ class Cli :
             elif cmd[0] == Cli.CT_PAIR :
                 timeout = 60 if len(cmd) == 1 else int(re.sub('\D', '', '0'+cmd[1])) ;
                 self.m_zbem.sendMsg('network pjoin %d' % timeout) ;
+            elif cmd[0] == Cli.CT_PRINT :
+                if cmd[1] == 'zigbee' :
+                    self.m_zbem.dump() ;
+                elif cmd[1] == 'db' :
+                    self.m_zbem.dbdump() ;
 
         DBG('End of cliMain') ;
