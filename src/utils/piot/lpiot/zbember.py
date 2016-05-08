@@ -41,7 +41,7 @@ class ZbEmber :
         self.m_fgRun = False ;
         os.killpg(os.getpgid(self.m_proc.pid), signal.SIGTERM) ;
     def dump(self) :
-        self.m_zbHandler.dumpNode() ;
+        self.m_zbHandler.dump() ;
     def dbdump(self) :
         pass ;
     @staticmethod
@@ -61,7 +61,9 @@ class ZbEmber :
         RegxPool = (
             ( self.rxOnInfo,      r'EMBER_NETWORK_UP 0x0000' ) ,
             ( self.rxOnNewJoin,   r'emberAfTrustCenterJoinCallback@newNodeId<0x([0-9a-fA-F]+)> newNodeEui64<([0-9a-fA-F]+)> parentOfNewNode<0x([0-9a-fA-F]+)> EmberDeviceUpdate<(.*)> EmberJoinDecision<(.*)>') ,
-            ( self.rxOnSimple,    r'Device-Query-Service EP\[([0-9a-fA-F]+)\] : found for 0x([0-9a-fA-F]+)') ,
+            # ( self.rxOnSimple,    r'Device-Query-Service EP\[([0-9a-fA-F]+)\] : found for 0x([0-9a-fA-F]+)') ,
+            ( self.rxOnCluster,   r'Device-Query-Service (in|out) cluster 0x([0-9a-fA-F]+) for ep\[([0-9a-fA-F]+)\] of 0x([0-9a-fA-F]+) (.*)') ,
+            ( self.rxOnBind,      r'Device-Query-Service All endpoints discovered for 0x([0-9a-fA-F]+)') ,
             ) ;
         # Remove prompt word
         if ZbEmber.PROMPT == msg[0:8] :
@@ -77,7 +79,7 @@ class ZbEmber :
     def rxOnNewJoin(self, mo) :
         DBG('%s %s %s %s %s' % (mo.group(1), mo.group(2), mo.group(3), mo.group(4), mo.group(5))) ;
         rv = False ;
-        node = self.m_zbHandler.getNode(mo.group(2), mo.group(1)) ;
+        node = self.m_zbHandler.getNodeWithEUI(mo.group(2)) ;
         if mo.group(4).find(' left') >= 0 :
             DBG('Device left, but keeping device data.') ;
             if node :
@@ -92,11 +94,18 @@ class ZbEmber :
             rv = True ;
             if node is None :
                 node = self.m_zbHandler.addChildNode(mo.group(2), mo.group(1)) ;
-            self.sendMsg('zdo active 0x%s' % node.m_nodeId, 0.01) ;
+            # self.sendMsg('zdo active %s' % hex(node.m_nodeId), 0.01) ;
         else :
             DBG(CliColor.RED + 'Unknown State' + CliColor.NONE) ;
         return rv ;
     def rxOnSimple(self, mo) :
         DBG('%s %s' % (mo.group(1), mo.group(2))) ;
         self.sendMsg('zdo simple 0x%s %s' % (mo.group(2), mo.group(1)), 0.01) ;
+        return True ;
+    def rxOnCluster(self, mo) :
+        DBG('%s %s %s %s %s' %(mo.group(1), mo.group(2), mo.group(3), mo.group(4), mo.group(5))) ;
+        node = self.m_zbHandler.getNode(int(mo.group(4),16)) ;
+        ep = node.getEndpoint(int(mo.group(3))) ;
+        if ep and ep.getCluster(int(mo.group(2),16)) is None :
+            self.m_zbHandler.addCluster(ep, int(mo.group(2),16), True if mo.group(1) == 'in' else False) ;
         return True ;
