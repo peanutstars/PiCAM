@@ -26,6 +26,7 @@ all: initember
 
 initember:
 	@(if [ -e "$(EMBER_BASE)" ] ; then \
+		[ ! -e "$(EMBER_APP_BASE)" ] && mkdir $(EMBER_APP_BASE); \
 		cp -a $(TARGET)/* $(EMBER_APP_BASE); \
 		if [ -e "$(EMBER_APP_BASE)/build" ] ; then rm -rf $(EMBER_APP_BASE)/build; fi; \
 	fi)

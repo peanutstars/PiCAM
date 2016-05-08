@@ -198,6 +198,7 @@
 #define EMBER_CALLBACK_REPORTING_ATTRIBUTE_CHANGE
 #define EMBER_CALLBACK_TIME_CLUSTER_TIME_CLUSTER_SERVER_INIT
 #define EMBER_CALLBACK_TIME_CLUSTER_TIME_CLUSTER_SERVER_TICK
+#define EMBER_CALLBACK_PRE_ZDO
 /**** Debug printing section ****/
 
 // Global switch
@@ -263,6 +264,19 @@
 // Use this macro to check if Counters plugin is included
 #define EMBER_AF_PLUGIN_COUNTERS
 // User options for plugin Counters
+
+// Use this macro to check if Device Database plugin is included
+#define EMBER_AF_PLUGIN_DEVICE_DATABASE
+// User options for plugin Device Database
+#define EMBER_AF_PLUGIN_DEVICE_DATABASE_MAX_DEVICES 20
+#define EMBER_AF_MAX_ENDPOINTS_PER_DEVICE 5
+#define EMBER_AF_MAX_CLUSTERS_PER_ENDPOINT 10
+
+// Use this macro to check if Device Query Service plugin is included
+#define EMBER_AF_PLUGIN_DEVICE_QUERY_SERVICE
+// User options for plugin Device Query Service
+#define EMBER_AF_PLUGIN_DEVICE_QUERY_SERVICE_MAX_FAILURES 3
+#define EMBER_AF_PLUGIN_DEVICE_QUERY_SERVICE_AUTO_START
 
 // Use this macro to check if EZ-Mode Commissioning plugin is included
 #define EMBER_AF_PLUGIN_EZMODE_COMMISSIONING
@@ -422,6 +436,7 @@
   do { \
     emberSerialInit(1, BAUD_19200, PARITY_NONE, 1); \
   } while (0)
+
 
 
 #endif // __APP_ZBEMBER_H__

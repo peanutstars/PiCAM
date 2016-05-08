@@ -28,6 +28,12 @@ void emAfOtaReloadStorageDevice(void);
 void emAfOtaServerPolicyPrint(void);
 void emAfOtaStorageDataPrint(void);
 void emAfOtaStorageInfoPrint(void);
+void emAfPluginDeviceDatabaseAddDummyDevice(void);
+void emAfPluginDeviceDatabaseErase(void);
+void emAfPluginDeviceDatabasePrintAll(void);
+void emAfPluginDeviceDatabasePrintDevice(void);
+void emAfPluginDeviceQueryServiceEnableDisableCommand(void);
+void emAfPluginDeviceQueryServiceStatusCommand(void);
 #if defined(EMBER_TEST)
 void emAfPluginFragmentationArtificialBlockDropCommand(void);
 #endif
@@ -1118,6 +1124,43 @@ EmberCommandEntry pluginEzmodeCommissioningCommands[] = {
   emberCommandEntryTerminator()
 };
 
+EmberCommandEntry pluginDeviceQueryServiceCommands[] = {
+  emberCommandEntryActionWithDetails("disable", emAfPluginDeviceQueryServiceEnableDisableCommand, "", "Disable the Device Query Service.", NULL),
+  emberCommandEntryActionWithDetails("enable", emAfPluginDeviceQueryServiceEnableDisableCommand, "", "Enable the Device Query Service.", NULL),
+  emberCommandEntryActionWithDetails("status", emAfPluginDeviceQueryServiceStatusCommand, "", "Print the current status of the device query service.", NULL),
+  emberCommandEntryTerminator()
+};
+
+PGM_P PGM deviceDatabaseDeviceAddDummyCommandArguments[] = {
+  "The address of the dummy device to add.",
+  "The number of dummy endpoints to add.",
+  "The number of dummy clusters to add.",
+  NULL
+};
+
+PGM_P PGM deviceDatabaseDeviceEraseCommandArguments[] = {
+  "The address of the device to erase from the database.",
+  NULL
+};
+
+PGM_P PGM deviceDatabaseDevicePrintCommandArguments[] = {
+  "The address of the device to be looked up (little endian)",
+  NULL
+};
+
+EmberCommandEntry deviceDatabaseDeviceCommands[] = {
+  emberCommandEntryActionWithDetails("add-dummy", emAfPluginDeviceDatabaseAddDummyDevice, "buv", "Add a device with specified EUI64 and a sequential number of clusters  ...", deviceDatabaseDeviceAddDummyCommandArguments),
+  emberCommandEntryActionWithDetails("erase", emAfPluginDeviceDatabaseErase, "b", "Erase the device with specified EUI64 from the database.", deviceDatabaseDeviceEraseCommandArguments),
+  emberCommandEntryActionWithDetails("print", emAfPluginDeviceDatabasePrintDevice, "b", "Print all the clusters and endpoints known about the specified device  ...", deviceDatabaseDevicePrintCommandArguments),
+  emberCommandEntryTerminator()
+};
+
+EmberCommandEntry pluginDeviceDatabaseCommands[] = {
+  emberCommandEntrySubMenu("device", deviceDatabaseDeviceCommands, ""),
+  emberCommandEntryActionWithDetails("print-all", emAfPluginDeviceDatabasePrintAll, "", "Print all devices in the database.", NULL),
+  emberCommandEntryTerminator()
+};
+
 PGM_P PGM pluginCountersSetThresholdCommandArguments[] = {
   "type of counter",
   "Threshold Value",
@@ -1170,6 +1213,8 @@ EmberCommandEntry emberCommandTablePluginCommands[] = {
   emberCommandEntrySubMenu("address-table", pluginAddressTableCommands, ""),
   emberCommandEntrySubMenu("concentrator", pluginConcentratorCommands, ""),
   emberCommandEntrySubMenu("counters", pluginCountersCommands, ""),
+  emberCommandEntrySubMenu("device-database", pluginDeviceDatabaseCommands, ""),
+  emberCommandEntrySubMenu("device-query-service", pluginDeviceQueryServiceCommands, ""),
   emberCommandEntrySubMenu("ezmode-commissioning", pluginEzmodeCommissioningCommands, ""),
   emberCommandEntrySubMenu("find-and-bind", pluginFindAndBindCommands, ""),
   emberCommandEntrySubMenu("fragmentation", pluginFragmentationCommands, ""),

@@ -986,6 +986,66 @@
 
 /** @} */ // end group plugin-counters
 
+/** @addtogroup plugin-device-database Plugin Commands: Device Database
+ * @ingroup cli
+ * This plugin provides a set of CLI commands for printing and manipulating the
+ * device database.
+ * 
+ * @{
+ */
+
+/** @brief <b>plugin device-database print-all </b>
+ *   - <i>Print all devices in the database.</i>
+ */
+#define EMBER_AF_DOXYGEN_CLI_COMMAND_PLUGIN_DEVICE_DATABASE_PLUGIN_DEVICE_DATABASE_PRINT_ALL
+
+/** @brief <b>plugin device-database device print [eui64:8] </b>
+ *   - <i>Print all the clusters and endpoints known about the specified device in the database.</i>
+ *     - eui64 - IEEE_ADDRESS - The address of the device to be looked up (little endian)
+ */
+#define EMBER_AF_DOXYGEN_CLI_COMMAND_PLUGIN_DEVICE_DATABASE_PLUGIN_DEVICE_DATABASE_DEVICE_PRINT
+
+/** @brief <b>plugin device-database device erase [eui64:8] </b>
+ *   - <i>Erase the device with specified EUI64 from the database.</i>
+ *     - eui64 - IEEE_ADDRESS - The address of the device to erase from the database.
+ */
+#define EMBER_AF_DOXYGEN_CLI_COMMAND_PLUGIN_DEVICE_DATABASE_PLUGIN_DEVICE_DATABASE_DEVICE_ERASE
+
+/** @brief <b>plugin device-database device add-dummy [eui64:8] [endpoints:1] [clusters:2] </b>
+ *   - <i>Add a device with specified EUI64 and a sequential number of clusters and endpoints.</i>
+ *     - eui64 - IEEE_ADDRESS - The address of the dummy device to add.
+ *     - endpoints - INT8U - The number of dummy endpoints to add.
+ *     - clusters - INT16U - The number of dummy clusters to add.
+ */
+#define EMBER_AF_DOXYGEN_CLI_COMMAND_PLUGIN_DEVICE_DATABASE_PLUGIN_DEVICE_DATABASE_DEVICE_ADD_DUMMY
+
+/** @} */ // end group plugin-device-database
+
+/** @addtogroup plugin-device-query-service Plugin Commands: Device Query Service
+ * @ingroup cli
+ * This plugin provides a set of CLI commands for printing and manipulating the
+ * device database.
+ * 
+ * @{
+ */
+
+/** @brief <b>plugin device-query-service status </b>
+ *   - <i>Print the current status of the device query service.</i>
+ */
+#define EMBER_AF_DOXYGEN_CLI_COMMAND_PLUGIN_DEVICE_QUERY_SERVICE_PLUGIN_DEVICE_QUERY_SERVICE_STATUS
+
+/** @brief <b>plugin device-query-service enable </b>
+ *   - <i>Enable the Device Query Service.</i>
+ */
+#define EMBER_AF_DOXYGEN_CLI_COMMAND_PLUGIN_DEVICE_QUERY_SERVICE_PLUGIN_DEVICE_QUERY_SERVICE_ENABLE
+
+/** @brief <b>plugin device-query-service disable </b>
+ *   - <i>Disable the Device Query Service.</i>
+ */
+#define EMBER_AF_DOXYGEN_CLI_COMMAND_PLUGIN_DEVICE_QUERY_SERVICE_PLUGIN_DEVICE_QUERY_SERVICE_DISABLE
+
+/** @} */ // end group plugin-device-query-service
+
 /** @addtogroup plugin-ezmode-commissioning Plugin Commands: EZ-Mode Commissioning
  * @ingroup cli
  * The EZ-Mode Commissioning plugin contributes several commands to the
@@ -1914,6 +1974,26 @@
  */
 
 /** @} */ // end group plugin-counters
+
+/** @addtogroup plugin-device-database Plugin Commands: Device Database
+ * @ingroup cli
+ * This plugin provides a set of CLI commands for printing and manipulating the
+ * device database.
+ * 
+ * @{
+ */
+
+/** @} */ // end group plugin-device-database
+
+/** @addtogroup plugin-device-query-service Plugin Commands: Device Query Service
+ * @ingroup cli
+ * This plugin provides a set of CLI commands for printing and manipulating the
+ * device database.
+ * 
+ * @{
+ */
+
+/** @} */ // end group plugin-device-query-service
 
 /** @addtogroup plugin-ezmode-commissioning Plugin Commands: EZ-Mode Commissioning
  * @ingroup cli

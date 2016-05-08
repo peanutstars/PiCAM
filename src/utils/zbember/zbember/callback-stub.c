@@ -1295,6 +1295,18 @@ void emberAfPluginCountersRolloverCallback(EmberCounterType type)
 {
 }
 
+/** @brief Discovery Complete
+ *
+ * This function is called when a device in the database has been set to
+ * EMBER_AF_DEVICE_DISCOVERY_STATUS_DONE.
+ *
+ * @param device A pointer to the information struct about the device.  Ver.:
+ * always
+ */
+void emberAfPluginDeviceDatabaseDiscoveryCompleteCallback(const EmberAfDeviceInfo* device)
+{
+}
+
 /** @brief Client Complete
  *
  * This function is called by the EZ-Mode Commissioning plugin when client
@@ -1620,26 +1632,6 @@ boolean emberAfPreMessageSendCallback(EmberAfMessageStruct* messageStruct,
  */
 void emberAfPreNcpResetCallback(void)
 {
-}
-
-/** @brief Pre ZDO Message Received
- *
- * This function passes the application an incoming ZDO message and gives the
- * appictation the opportunity to handle it. By default, this callback returns
- * FALSE indicating that the incoming ZDO message has not been handled and
- * should be handled by the Application Framework.
- *
- * @param emberNodeId   Ver.: always
- * @param apsFrame   Ver.: always
- * @param message   Ver.: always
- * @param length   Ver.: always
- */
-boolean emberAfPreZDOMessageReceivedCallback(EmberNodeId emberNodeId,
-                                             EmberApsFrame* apsFrame,
-                                             int8u* message,
-                                             int16u length)
-{
-  return FALSE;
 }
 
 /** @brief Read Attributes Response

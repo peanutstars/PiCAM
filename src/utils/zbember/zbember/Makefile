@@ -165,6 +165,10 @@ APPLICATION_FILES= \
   ../../../app/framework/plugin/counters/counters-cli.c \
   ../../../app/framework/plugin/counters/counters-ota-host.c \
   ../../../app/framework/plugin/counters/counters-host.c \
+  ../../../app/framework/plugin/device-database/device-database.c \
+  ../../../app/framework/plugin/device-database/device-database-cli.c \
+  ../../../app/framework/plugin/device-query-service/device-query-service.c \
+  ../../../app/framework/plugin/device-query-service/device-query-service-cli.c \
   ../../../app/framework/plugin/ezmode-commissioning/ez-mode.c \
   ../../../app/framework/plugin/ezmode-commissioning/ez-mode-cli.c \
   ../../../app/framework/plugin/find-and-bind/find-and-bind-initiator.c \

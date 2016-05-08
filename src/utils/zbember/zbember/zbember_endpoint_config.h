@@ -161,6 +161,8 @@ PGM EmberAfGenericClusterFunction emberAfFuncArrayOtaBootloadClusterServer[] = {
   extern void emberAfPluginReportingTickEventHandler(void); \
   extern EmberEventControl emberAfPluginSleepyMessageQueueTimeoutEventControl; \
   extern void emberAfPluginSleepyMessageQueueTimeoutEventHandler(void); \
+  extern EmberEventControl emberAfPluginDeviceQueryServiceMyEventControl; \
+  extern void emberAfPluginDeviceQueryServiceMyEventHandler(void); \
   static void networkEventWrapper(EmberEventControl *control, EmberAfNetworkEventHandler handler, int8u networkIndex) \
   { \
     emberAfPushNetworkIndex(networkIndex); \
@@ -196,6 +198,7 @@ PGM EmberAfGenericClusterFunction emberAfFuncArrayOtaBootloadClusterServer[] = {
   { &emberAfPluginNetworkFindTickEventControl, emberAfPluginNetworkFindTickEventHandler }, \
   { &emberAfPluginReportingTickEventControl, emberAfPluginReportingTickEventHandler }, \
   { &emberAfPluginSleepyMessageQueueTimeoutEventControl, emberAfPluginSleepyMessageQueueTimeoutEventHandler }, \
+  { &emberAfPluginDeviceQueryServiceMyEventControl, emberAfPluginDeviceQueryServiceMyEventHandler }, \
   { &emberAfPluginPermitJoinManagerTimeoutNetworkEventControls[0], emberAfPluginPermitJoinManagerTimeoutNetworkEventWrapper0 }, \
 
 
@@ -211,6 +214,7 @@ PGM EmberAfGenericClusterFunction emberAfFuncArrayOtaBootloadClusterServer[] = {
   "Network Find Plugin Tick",  \
   "Reporting Plugin Tick",  \
   "Sleepy Message Queue Plugin Timeout",  \
+  "Device Query Service Plugin My",  \
   "Permit Join Manager Plugin Timeout NWK 0", \
 
 
@@ -233,6 +237,8 @@ PGM EmberAfGenericClusterFunction emberAfFuncArrayOtaBootloadClusterServer[] = {
   void emberAfPluginNetworkFindInitCallback(void); \
   void emberAfPluginPermitJoinManagerInitCallback(void); \
   void emberAfPluginReportingInitCallback(void); \
+  void emberAfPluginDeviceQueryServiceInitCallback(void); \
+  void emberAfPluginDeviceDatabaseInitCallback(void); \
 
 
 #define EMBER_AF_GENERATED_PLUGIN_INIT_FUNCTION_CALLS \
@@ -245,6 +251,8 @@ PGM EmberAfGenericClusterFunction emberAfFuncArrayOtaBootloadClusterServer[] = {
   emberAfPluginNetworkFindInitCallback(); \
   emberAfPluginPermitJoinManagerInitCallback(); \
   emberAfPluginReportingInitCallback(); \
+  emberAfPluginDeviceQueryServiceInitCallback(); \
+  emberAfPluginDeviceDatabaseInitCallback(); \
 
 
 #define EMBER_AF_GENERATED_PLUGIN_NCP_INIT_FUNCTION_DECLARATIONS \
