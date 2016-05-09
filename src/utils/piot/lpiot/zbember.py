@@ -25,6 +25,8 @@ class ZbEmber :
         self.m_proc = subprocess.Popen(self.m_cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, preexec_fn=os.setsid) ;
         while self.m_fgRun :
             line = self.m_proc.stdout.readline().strip() ;
+            if len(line) == 0 :
+                continue ;
             if line == self.m_sentMsg :
                 self.m_sentMsg = None ;
                 continue ;
@@ -61,9 +63,10 @@ class ZbEmber :
         RegxPool = (
             ( self.rxOnInfo,      r'EMBER_NETWORK_UP 0x0000' ) ,
             ( self.rxOnNewJoin,   r'emberAfTrustCenterJoinCallback@newNodeId<0x([0-9a-fA-F]+)> newNodeEui64<([0-9a-fA-F]+)> parentOfNewNode<0x([0-9a-fA-F]+)> EmberDeviceUpdate<(.*)> EmberJoinDecision<(.*)>') ,
+            # It brings up automatically by Device-Query-Service plugin for sending a simple descriptor request.
             # ( self.rxOnSimple,    r'Device-Query-Service EP\[([0-9a-fA-F]+)\] : found for 0x([0-9a-fA-F]+)') ,
             ( self.rxOnCluster,   r'Device-Query-Service (in|out) cluster 0x([0-9a-fA-F]+) for ep\[([0-9a-fA-F]+)\] of 0x([0-9a-fA-F]+) (.*)') ,
-            ( self.rxOnBind,      r'Device-Query-Service All endpoints discovered for 0x([0-9a-fA-F]+)') ,
+            ( self.rxOnReadBasic, r'Device-Query-Service All endpoints discovered for 0x([0-9a-fA-F]+)') ,
             ) ;
         # Remove prompt word
         if ZbEmber.PROMPT == msg[0:8] :
@@ -71,20 +74,20 @@ class ZbEmber :
         for func, rstr in RegxPool :
             mo = re.match(rstr, msg)
             if mo :
+                DBG(mo.groups()) ;
                 return func(mo) ;
 
     def rxOnInfo(self, mo) :
         self.sendMsg('info') ;
         return True ;
     def rxOnNewJoin(self, mo) :
-        DBG('%s %s %s %s %s' % (mo.group(1), mo.group(2), mo.group(3), mo.group(4), mo.group(5))) ;
         rv = False ;
         node = self.m_zbHandler.getNodeWithEUI(mo.group(2)) ;
         if mo.group(4).find(' left') >= 0 :
             DBG('Device left, but keeping device data.') ;
             if node :
                 node.setActivity(False) ;
-            self.sendMsg('plugin device-database device erase {%s}' % self.m_zbHandler.getSwapEUI64(mo.group(2))) ;
+            # self.sendMsg('plugin device-database device erase {%s}' % self.m_zbHandler.getSwapEUI64(mo.group(2))) ;
         elif mo.group(4).find(' rejoin') >= 0 :
             # TODO :
             # It should be to read basic cluster attributes for firmware version and others ...
@@ -94,18 +97,26 @@ class ZbEmber :
             rv = True ;
             if node is None :
                 node = self.m_zbHandler.addChildNode(mo.group(2), mo.group(1)) ;
+            else :
+                # It could be changed nodeId, in case of joinning again after end-device leaved network by user.
+                node.setNodeId(mo.group(1)) ;
             # self.sendMsg('zdo active %s' % hex(node.m_nodeId), 0.01) ;
         else :
             DBG(CliColor.RED + 'Unknown State' + CliColor.NONE) ;
         return rv ;
     def rxOnSimple(self, mo) :
-        DBG('%s %s' % (mo.group(1), mo.group(2))) ;
         self.sendMsg('zdo simple 0x%s %s' % (mo.group(2), mo.group(1)), 0.01) ;
         return True ;
     def rxOnCluster(self, mo) :
-        DBG('%s %s %s %s %s' %(mo.group(1), mo.group(2), mo.group(3), mo.group(4), mo.group(5))) ;
-        node = self.m_zbHandler.getNode(int(mo.group(4),16)) ;
+        node = self.m_zbHandler.getNode(mo.group(4)) ;
         ep = node.getEndpoint(int(mo.group(3))) ;
         if ep and ep.getCluster(int(mo.group(2),16)) is None :
             self.m_zbHandler.addCluster(ep, int(mo.group(2),16), True if mo.group(1) == 'in' else False) ;
         return True ;
+    def rxOnReadBasic(self, mo) :
+        rv = False ;
+        node = self.m_zbHandler.getNode(mo.group(1)) ;
+        if node :
+            self.sendMsg(self.m_zbHandler.getMessageToReadBasicAttribute(node).strip(), 0.01) ;
+            rv = True ;
+        return rv ;
