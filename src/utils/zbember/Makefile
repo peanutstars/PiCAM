@@ -29,8 +29,6 @@ all: initember
 initember:
 	@(if [ -e "$(EMBER_BASE)" ] ; then \
 		[ ! -e "$(EMBER_APP_BASE)" ] && mkdir $(EMBER_APP_BASE); \
-		[ ! -e "$(EMBER_DEVICE_QUERY_SERVICE).origin" ] && cp -a $(EMBER_DEVICE_QUERY_SERVICE) $(EMBER_DEVICE_QUERY_SERVICE).origin; \
-		[ ! -e "$(EMBER_FIND_AND_BIND_INITIATOR).origin" ] && cp -a $(EMBER_FIND_AND_BIND_INITIATOR) $(EMBER_FIND_AND_BIND_INITIATOR).origin; \
 		cp -a $(TARGET)/device-query-service.c $(EMBER_DEVICE_QUERY_SERVICE); \
 		cp -a $(TARGET)/find-and-bind-initiator.c $(EMBER_FIND_AND_BIND_INITIATOR); \
 		cp -a $(TARGET)/* $(EMBER_APP_BASE); \
