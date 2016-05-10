@@ -1571,6 +1571,27 @@ boolean emberAfPreCliSendCallback(EmberApsFrame* apsFrame,
 {
   return FALSE;
 }
+/** @brief Pre Command Received
+ *
+ * This callback is the second in the Application Framework's message processing
+ * chain. At this point in the processing of incoming over-the-air messages, the
+ * application has determined that the incoming message is a ZCL command. It
+ * parses enough of the message to populate an EmberAfClusterCommand struct. The
+ * Application Framework defines this struct value in a local scope to the
+ * command processing but also makes it available through a global pointer
+ * called emberAfCurrentCommand, in app/framework/util/util.c. When command
+ * processing is complete, this pointer is cleared.
+ *
+ * @param cmd   Ver.: always
+ */
+boolean emberAfPreCommandReceivedCustomCallback(EmberAfClusterCommand* cmd)
+{
+  boolean rv = FALSE ;
+  if (cmd->apsFrame->clusterId == ZCL_IAS_ZONE_CLUSTER_ID && cmd->commandId == ZCL_ZONE_STATUS_CHANGE_NOTIFICATION_COMMAND_ID) {
+    rv = TRUE ;
+  }
+  return rv ;
+}
 
 /** @brief Pre Message Received
  *
