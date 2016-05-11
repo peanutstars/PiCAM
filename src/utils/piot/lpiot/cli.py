@@ -4,6 +4,12 @@ import subprocess ;
 import threading ;
 from libps.psDebug import CliColor, DBG, ERR ;
 
+# raw_input() would be appended a  history function when import readline ;
+try :
+    import readline ;
+except :
+    pass ;
+
 class Cli :
     PROMPT = 'picam >'
     CT_ZB = 'zb' ;
@@ -36,5 +42,7 @@ class Cli :
                     self.m_zbem.dump() ;
                 elif cmd[1] == 'db' :
                     self.m_zbem.dbdump() ;
+                else :
+                    pass ;
 
         DBG('End of cliMain') ;

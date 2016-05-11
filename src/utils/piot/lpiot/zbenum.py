@@ -74,10 +74,10 @@ class ZCLCluster :
 
 
 class ZCLAttribute :
-# Attribute types for cluster: Basic
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Basic
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_VERSION_ATTRIBUTE_ID                     =0x0000 # Ver.: always
     ZCL_APPLICATION_VERSION_ATTRIBUTE_ID         =0x0001 # Ver.: always
     ZCL_STACK_VERSION_ATTRIBUTE_ID               =0x0002 # Ver.: always
@@ -95,10 +95,10 @@ class ZCLAttribute :
     ZCL_SW_BUILD_ID_ATTRIBUTE_ID                 =0x4000 # Ver.: since zll-1.0-11-0037-10
 
 
-# Attribute types for cluster: Power Configuration
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Power Configuration
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_MAINS_VOLTAGE_ATTRIBUTE_ID                      =0x0000 # Ver.: always
     ZCL_MAINS_FREQUENCY_ATTRIBUTE_ID                    =0x0001 # Ver.: always
     ZCL_MAINS_ALARM_MASK_ATTRIBUTE_ID                   =0x0010 # Ver.: always
@@ -158,10 +158,10 @@ class ZCLAttribute :
     ZCL_BATTERY_3_ALARM_STATE_ATTRIBUTE_ID              =0x007E # Ver.: since ha-1.2-05-3520-29
 
 
-# Attribute types for cluster: Device Temperature Configuration
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Device Temperature Configuration
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_CURRENT_TEMPERATURE_ATTRIBUTE_ID        =0x0000 # Ver.: always
     ZCL_MIN_TEMP_EXPERIENCED_ATTRIBUTE_ID       =0x0001 # Ver.: always
     ZCL_MAX_TEMP_EXPERIENCED_ATTRIBUTE_ID       =0x0002 # Ver.: always
@@ -173,25 +173,25 @@ class ZCLAttribute :
     ZCL_HIGH_TEMP_DWELL_TRIP_POINT_ATTRIBUTE_ID =0x0014 # Ver.: always
 
 
-# Attribute types for cluster: Identify
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Identify
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_IDENTIFY_TIME_ATTRIBUTE_ID    =0x0000 # Ver.: always
     ZCL_COMMISSION_STATE_ATTRIBUTE_ID =0x0001 # Ver.: always
 
 
-# Attribute types for cluster: Groups
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Groups
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_GROUP_NAME_SUPPORT_ATTRIBUTE_ID =0x0000 # Ver.: always
 
 
-# Attribute types for cluster: Scenes
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Scenes
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_SCENE_COUNT_ATTRIBUTE_ID        =0x0000 # Ver.: always
     ZCL_CURRENT_SCENE_ATTRIBUTE_ID      =0x0001 # Ver.: always
     ZCL_CURRENT_GROUP_ATTRIBUTE_ID      =0x0002 # Ver.: always
@@ -200,10 +200,10 @@ class ZCLAttribute :
     ZCL_LAST_CONFIGURED_BY_ATTRIBUTE_ID =0x0005 # Ver.: always
 
 
-# Attribute types for cluster: On/off
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: On/off
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_ON_OFF_ATTRIBUTE_ID                              =0x0000 # Ver.: always
     ZCL_SAMPLE_MFG_SPECIFIC_TRANSITION_TIME_ATTRIBUTE_ID =0x0000 # Ver.: always
     ZCL_GLOBAL_SCENE_CONTROL_ATTRIBUTE_ID                =0x4000 # Ver.: since zll-1.0-11-0037-10
@@ -211,18 +211,18 @@ class ZCLAttribute :
     ZCL_OFF_WAIT_TIME_ATTRIBUTE_ID                       =0x4002 # Ver.: since zll-1.0-11-0037-10
 
 
-# Attribute types for cluster: On/off Switch Configuration
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: On/off Switch Configuration
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_SWITCH_TYPE_ATTRIBUTE_ID    =0x0000 # Ver.: always
     ZCL_SWITCH_ACTIONS_ATTRIBUTE_ID =0x0010 # Ver.: always
 
 
-# Attribute types for cluster: Level Control
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Level Control
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_CURRENT_LEVEL_ATTRIBUTE_ID                =0x0000 # Ver.: always
     ZCL_LEVEL_CONTROL_REMAINING_TIME_ATTRIBUTE_ID =0x0001 # Ver.: always
     ZCL_ON_OFF_TRANSITION_TIME_ATTRIBUTE_ID       =0x0010 # Ver.: always
@@ -232,17 +232,17 @@ class ZCLAttribute :
     ZCL_DEFAULT_MOVE_RATE_ATTRIBUTE_ID            =0x0014 # Ver.: since ha-1.2-05-3520-29
 
 
-# Attribute types for cluster: Alarms
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Alarms
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_ALARM_COUNT_ATTRIBUTE_ID =0x0000 # Ver.: always
 
 
-# Attribute types for cluster: Time
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Time
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_TIME_ATTRIBUTE_ID             =0x0000 # Ver.: always
     ZCL_TIME_STATUS_ATTRIBUTE_ID      =0x0001 # Ver.: always
     ZCL_TIME_ZONE_ATTRIBUTE_ID        =0x0002 # Ver.: always
@@ -255,10 +255,10 @@ class ZCLAttribute :
     ZCL_VALID_UNTIL_TIME_ATTRIBUTE_ID =0x0009 # Ver.: always
 
 
-# Attribute types for cluster: RSSI Location
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: RSSI Location
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_LOCATION_TYPE_ATTRIBUTE_ID            =0x0000 # Ver.: always
     ZCL_LOCATION_METHOD_ATTRIBUTE_ID          =0x0001 # Ver.: always
     ZCL_LOCATION_AGE_ATTRIBUTE_ID             =0x0002 # Ver.: always
@@ -274,10 +274,10 @@ class ZCLAttribute :
     ZCL_NUMBER_RSSI_MEASUREMENTS_ATTRIBUTE_ID =0x0017 # Ver.: always
 
 
-# Attribute types for cluster: Binary Input (Basic)
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Binary Input (Basic)
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_ACTIVE_TEXT_ATTRIBUTE_ID      =0x0004 # Ver.: always
     ZCL_DESCRIPTION_ATTRIBUTE_ID      =0x001C # Ver.: always
     ZCL_INACTIVE_TEXT_ATTRIBUTE_ID    =0x002E # Ver.: always
@@ -289,10 +289,10 @@ class ZCLAttribute :
     ZCL_APPLICATION_TYPE_ATTRIBUTE_ID =0x0100 # Ver.: always
 
 
-# Attribute types for cluster: Commissioning
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Commissioning
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_SHORT_ADDRESS_ATTRIBUTE_ID               =0x0000 # Ver.: always
     ZCL_EXTENDED_PAN_ID_ATTRIBUTE_ID             =0x0001 # Ver.: always
     ZCL_PAN_ID_ATTRIBUTE_ID                      =0x0002 # Ver.: always
@@ -319,10 +319,10 @@ class ZCLAttribute :
     ZCL_CONCENTRATOR_DISCOVERY_TIME_ATTRIBUTE_ID =0x0042 # Ver.: always
 
 
-# Attribute types for cluster: Partition
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Partition
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_PARTITION_MAXIMUM_INCOMING_TRANSFER_SIZE_ATTRIBUTE_ID =0x0000 # Ver.: always
     ZCL_PARTITION_MAXIMUM_OUTGOING_TRANSFER_SIZE_ATTRIBUTE_ID =0x0001 # Ver.: always
     ZCL_PARTIONED_FRAME_SIZE_ATTRIBUTE_ID                     =0x0002 # Ver.: always
@@ -335,10 +335,10 @@ class ZCLAttribute :
     ZCL_RECEIVER_TIMEOUT_ATTRIBUTE_ID                         =0x0009 # Ver.: always
 
 
-# Attribute types for cluster: Over the Air Bootloading
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Over the Air Bootloading
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Client attributes
+    # Client attributes
     ZCL_UPGRADE_SERVER_ID_ATTRIBUTE_ID               =0x0000 # Ver.: always
     ZCL_FILE_OFFSET_ATTRIBUTE_ID                     =0x0001 # Ver.: always
     ZCL_CURRENT_FILE_VERSION_ATTRIBUTE_ID            =0x0002 # Ver.: always
@@ -352,10 +352,10 @@ class ZCLAttribute :
     ZCL_IMAGE_STAMP_ATTRIBUTE_ID                     =0x000A # Ver.: since ha-1.2-05-3520-29
 
 
-# Attribute types for cluster: Power Profile
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Power Profile
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_TOTAL_PROFILE_NUM_ATTRIBUTE_ID   =0x0000 # Ver.: always
     ZCL_MULTIPLE_SCHEDULING_ATTRIBUTE_ID =0x0001 # Ver.: always
     ZCL_ENERGY_FORMATTING_ATTRIBUTE_ID   =0x0002 # Ver.: always
@@ -363,19 +363,19 @@ class ZCLAttribute :
     ZCL_SCHEDULE_MODE_ATTRIBUTE_ID       =0x0004 # Ver.: always
 
 
-# Attribute types for cluster: Appliance Control
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Appliance Control
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_START_TIME_ATTRIBUTE_ID     =0x0000 # Ver.: always
     ZCL_FINISH_TIME_ATTRIBUTE_ID    =0x0001 # Ver.: always
     ZCL_REMAINING_TIME_ATTRIBUTE_ID =0x0002 # Ver.: always
 
 
-# Attribute types for cluster: Poll Control
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Poll Control
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_CHECK_IN_INTERVAL_ATTRIBUTE_ID      =0x0000 # Ver.: always
     ZCL_LONG_POLL_INTERVAL_ATTRIBUTE_ID     =0x0001 # Ver.: always
     ZCL_SHORT_POLL_INTERVAL_ATTRIBUTE_ID    =0x0002 # Ver.: always
@@ -385,10 +385,10 @@ class ZCLAttribute :
     ZCL_FAST_POLL_TIMEOUT_MAX_ATTRIBUTE_ID  =0x0006 # Ver.: always
 
 
-# Attribute types for cluster: Shade Configuration
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Shade Configuration
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_SHADE_CONFIG_PHYSICAL_CLOSED_LIMIT_ATTRIBUTE_ID =0x0000 # Ver.: always
     ZCL_SHADE_CONFIG_MOTOR_STEP_SIZE_ATTRIBUTE_ID       =0x0001 # Ver.: always
     ZCL_SHADE_CONFIG_STATUS_ATTRIBUTE_ID                =0x0002 # Ver.: always
@@ -396,10 +396,10 @@ class ZCLAttribute :
     ZCL_SHADE_CONFIG_MODE_ATTRIBUTE_ID                  =0x0011 # Ver.: always
 
 
-# Attribute types for cluster: Door Lock
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Door Lock
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_LOCK_STATE_ATTRIBUTE_ID                               =0x0000 # Ver.: always
     ZCL_LOCK_TYPE_ATTRIBUTE_ID                                =0x0001 # Ver.: always
     ZCL_ACTUATOR_ENABLED_ATTRIBUTE_ID                         =0x0002 # Ver.: always
@@ -445,10 +445,10 @@ class ZCLAttribute :
     ZCL_RFID_PROGRAMMING_EVENT_MASK_ATTRIBUTE_ID              =0x0047 # Ver.: since ha-1.2-05-3520-29
 
 
-# Attribute types for cluster: Window Covering
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Window Covering
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_COVERING_TYPE_ATTRIBUTE_ID           =0x0000 # Ver.: always
     ZCL_LIMIT_LIFT_ATTRIBUTE_ID              =0x0001 # Ver.: always
     ZCL_LIMIT_TILT_ATTRIBUTE_ID              =0x0002 # Ver.: always
@@ -471,10 +471,10 @@ class ZCLAttribute :
     ZCL_SETPOINTS_TILT_ATTRIBUTE_ID          =0x0019 # Ver.: always
 
 
-# Attribute types for cluster: Pump Configuration and Control
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Pump Configuration and Control
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_MAX_PRESSURE_ATTRIBUTE_ID             =0x0000 # Ver.: always
     ZCL_MAX_SPEED_ATTRIBUTE_ID                =0x0001 # Ver.: always
     ZCL_MAX_FLOW_ATTRIBUTE_ID                 =0x0002 # Ver.: always
@@ -501,10 +501,10 @@ class ZCLAttribute :
     ZCL_PUMP_ALARM_MASK_ATTRIBUTE_ID          =0x0022 # Ver.: always
 
 
-# Attribute types for cluster: Thermostat
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Thermostat
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_LOCAL_TEMPERATURE_ATTRIBUTE_ID                     =0x0000 # Ver.: always
     ZCL_OUTDOOR_TEMPERATURE_ATTRIBUTE_ID                   =0x0001 # Ver.: always
     ZCL_THERMOSTAT_OCCUPANCY_ATTRIBUTE_ID                  =0x0002 # Ver.: always
@@ -550,18 +550,18 @@ class ZCLAttribute :
     ZCL_AC_CAPACITY_FORMAT_ATTRIBUTE_ID                    =0x0047 # Ver.: since ha-1.2-05-3520-29
 
 
-# Attribute types for cluster: Fan Control
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Fan Control
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_FAN_CONTROL_FAN_MODE_ATTRIBUTE_ID          =0x0000 # Ver.: always
     ZCL_FAN_CONTROL_FAN_MODE_SEQUENCE_ATTRIBUTE_ID =0x0001 # Ver.: always
 
 
-# Attribute types for cluster: Dehumidification Control
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Dehumidification Control
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_RELATIVE_HUMIDITY_ATTRIBUTE_ID            =0x0000 # Ver.: always
     ZCL_DEHUMIDIFICATION_COOLING_ATTRIBUTE_ID     =0x0001 # Ver.: always
     ZCL_RH_DEHUMIDIFICATION_SETPOINT_ATTRIBUTE_ID =0x0010 # Ver.: always
@@ -572,19 +572,19 @@ class ZCLAttribute :
     ZCL_RELATIVE_HUMIDITY_DISPLAY_ATTRIBUTE_ID    =0x0015 # Ver.: always
 
 
-# Attribute types for cluster: Thermostat User Interface Configuration
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Thermostat User Interface Configuration
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_TEMPERATURE_DISPLAY_MODE_ATTRIBUTE_ID        =0x0000 # Ver.: always
     ZCL_KEYPAD_LOCKOUT_ATTRIBUTE_ID                  =0x0001 # Ver.: always
     ZCL_SCHEDULE_PROGRAMMING_VISIBILITY_ATTRIBUTE_ID =0x0002 # Ver.: since ha-1.2-05-3520-29
 
 
-# Attribute types for cluster: Color Control
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Color Control
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_COLOR_CONTROL_CURRENT_HUE_ATTRIBUTE_ID                    =0x0000 # Ver.: always
     ZCL_COLOR_CONTROL_CURRENT_SATURATION_ATTRIBUTE_ID             =0x0001 # Ver.: always
     ZCL_COLOR_CONTROL_REMAINING_TIME_ATTRIBUTE_ID                 =0x0002 # Ver.: always
@@ -636,10 +636,10 @@ class ZCLAttribute :
     ZCL_COLOR_CONTROL_COLOR_TEMP_PHYSICAL_MAX_ATTRIBUTE_ID        =0x400C # Ver.: since zll-1.0-11-0037-10
 
 
-# Attribute types for cluster: Ballast Configuration
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Ballast Configuration
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_PHYSICAL_MIN_LEVEL_ATTRIBUTE_ID         =0x0000 # Ver.: always
     ZCL_PHYSICAL_MAX_LEVEL_ATTRIBUTE_ID         =0x0001 # Ver.: always
     ZCL_BALLAST_STATUS_ATTRIBUTE_ID             =0x0002 # Ver.: always
@@ -658,10 +658,10 @@ class ZCLAttribute :
     ZCL_LAMP_BURN_HOURS_TRIP_POINT_ATTRIBUTE_ID =0x0035 # Ver.: always
 
 
-# Attribute types for cluster: Illuminance Measurement
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Illuminance Measurement
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_ILLUM_MEASURED_VALUE_ATTRIBUTE_ID          =0x0000 # Ver.: always
     ZCL_ILLUM_MIN_MEASURED_VALUE_ATTRIBUTE_ID      =0x0001 # Ver.: always
     ZCL_ILLUM_MAX_MEASURED_VALUE_ATTRIBUTE_ID      =0x0002 # Ver.: always
@@ -669,29 +669,29 @@ class ZCLAttribute :
     ZCL_MEASUREMENT_LIGHT_SENSOR_TYPE_ATTRIBUTE_ID =0x0004 # Ver.: always
 
 
-# Attribute types for cluster: Illuminance Level Sensing
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Illuminance Level Sensing
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_LEVEL_STATUS_ATTRIBUTE_ID              =0x0000 # Ver.: always
     ZCL_SENSING_LIGHT_SENSOR_TYPE_ATTRIBUTE_ID =0x0001 # Ver.: always
     ZCL_ILLUMINANCE_TARGET_LEVEL_ATTRIBUTE_ID  =0x0010 # Ver.: always
 
 
-# Attribute types for cluster: Temperature Measurement
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Temperature Measurement
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_TEMP_MEASURED_VALUE_ATTRIBUTE_ID     =0x0000 # Ver.: always
     ZCL_TEMP_MIN_MEASURED_VALUE_ATTRIBUTE_ID =0x0001 # Ver.: always
     ZCL_TEMP_MAX_MEASURED_VALUE_ATTRIBUTE_ID =0x0002 # Ver.: always
     ZCL_TEMP_TOLERANCE_ATTRIBUTE_ID          =0x0003 # Ver.: always
 
 
-# Attribute types for cluster: Pressure Measurement
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Pressure Measurement
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_PRESSURE_MEASURED_VALUE_ATTRIBUTE_ID     =0x0000 # Ver.: always
     ZCL_PRESSURE_MIN_MEASURED_VALUE_ATTRIBUTE_ID =0x0001 # Ver.: always
     ZCL_PRESSURE_MAX_MEASURED_VALUE_ATTRIBUTE_ID =0x0002 # Ver.: always
@@ -703,30 +703,30 @@ class ZCLAttribute :
     ZCL_PRESSURE_SCALE_ATTRIBUTE_ID              =0x0014 # Ver.: always
 
 
-# Attribute types for cluster: Flow Measurement
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Flow Measurement
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_FLOW_MEASURED_VALUE_ATTRIBUTE_ID     =0x0000 # Ver.: always
     ZCL_FLOW_MIN_MEASURED_VALUE_ATTRIBUTE_ID =0x0001 # Ver.: always
     ZCL_FLOW_MAX_MEASURED_VALUE_ATTRIBUTE_ID =0x0002 # Ver.: always
     ZCL_FLOW_TOLERANCE_ATTRIBUTE_ID          =0x0003 # Ver.: always
 
 
-# Attribute types for cluster: Relative Humidity Measurement
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Relative Humidity Measurement
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_RELATIVE_HUMIDITY_MEASURED_VALUE_ATTRIBUTE_ID     =0x0000 # Ver.: always
     ZCL_RELATIVE_HUMIDITY_MIN_MEASURED_VALUE_ATTRIBUTE_ID =0x0001 # Ver.: always
     ZCL_RELATIVE_HUMIDITY_MAX_MEASURED_VALUE_ATTRIBUTE_ID =0x0002 # Ver.: always
     ZCL_RELATIVE_HUMIDITY_TOLERANCE_ATTRIBUTE_ID          =0x0003 # Ver.: always
 
 
-# Attribute types for cluster: Occupancy Sensing
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: Occupancy Sensing
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_OCCUPANCY_ATTRIBUTE_ID                                   =0x0000 # Ver.: always
     ZCL_OCCUPANCY_SENSOR_TYPE_ATTRIBUTE_ID                       =0x0001 # Ver.: always
     ZCL_PIR_OCCUPIED_TO_UNOCCUPIED_DELAY_ATTRIBUTE_ID            =0x0010 # Ver.: always
@@ -737,10 +737,10 @@ class ZCLAttribute :
     ZCL_ULTRASONIC_UNOCCUPIED_TO_OCCUPIED_THRESHOLD_ATTRIBUTE_ID =0x0022 # Ver.: always
 
 
-# Attribute types for cluster: IAS Zone
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: IAS Zone
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_ZONE_STATE_ATTRIBUTE_ID                                  =0x0000 # Ver.: always
     ZCL_ZONE_TYPE_ATTRIBUTE_ID                                   =0x0001 # Ver.: always
     ZCL_ZONE_STATUS_ATTRIBUTE_ID                                 =0x0002 # Ver.: always
@@ -750,26 +750,26 @@ class ZCLAttribute :
     ZCL_CURRENT_ZONE_SENSITIVITY_LEVEL_ATTRIBUTE_ID              =0x0013 # Ver.: always
 
 
-# Attribute types for cluster: IAS WD
-# Cluster specification level: zcl-1.0-07-5123-03
+    # Attribute types for cluster: IAS WD
+    # Cluster specification level: zcl-1.0-07-5123-03
 
-# Server attributes
+    # Server attributes
     ZCL_MAX_DURATION_ATTRIBUTE_ID =0x0000 # Ver.: always
 
 
-# Attribute types for cluster: Generic Tunnel
-# Cluster specification level: cba-1.0-05-3516-12
+    # Attribute types for cluster: Generic Tunnel
+    # Cluster specification level: cba-1.0-05-3516-12
 
-# Server attributes
+    # Server attributes
     ZCL_MAXIMUM_INCOMING_TRANSFER_SIZE_ATTRIBUTE_ID =0x0001 # Ver.: always
     ZCL_MAXIMUM_OUTGOING_TRANSFER_SIZE_ATTRIBUTE_ID =0x0002 # Ver.: always
     ZCL_PROTOCOL_ADDRESS_ATTRIBUTE_ID               =0x0003 # Ver.: always
 
 
-# Attribute types for cluster: 11073 Protocol Tunnel
-# Cluster specification level: hc-1.0-07-5360-15
+    # Attribute types for cluster: 11073 Protocol Tunnel
+    # Cluster specification level: hc-1.0-07-5360-15
 
-# Server attributes
+    # Server attributes
     ZCL_DEVICE_ID_LIST_ATTRIBUTE_ID   =0x0000 # Ver.: always
     ZCL_MANAGER_TARGET_ATTRIBUTE_ID   =0x0001 # Ver.: always
     ZCL_MANAGER_ENDPOINT_ATTRIBUTE_ID =0x0002 # Ver.: always
@@ -778,22 +778,22 @@ class ZCLAttribute :
     ZCL_IDLE_TIMEOUT_ATTRIBUTE_ID     =0x0005 # Ver.: always
 
 
-# Attribute types for cluster: ISO 7816 Protocol Tunnel
-# Cluster specification level: ta-1.0-07-5307-07
+    # Attribute types for cluster: ISO 7816 Protocol Tunnel
+    # Cluster specification level: ta-1.0-07-5307-07
 
-# Server attributes
+    # Server attributes
     ZCL_ISO7816_PROTOCOL_TUNNEL_STATUS_ATTRIBUTE_ID =0x0000 # Ver.: always
 
 
-# Attribute types for cluster: Price
-# Cluster specification level: se-1.2a-07-5356-19
+    # Attribute types for cluster: Price
+    # Cluster specification level: se-1.2a-07-5356-19
 
-# Client attributes
+    # Client attributes
     ZCL_PRICE_INCREASE_RANDOMIZE_MINUTES_ATTRIBUTE_ID =0x0000 # Ver.: always
     ZCL_PRICE_DECREASE_RANDOMIZE_MINUTES_ATTRIBUTE_ID =0x0001 # Ver.: always
     ZCL_COMMODITY_TYPE_CLIENT_ATTRIBUTE_ID            =0x0002 # Ver.: always
 
-# Server attributes
+    # Server attributes
     ZCL_TIER1_PRICE_LABEL_ATTRIBUTE_ID                        =0x0000 # Ver.: always
     ZCL_TIER2_PRICE_LABEL_ATTRIBUTE_ID                        =0x0001 # Ver.: always
     ZCL_TIER3_PRICE_LABEL_ATTRIBUTE_ID                        =0x0002 # Ver.: always
@@ -1808,20 +1808,20 @@ class ZCLAttribute :
     ZCL_RX_LAST_BILLING_PERIOD_CONSOLIDATED_BILL_ATTRIBUTE_ID =0x8704 # Ver.: since se-1.2a-07-5356-19
 
 
-# Attribute types for cluster: Demand Response and Load Control
-# Cluster specification level: se-1.2a-07-5356-19
+    # Attribute types for cluster: Demand Response and Load Control
+    # Cluster specification level: se-1.2a-07-5356-19
 
-# Client attributes
+    # Client attributes
     ZCL_UTILITY_ENROLLMENT_GROUP_ATTRIBUTE_ID =0x0000 # Ver.: always
     ZCL_START_RANDOMIZE_MINUTES_ATTRIBUTE_ID  =0x0001 # Ver.: always
     ZCL_STOP_RANDOMIZE_MINUTES_ATTRIBUTE_ID   =0x0002 # Ver.: always
     ZCL_DEVICE_CLASS_VALUE_ATTRIBUTE_ID       =0x0003 # Ver.: always
 
 
-# Attribute types for cluster: Simple Metering
-# Cluster specification level: se-1.2a-07-5356-19
+    # Attribute types for cluster: Simple Metering
+    # Cluster specification level: se-1.2a-07-5356-19
 
-# Client attributes
+    # Client attributes
     ZCL_FUNCTIONAL_NOTIFICATION_FLAGS_ATTRIBUTE_ID =0x0000 # Ver.: since se-1.2a-07-5356-19
     ZCL_NOTIFICATION_FLAGS_2_ATTRIBUTE_ID          =0x0001 # Ver.: since se-1.2a-07-5356-19
     ZCL_NOTIFICATION_FLAGS_3_ATTRIBUTE_ID          =0x0002 # Ver.: since se-1.2a-07-5356-19
@@ -1831,7 +1831,7 @@ class ZCLAttribute :
     ZCL_NOTIFICATION_FLAGS_7_ATTRIBUTE_ID          =0x0006 # Ver.: since se-1.2a-07-5356-19
     ZCL_NOTIFICATION_FLAGS_8_ATTRIBUTE_ID          =0x0007 # Ver.: since se-1.2a-07-5356-19
 
-# Server attributes
+    # Server attributes
     ZCL_CURRENT_SUMMATION_DELIVERED_ATTRIBUTE_ID                                       =0x0000 # Ver.: always
     ZCL_CURRENT_SUMMATION_RECEIVED_ATTRIBUTE_ID                                        =0x0001 # Ver.: always
     ZCL_CURRENT_MAX_DEMAND_DELIVERED_ATTRIBUTE_ID                                      =0x0002 # Ver.: always
@@ -2695,17 +2695,17 @@ class ZCLAttribute :
     ZCL_ATTRIBUTE_REPORTING_STATUS_ATTRIBUTE_ID                                        =0xFFFE # Ver.: always
 
 
-# Attribute types for cluster: Tunneling
-# Cluster specification level: se-1.2a-07-5356-19
+    # Attribute types for cluster: Tunneling
+    # Cluster specification level: se-1.2a-07-5356-19
 
-# Server attributes
+    # Server attributes
     ZCL_CLOSE_TUNNEL_TIMEOUT_ATTRIBUTE_ID =0x0000 # Ver.: always
 
 
-# Attribute types for cluster: Prepayment
-# Cluster specification level: se-1.2a-07-5356-19
+    # Attribute types for cluster: Prepayment
+    # Cluster specification level: se-1.2a-07-5356-19
 
-# Server attributes
+    # Server attributes
     ZCL_PAYMENT_CONTROL_CONFIGURATION_ATTRIBUTE_ID                =0x0000 # Ver.: always
     ZCL_CREDIT_REMAINING_ATTRIBUTE_ID                             =0x0001 # Ver.: always
     ZCL_EMERGENCY_CREDIT_REMAINING_ATTRIBUTE_ID                   =0x0002 # Ver.: always
@@ -2839,10 +2839,10 @@ class ZCLAttribute :
     ZCL_PREPAYMENT_HISTORICAL_FREEZE_TIME_ATTRIBUTE_ID            =0x055C # Ver.: since se-1.2a-07-5356-19
 
 
-# Attribute types for cluster: Energy Management
-# Cluster specification level: se-1.2a-07-5356-19
+    # Attribute types for cluster: Energy Management
+    # Cluster specification level: se-1.2a-07-5356-19
 
-# Server attributes
+    # Server attributes
     ZCL_LOAD_CONTROL_STATE_ATTRIBUTE_ID   =0x0000 # Ver.: always
     ZCL_CURRENT_EVENT_ID_ATTRIBUTE_ID     =0x0001 # Ver.: always
     ZCL_CURRENT_EVENT_STATUS_ATTRIBUTE_ID =0x0002 # Ver.: always
@@ -2852,10 +2852,10 @@ class ZCLAttribute :
     ZCL_MINIMUM_CYCLE_PERIOD_ATTRIBUTE_ID =0x0006 # Ver.: always
 
 
-# Attribute types for cluster: Calendar
-# Cluster specification level: se-1.2a-07-5356-19
+    # Attribute types for cluster: Calendar
+    # Cluster specification level: se-1.2a-07-5356-19
 
-# Server attributes
+    # Server attributes
     ZCL_AUXILIARY_SWITCH_1_LABEL_ATTRIBUTE_ID =0x0000 # Ver.: always
     ZCL_AUXILIARY_SWITCH_2_LABEL_ATTRIBUTE_ID =0x0001 # Ver.: always
     ZCL_AUXILIARY_SWITCH_3_LABEL_ATTRIBUTE_ID =0x0002 # Ver.: always
@@ -2866,10 +2866,10 @@ class ZCLAttribute :
     ZCL_AUXILIARY_SWITCH_8_LABEL_ATTRIBUTE_ID =0x0007 # Ver.: always
 
 
-# Attribute types for cluster: Device Management
-# Cluster specification level: se-1.2a-07-5356-19
+    # Attribute types for cluster: Device Management
+    # Cluster specification level: se-1.2a-07-5356-19
 
-# Client attributes
+    # Client attributes
     ZCL_PROVIDER_ID_CLIENT_ATTRIBUTE_ID                                 =0x0000 # Ver.: always
     ZCL_RECEIVED_PROVIDER_ID_CLIENT_ATTRIBUTE_ID                        =0x0010 # Ver.: always
     ZCL_TOU_TARIFF_ACTIVATION_ATTRIBUTE_ID                              =0x0100 # Ver.: always
@@ -3305,7 +3305,7 @@ class ZCLAttribute :
     ZCL_QUERY_SPECIFIC_FILE_RESPONSE_RECEIVED_ATTRIBUTE_ID              =0x08CD # Ver.: always
     ZCL_QUERY_SPECIFIC_FILE_RESPONSE_REJECTED_ATTRIBUTE_ID              =0x08CE # Ver.: always
 
-# Server attributes
+    # Server attributes
     ZCL_PROVIDER_ID_SERVER_ATTRIBUTE_ID                          =0x0100 # Ver.: always
     ZCL_PROVIDER_NAME_ATTRIBUTE_ID                               =0x0101 # Ver.: always
     ZCL_PROVIDER_CONTACT_DETAILS_ATTRIBUTE_ID                    =0x0102 # Ver.: always
@@ -3327,20 +3327,20 @@ class ZCLAttribute :
     ZCL_MEDIUM_HIGH_THRESHOLD_ATTRIBUTE_ID                       =0x0401 # Ver.: always
 
 
-# Attribute types for cluster: Key Establishment
-# Cluster specification level: se-1.2a-07-5356-19
+    # Attribute types for cluster: Key Establishment
+    # Cluster specification level: se-1.2a-07-5356-19
 
-# Client attributes
+    # Client attributes
     ZCL_KEY_ESTABLISHMENT_SUITE_CLIENT_ATTRIBUTE_ID =0x0000 # Ver.: always
 
-# Server attributes
+    # Server attributes
     ZCL_KEY_ESTABLISHMENT_SUITE_SERVER_ATTRIBUTE_ID =0x0000 # Ver.: always
 
 
-# Attribute types for cluster: Information
-# Cluster specification level: ta-1.0-07-5307-07
+    # Attribute types for cluster: Information
+    # Cluster specification level: ta-1.0-07-5307-07
 
-# Server attributes
+    # Server attributes
     ZCL_NODE_DESCRIPTION_ATTRIBUTE_ID            =0x0000 # Ver.: always
     ZCL_DELIVERY_ENABLE_ATTRIBUTE_ID             =0x0001 # Ver.: always
     ZCL_PUSH_INFORMATION_TIMER_ATTRIBUTE_ID      =0x0002 # Ver.: always
@@ -3349,18 +3349,18 @@ class ZCLAttribute :
     ZCL_CONTENT_ROOT_ID_ATTRIBUTE_ID             =0x0011 # Ver.: always
 
 
-# Attribute types for cluster: Data Sharing
-# Cluster specification level: ta-1.0-07-5307-07
+    # Attribute types for cluster: Data Sharing
+    # Cluster specification level: ta-1.0-07-5307-07
 
-# Server attributes
+    # Server attributes
     ZCL_DEVICE_NAME_ATTRIBUTE_ID        =0x0000 # Ver.: always
     ZCL_DEVICE_DESCRIPTION_ATTRIBUTE_ID =0x0001 # Ver.: always
 
 
-# Attribute types for cluster: Gaming
-# Cluster specification level: ta-1.0-07-5307-07
+    # Attribute types for cluster: Gaming
+    # Cluster specification level: ta-1.0-07-5307-07
 
-# Server attributes
+    # Server attributes
     ZCL_PLAYER_NAME_ATTRIBUTE_ID             =0x0000 # Ver.: always
     ZCL_NB_OF_GAMES_ATTRIBUTE_ID             =0x0001 # Ver.: always
     ZCL_LIST_OF_GAMES_ATTRIBUTE_ID           =0x0002 # Ver.: always
@@ -3383,19 +3383,19 @@ class ZCLAttribute :
     ZCL_DOWNLOADABLE_ATTRIBUTE_ID            =0x001F # Ver.: always
 
 
-# Attribute types for cluster: Data Rate Control
-# Cluster specification level: ta-1.0-07-5307-07
+    # Attribute types for cluster: Data Rate Control
+    # Cluster specification level: ta-1.0-07-5307-07
 
-# Server attributes
+    # Server attributes
     ZCL_AVERAGE_LATENCY_REQUIREMENT_ATTRIBUTE_ID =0x0000 # Ver.: always
     ZCL_MAX_LATENCY_REQUIREMENT_ATTRIBUTE_ID     =0x0001 # Ver.: always
     ZCL_BANDWIDTH_REQUIREMENT_ATTRIBUTE_ID       =0x0002 # Ver.: always
 
 
-# Attribute types for cluster: Voice over ZigBee
-# Cluster specification level: ta-1.0-07-5307-07
+    # Attribute types for cluster: Voice over ZigBee
+    # Cluster specification level: ta-1.0-07-5307-07
 
-# Server attributes
+    # Server attributes
     ZCL_CODEC_TYPE_ATTRIBUTE_ID            =0x0000 # Ver.: always
     ZCL_SAMPLING_FREQUENCY_ATTRIBUTE_ID    =0x0001 # Ver.: always
     ZCL_CODEC_RATE_ATTRIBUTE_ID            =0x0002 # Ver.: always
@@ -3409,10 +3409,10 @@ class ZCLAttribute :
     ZCL_THRESHOLD_ATTRIBUTE_ID             =0x000A # Ver.: always
 
 
-# Attribute types for cluster: Chatting
-# Cluster specification level: ta-1.0-07-5307-07
+    # Attribute types for cluster: Chatting
+    # Cluster specification level: ta-1.0-07-5307-07
 
-# Server attributes
+    # Server attributes
     ZCL_U_ID_ATTRIBUTE_ID            =0x0000 # Ver.: always
     ZCL_NICKNAME_ATTRIBUTE_ID        =0x0001 # Ver.: always
     ZCL_C_ID_ATTRIBUTE_ID            =0x0010 # Ver.: always
@@ -3420,10 +3420,10 @@ class ZCLAttribute :
     ZCL_ENABLE_ADD_CHAT_ATTRIBUTE_ID =0x0020 # Ver.: always
 
 
-# Attribute types for cluster: Payment
-# Cluster specification level: ta-1.0-07-5307-07
+    # Attribute types for cluster: Payment
+    # Cluster specification level: ta-1.0-07-5307-07
 
-# Server attributes
+    # Server attributes
     ZCL_PAYMENT_USER_ID_ATTRIBUTE_ID             =0x0000 # Ver.: always
     ZCL_USER_TYPE_ATTRIBUTE_ID                   =0x0001 # Ver.: always
     ZCL_PAYMENT_SERVICE_ID_ATTRIBUTE_ID          =0x0010 # Ver.: always
@@ -3440,10 +3440,10 @@ class ZCLAttribute :
     ZCL_PAYMENT_STATUS_ATTRIBUTE_ID              =0x0035 # Ver.: always
 
 
-# Attribute types for cluster: Billing
-# Cluster specification level: ta-1.0-07-5307-07
+    # Attribute types for cluster: Billing
+    # Cluster specification level: ta-1.0-07-5307-07
 
-# Server attributes
+    # Server attributes
     ZCL_USER_ID_ATTRIBUTE_ID             =0x0000 # Ver.: always
     ZCL_SERVICE_ID_ATTRIBUTE_ID          =0x0010 # Ver.: always
     ZCL_SERVICE_PROVIDER_ID_ATTRIBUTE_ID =0x0011 # Ver.: always
@@ -3452,10 +3452,10 @@ class ZCLAttribute :
     ZCL_DURATION_ATTRIBUTE_ID            =0x0021 # Ver.: always
 
 
-# Attribute types for cluster: Appliance Identification
-# Cluster specification level: UNKNOWN
+    # Attribute types for cluster: Appliance Identification
+    # Cluster specification level: UNKNOWN
 
-# Server attributes
+    # Server attributes
     ZCL_BASIC_IDENTIFICATION_ATTRIBUTE_ID        =0x0000 # Ver.: always
     ZCL_APPLIANCE_COMPANY_NAME_ATTRIBUTE_ID      =0x0010 # Ver.: always
     ZCL_COMPANY_ID_ATTRIBUTE_ID                  =0x0011 # Ver.: always
@@ -3470,10 +3470,10 @@ class ZCLAttribute :
     ZCL_CECED_SPECIFICATION_VERSION_ATTRIBUTE_ID =0x001A # Ver.: always
 
 
-# Attribute types for cluster: Meter Identification
-# Cluster specification level: UNKNOWN
+    # Attribute types for cluster: Meter Identification
+    # Cluster specification level: UNKNOWN
 
-# Server attributes
+    # Server attributes
     ZCL_METER_COMPANY_NAME_ATTRIBUTE_ID      =0x0000 # Ver.: always
     ZCL_METER_TYPE_ID_ATTRIBUTE_ID           =0x0001 # Ver.: always
     ZCL_DATA_QUALITY_ID_ATTRIBUTE_ID         =0x0004 # Ver.: always
@@ -3488,18 +3488,18 @@ class ZCLAttribute :
     ZCL_POWER_THRESHOLD_ATTRIBUTE_ID         =0x000E # Ver.: always
 
 
-# Attribute types for cluster: Appliance Statistics
-# Cluster specification level: UNKNOWN
+    # Attribute types for cluster: Appliance Statistics
+    # Cluster specification level: UNKNOWN
 
-# Server attributes
+    # Server attributes
     ZCL_LOG_MAX_SIZE_ATTRIBUTE_ID       =0x0000 # Ver.: always
     ZCL_LOG_QUEUE_MAX_SIZE_ATTRIBUTE_ID =0x0001 # Ver.: always
 
 
-# Attribute types for cluster: Electrical Measurement
-# Cluster specification level: UNKNOWN
+    # Attribute types for cluster: Electrical Measurement
+    # Cluster specification level: UNKNOWN
 
-# Server attributes
+    # Server attributes
     ZCL_MEASUREMENT_TYPE_ATTRIBUTE_ID                               =0x0000 # Ver.: always
     ZCL_DC_VOLTAGE_ATTRIBUTE_ID                                     =0x0100 # Ver.: always
     ZCL_DC_VOLTAGE_MIN_ATTRIBUTE_ID                                 =0x0101 # Ver.: always
@@ -3630,10 +3630,10 @@ class ZCLAttribute :
     ZCL_RMS_VOLTAGE_SWELL_PERIOD_PHASE_C_ATTRIBUTE_ID               =0x0A17 # Ver.: always
 
 
-# Attribute types for cluster: Diagnostics
-# Cluster specification level: UNKNOWN
+    # Attribute types for cluster: Diagnostics
+    # Cluster specification level: UNKNOWN
 
-# Server attributes
+    # Server attributes
     ZCL_NUMBER_OF_RESETS_ATTRIBUTE_ID                   =0x0000 # Ver.: always
     ZCL_PERSISTENT_MEMORY_WRITES_ATTRIBUTE_ID           =0x0001 # Ver.: always
     ZCL_MAC_RX_BCAST_ATTRIBUTE_ID                       =0x0100 # Ver.: always
@@ -3668,8 +3668,995 @@ class ZCLAttribute :
     ZCL_LAST_MESSAGE_RSSI_ATTRIBUTE_ID                  =0x011D # Ver.: always
 
 
-# Attribute types for cluster: Sample Mfg Specific Cluster
-# Cluster specification level: UNKNOWN
+    # Attribute types for cluster: Sample Mfg Specific Cluster
+    # Cluster specification level: UNKNOWN
 
-# Server attributes
+    # Server attributes
     ZCL_ATTRIBUTE_ONE_ATTRIBUTE_ID =0x0000 # Ver.: always
+
+class ZCLAttributeType :
+    SIZE = (
+    #   0   1   2   3     4   5   6   7      8   9   A   B     C   D   E   F
+        0,  0,  0,  0,    0,  0,  0,  0,     1,  2,  3,  4,    5,  6,  7,  8, # 0X
+        1,  0,  0,  0,    0,  0,  0,  0,     1,  2,  3,  4,    5,  6,  7,  8, # 1X
+        1,  2,  3,  4,    5,  6,  7,  8,     1,  2,  3,  4,    5,  6,  7,  8, # 2X
+    )
+    ZCL_NO_DATA_ATTRIBUTE_TYPE                        = 0x00 # No data
+    ZCL_DATA8_ATTRIBUTE_TYPE                          = 0x08 # 8-bit data
+    ZCL_DATA16_ATTRIBUTE_TYPE                         = 0x09 # 16-bit data
+    ZCL_DATA24_ATTRIBUTE_TYPE                         = 0x0A # 24-bit data
+    ZCL_DATA32_ATTRIBUTE_TYPE                         = 0x0B # 32-bit data
+    ZCL_DATA40_ATTRIBUTE_TYPE                         = 0x0C # 40-bit data
+    ZCL_DATA48_ATTRIBUTE_TYPE                         = 0x0D # 48-bit data
+    ZCL_DATA56_ATTRIBUTE_TYPE                         = 0x0E # 56-bit data
+    ZCL_DATA64_ATTRIBUTE_TYPE                         = 0x0F # 64-bit data
+    ZCL_BOOLEAN_ATTRIBUTE_TYPE                        = 0x10 # Boolean
+    ZCL_BITMAP8_ATTRIBUTE_TYPE                        = 0x18 # 8-bit bitmap
+    ZCL_BITMAP16_ATTRIBUTE_TYPE                       = 0x19 # 16-bit bitmap
+    ZCL_BITMAP24_ATTRIBUTE_TYPE                       = 0x1A # 24-bit bitmap
+    ZCL_BITMAP32_ATTRIBUTE_TYPE                       = 0x1B # 32-bit bitmap
+    ZCL_BITMAP40_ATTRIBUTE_TYPE                       = 0x1C # 40-bit bitmap
+    ZCL_BITMAP48_ATTRIBUTE_TYPE                       = 0x1D # 48-bit bitmap
+    ZCL_BITMAP56_ATTRIBUTE_TYPE                       = 0x1E # 56-bit bitmap
+    ZCL_BITMAP64_ATTRIBUTE_TYPE                       = 0x1F # 64-bit bitmap
+    ZCL_INT8U_ATTRIBUTE_TYPE                          = 0x20 # Unsigned 8-bit integer
+    ZCL_INT16U_ATTRIBUTE_TYPE                         = 0x21 # Unsigned 16-bit integer
+    ZCL_INT24U_ATTRIBUTE_TYPE                         = 0x22 # Unsigned 24-bit integer
+    ZCL_INT32U_ATTRIBUTE_TYPE                         = 0x23 # Unsigned 32-bit integer
+    ZCL_INT40U_ATTRIBUTE_TYPE                         = 0x24 # Unsigned 40-bit integer
+    ZCL_INT48U_ATTRIBUTE_TYPE                         = 0x25 # Unsigned 48-bit integer
+    ZCL_INT56U_ATTRIBUTE_TYPE                         = 0x26 # Unsigned 56-bit integer
+    ZCL_INT64U_ATTRIBUTE_TYPE                         = 0x27 # Unsigned 64-bit integer
+    ZCL_INT8S_ATTRIBUTE_TYPE                          = 0x28 # Signed 8-bit integer
+    ZCL_INT16S_ATTRIBUTE_TYPE                         = 0x29 # Signed 16-bit integer
+    ZCL_INT24S_ATTRIBUTE_TYPE                         = 0x2A # Signed 24-bit integer
+    ZCL_INT32S_ATTRIBUTE_TYPE                         = 0x2B # Signed 32-bit integer
+    ZCL_INT40S_ATTRIBUTE_TYPE                         = 0x2C # Signed 40-bit integer
+    ZCL_INT48S_ATTRIBUTE_TYPE                         = 0x2D # Signed 48-bit integer
+    ZCL_INT56S_ATTRIBUTE_TYPE                         = 0x2E # Signed 56-bit integer
+    ZCL_INT64S_ATTRIBUTE_TYPE                         = 0x2F # Signed 64-bit integer
+    ZCL_ENUM8_ATTRIBUTE_TYPE                          = 0x30 # 8-bit enumeration
+    ZCL_ENUM16_ATTRIBUTE_TYPE                         = 0x31 # 16-bit enumeration
+    ZCL_FLOAT_SEMI_ATTRIBUTE_TYPE                     = 0x38 # Semi-precision
+    ZCL_FLOAT_SINGLE_ATTRIBUTE_TYPE                   = 0x39 # Single precision
+    ZCL_FLOAT_DOUBLE_ATTRIBUTE_TYPE                   = 0x3A # Double precision
+    ZCL_OCTET_STRING_ATTRIBUTE_TYPE                   = 0x41 # Octet string
+    ZCL_CHAR_STRING_ATTRIBUTE_TYPE                    = 0x42 # Character string
+    ZCL_LONG_OCTET_STRING_ATTRIBUTE_TYPE              = 0x43 # Long octet string
+    ZCL_LONG_CHAR_STRING_ATTRIBUTE_TYPE               = 0x44 # Long character string
+    ZCL_ARRAY_ATTRIBUTE_TYPE                          = 0x48 # Array
+    ZCL_STRUCT_ATTRIBUTE_TYPE                         = 0x4C # Structure
+    ZCL_SET_ATTRIBUTE_TYPE                            = 0x50 # Set
+    ZCL_BAG_ATTRIBUTE_TYPE                            = 0x51 # Bag
+    ZCL_TIME_OF_DAY_ATTRIBUTE_TYPE                    = 0xE0 # Time of day
+    ZCL_DATE_ATTRIBUTE_TYPE                           = 0xE1 # Date
+    ZCL_UTC_TIME_ATTRIBUTE_TYPE                       = 0xE2 # UTC Time
+    ZCL_CLUSTER_ID_ATTRIBUTE_TYPE                     = 0xE8 # Cluster ID
+    ZCL_ATTRIBUTE_ID_ATTRIBUTE_TYPE                   = 0xE9 # Attribute ID
+    ZCL_BACNET_OID_ATTRIBUTE_TYPE                     = 0xEA # BACnet OID
+    ZCL_IEEE_ADDRESS_ATTRIBUTE_TYPE                   = 0xF0 # IEEE address
+    ZCL_SECURITY_KEY_ATTRIBUTE_TYPE                   = 0xF1 # 128-bit security key
+    ZCL_UNKNOWN_ATTRIBUTE_TYPE                        = 0xFF # Unknown
+
+class ZCLCommandId :
+    # Global commands
+
+    # Either direction
+    ZCL_READ_ATTRIBUTES_COMMAND_ID                       =0x00 # Ver.: always
+    ZCL_READ_ATTRIBUTES_RESPONSE_COMMAND_ID              =0x01 # Ver.: always
+    ZCL_WRITE_ATTRIBUTES_COMMAND_ID                      =0x02 # Ver.: always
+    ZCL_WRITE_ATTRIBUTES_UNDIVIDED_COMMAND_ID            =0x03 # Ver.: always
+    ZCL_WRITE_ATTRIBUTES_RESPONSE_COMMAND_ID             =0x04 # Ver.: always
+    ZCL_WRITE_ATTRIBUTES_NO_RESPONSE_COMMAND_ID          =0x05 # Ver.: always
+    ZCL_CONFIGURE_REPORTING_COMMAND_ID                   =0x06 # Ver.: always
+    ZCL_CONFIGURE_REPORTING_RESPONSE_COMMAND_ID          =0x07 # Ver.: always
+    ZCL_READ_REPORTING_CONFIGURATION_COMMAND_ID          =0x08 # Ver.: always
+    ZCL_READ_REPORTING_CONFIGURATION_RESPONSE_COMMAND_ID =0x09 # Ver.: always
+    ZCL_REPORT_ATTRIBUTES_COMMAND_ID                     =0x0A # Ver.: always
+    ZCL_DEFAULT_RESPONSE_COMMAND_ID                      =0x0B # Ver.: always
+    ZCL_DISCOVER_ATTRIBUTES_COMMAND_ID                   =0x0C # Ver.: always
+    ZCL_DISCOVER_ATTRIBUTES_RESPONSE_COMMAND_ID          =0x0D # Ver.: always
+    ZCL_READ_ATTRIBUTES_STRUCTURED_COMMAND_ID            =0x0E # Ver.: always
+    ZCL_WRITE_ATTRIBUTES_STRUCTURED_COMMAND_ID           =0x0F # Ver.: always
+    ZCL_WRITE_ATTRIBUTES_STRUCTURED_RESPONSE_COMMAND_ID  =0x10 # Ver.: always
+    ZCL_DISCOVER_COMMANDS_RECEIVED_COMMAND_ID            =0x11 # Ver.: always
+    ZCL_DISCOVER_COMMANDS_RECEIVED_RESPONSE_COMMAND_ID   =0x12 # Ver.: always
+    ZCL_DISCOVER_COMMANDS_GENERATED_COMMAND_ID           =0x13 # Ver.: always
+    ZCL_DISCOVER_COMMANDS_GENERATED_RESPONSE_COMMAND_ID  =0x14 # Ver.: always
+    ZCL_DISCOVER_ATTRIBUTES_EXTENDED_COMMAND_ID          =0x15 # Ver.: always
+    ZCL_DISCOVER_ATTRIBUTES_EXTENDED_RESPONSE_COMMAND_ID =0x16 # Ver.: always
+    # Command types for cluster: Basic
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Client to server
+    ZCL_RESET_TO_FACTORY_DEFAULTS_COMMAND_ID =0x00 # Ver.: always
+
+
+    # Command types for cluster: Identify
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_IDENTIFY_QUERY_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+
+    # Client to server
+    ZCL_IDENTIFY_COMMAND_ID =0x00 # Ver.: always
+    ZCL_IDENTIFY_QUERY_COMMAND_ID =0x01 # Ver.: always
+    ZCL_E_Z_MODE_INVOKE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_UPDATE_COMMISSION_STATE_COMMAND_ID =0x03 # Ver.: always
+    ZCL_TRIGGER_EFFECT_COMMAND_ID =0x40 # Ver.: since zll-1.0-11-0037-10
+
+
+    # Command types for cluster: Groups
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_ADD_GROUP_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_VIEW_GROUP_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_GET_GROUP_MEMBERSHIP_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_REMOVE_GROUP_RESPONSE_COMMAND_ID =0x03 # Ver.: always
+
+    # Client to server
+    ZCL_ADD_GROUP_COMMAND_ID =0x00 # Ver.: always
+    ZCL_VIEW_GROUP_COMMAND_ID =0x01 # Ver.: always
+    ZCL_GET_GROUP_MEMBERSHIP_COMMAND_ID =0x02 # Ver.: always
+    ZCL_REMOVE_GROUP_COMMAND_ID =0x03 # Ver.: always
+    ZCL_REMOVE_ALL_GROUPS_COMMAND_ID =0x04 # Ver.: always
+    ZCL_ADD_GROUP_IF_IDENTIFYING_COMMAND_ID =0x05 # Ver.: always
+
+
+    # Command types for cluster: Scenes
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_ADD_SCENE_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_VIEW_SCENE_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_REMOVE_SCENE_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_REMOVE_ALL_SCENES_RESPONSE_COMMAND_ID =0x03 # Ver.: always
+    ZCL_STORE_SCENE_RESPONSE_COMMAND_ID =0x04 # Ver.: always
+    ZCL_GET_SCENE_MEMBERSHIP_RESPONSE_COMMAND_ID =0x06 # Ver.: always
+    ZCL_ENHANCED_ADD_SCENE_RESPONSE_COMMAND_ID =0x40 # Ver.: since zll-1.0-11-0037-10
+    ZCL_ENHANCED_VIEW_SCENE_RESPONSE_COMMAND_ID =0x41 # Ver.: since zll-1.0-11-0037-10
+    ZCL_COPY_SCENE_RESPONSE_COMMAND_ID =0x42 # Ver.: since zll-1.0-11-0037-10
+
+    # Client to server
+    ZCL_ADD_SCENE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_VIEW_SCENE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_REMOVE_SCENE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_REMOVE_ALL_SCENES_COMMAND_ID =0x03 # Ver.: always
+    ZCL_STORE_SCENE_COMMAND_ID =0x04 # Ver.: always
+    ZCL_RECALL_SCENE_COMMAND_ID =0x05 # Ver.: always
+    ZCL_GET_SCENE_MEMBERSHIP_COMMAND_ID =0x06 # Ver.: always
+    ZCL_ENHANCED_ADD_SCENE_COMMAND_ID =0x40 # Ver.: since zll-1.0-11-0037-10
+    ZCL_ENHANCED_VIEW_SCENE_COMMAND_ID =0x41 # Ver.: since zll-1.0-11-0037-10
+    ZCL_COPY_SCENE_COMMAND_ID =0x42 # Ver.: since zll-1.0-11-0037-10
+
+
+    # Command types for cluster: On/off
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Client to server
+    ZCL_OFF_COMMAND_ID =0x00 # Ver.: always
+    ZCL_ON_COMMAND_ID =0x01 # Ver.: always
+    ZCL_TOGGLE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_OFF_WITH_EFFECT_COMMAND_ID =0x40 # Ver.: since zll-1.0-11-0037-10
+    ZCL_ON_WITH_RECALL_GLOBAL_SCENE_COMMAND_ID =0x41 # Ver.: since zll-1.0-11-0037-10
+    ZCL_ON_WITH_TIMED_OFF_COMMAND_ID =0x42 # Ver.: since zll-1.0-11-0037-10
+    ZCL_SAMPLE_MFG_SPECIFIC_OFF_WITH_TRANSITION_COMMAND_ID =0x00 # Ver.: always mfgCode: =0x1002
+    ZCL_SAMPLE_MFG_SPECIFIC_ON_WITH_TRANSITION_COMMAND_ID =0x01 # Ver.: always mfgCode: =0x1002
+    ZCL_SAMPLE_MFG_SPECIFIC_TOGGLE_WITH_TRANSITION_COMMAND_ID =0x02 # Ver.: always mfgCode: =0x1002
+
+
+    # Command types for cluster: Level Control
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Client to server
+    ZCL_MOVE_TO_LEVEL_COMMAND_ID =0x00 # Ver.: always
+    ZCL_MOVE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_STEP_COMMAND_ID =0x02 # Ver.: always
+    ZCL_STOP_COMMAND_ID =0x03 # Ver.: always
+    ZCL_MOVE_TO_LEVEL_WITH_ON_OFF_COMMAND_ID =0x04 # Ver.: always
+    ZCL_MOVE_WITH_ON_OFF_COMMAND_ID =0x05 # Ver.: always
+    ZCL_STEP_WITH_ON_OFF_COMMAND_ID =0x06 # Ver.: always
+    ZCL_STOP_WITH_ON_OFF_COMMAND_ID =0x07 # Ver.: always
+
+
+    # Command types for cluster: Alarms
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_ALARM_COMMAND_ID =0x00 # Ver.: always
+    ZCL_GET_ALARM_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+
+    # Client to server
+    ZCL_RESET_ALARM_COMMAND_ID =0x00 # Ver.: always
+    ZCL_RESET_ALL_ALARMS_COMMAND_ID =0x01 # Ver.: always
+    ZCL_GET_ALARM_COMMAND_ID =0x02 # Ver.: always
+    ZCL_RESET_ALARM_LOG_COMMAND_ID =0x03 # Ver.: always
+
+
+    # Command types for cluster: RSSI Location
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_DEVICE_CONFIGURATION_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_LOCATION_DATA_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_LOCATION_DATA_NOTIFICATION_COMMAND_ID =0x02 # Ver.: always
+    ZCL_COMPACT_LOCATION_DATA_NOTIFICATION_COMMAND_ID =0x03 # Ver.: always
+    ZCL_RSSI_PING_COMMAND_ID =0x04 # Ver.: always
+    ZCL_RSSI_REQUEST_COMMAND_ID =0x05 # Ver.: always
+    ZCL_REPORT_RSSI_MEASUREMENTS_COMMAND_ID =0x06 # Ver.: always
+    ZCL_REQUEST_OWN_LOCATION_COMMAND_ID =0x07 # Ver.: always
+
+    # Client to server
+    ZCL_SET_ABSOLUTE_LOCATION_COMMAND_ID =0x00 # Ver.: always
+    ZCL_SET_DEVICE_CONFIGURATION_COMMAND_ID =0x01 # Ver.: always
+    ZCL_GET_DEVICE_CONFIGURATION_COMMAND_ID =0x02 # Ver.: always
+    ZCL_GET_LOCATION_DATA_COMMAND_ID =0x03 # Ver.: always
+    ZCL_RSSI_RESPONSE_COMMAND_ID =0x04 # Ver.: always
+    ZCL_SEND_PINGS_COMMAND_ID =0x05 # Ver.: always
+    ZCL_ANCHOR_NODE_ANNOUNCE_COMMAND_ID =0x06 # Ver.: always
+
+
+    # Command types for cluster: Commissioning
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_RESTART_DEVICE_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_SAVE_STARTUP_PARAMETERS_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_RESTORE_STARTUP_PARAMETERS_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_RESET_STARTUP_PARAMETERS_RESPONSE_COMMAND_ID =0x03 # Ver.: always
+
+    # Client to server
+    ZCL_RESTART_DEVICE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_SAVE_STARTUP_PARAMETERS_COMMAND_ID =0x01 # Ver.: always
+    ZCL_RESTORE_STARTUP_PARAMETERS_COMMAND_ID =0x02 # Ver.: always
+    ZCL_RESET_STARTUP_PARAMETERS_COMMAND_ID =0x03 # Ver.: always
+
+
+    # Command types for cluster: Partition
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_MULTIPLE_ACK_COMMAND_ID =0x00 # Ver.: always
+    ZCL_READ_HANDSHAKE_PARAM_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+
+    # Client to server
+    ZCL_TRANSFER_PARTITIONED_FRAME_COMMAND_ID =0x00 # Ver.: always
+    ZCL_READ_HANDSHAKE_PARAM_COMMAND_ID =0x01 # Ver.: always
+    ZCL_WRITE_HANDSHAKE_PARAM_COMMAND_ID =0x02 # Ver.: always
+
+
+    # Command types for cluster: Over the Air Bootloading
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_IMAGE_NOTIFY_COMMAND_ID =0x00 # Ver.: always
+    ZCL_QUERY_NEXT_IMAGE_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_IMAGE_BLOCK_RESPONSE_COMMAND_ID =0x05 # Ver.: always
+    ZCL_UPGRADE_END_RESPONSE_COMMAND_ID =0x07 # Ver.: always
+    ZCL_QUERY_SPECIFIC_FILE_RESPONSE_COMMAND_ID =0x09 # Ver.: always
+
+    # Client to server
+    ZCL_QUERY_NEXT_IMAGE_REQUEST_COMMAND_ID =0x01 # Ver.: always
+    ZCL_IMAGE_BLOCK_REQUEST_COMMAND_ID =0x03 # Ver.: always
+    ZCL_IMAGE_PAGE_REQUEST_COMMAND_ID =0x04 # Ver.: always
+    ZCL_UPGRADE_END_REQUEST_COMMAND_ID =0x06 # Ver.: always
+    ZCL_QUERY_SPECIFIC_FILE_REQUEST_COMMAND_ID =0x08 # Ver.: always
+
+
+    # Command types for cluster: Power Profile
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_POWER_PROFILE_NOTIFICATION_COMMAND_ID =0x00 # Ver.: always
+    ZCL_POWER_PROFILE_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_POWER_PROFILE_STATE_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_GET_POWER_PROFILE_PRICE_COMMAND_ID =0x03 # Ver.: always
+    ZCL_POWER_PROFILES_STATE_NOTIFICATION_COMMAND_ID =0x04 # Ver.: always
+    ZCL_GET_OVERALL_SCHEDULE_PRICE_COMMAND_ID =0x05 # Ver.: always
+    ZCL_ENERGY_PHASES_SCHEDULE_REQUEST_COMMAND_ID =0x06 # Ver.: always
+    ZCL_ENERGY_PHASES_SCHEDULE_STATE_RESPONSE_COMMAND_ID =0x07 # Ver.: always
+    ZCL_ENERGY_PHASES_SCHEDULE_STATE_NOTIFICATION_COMMAND_ID =0x08 # Ver.: always
+    ZCL_POWER_PROFILE_SCHEDULE_CONSTRAINTS_NOTIFICATION_COMMAND_ID =0x09 # Ver.: always
+    ZCL_POWER_PROFILE_SCHEDULE_CONSTRAINTS_RESPONSE_COMMAND_ID =0x0A # Ver.: always
+    ZCL_GET_POWER_PROFILE_PRICE_EXTENDED_COMMAND_ID =0x0B # Ver.: always
+
+    # Client to server
+    ZCL_POWER_PROFILE_REQUEST_COMMAND_ID =0x00 # Ver.: always
+    ZCL_POWER_PROFILE_STATE_REQUEST_COMMAND_ID =0x01 # Ver.: always
+    ZCL_GET_POWER_PROFILE_PRICE_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_GET_OVERALL_SCHEDULE_PRICE_RESPONSE_COMMAND_ID =0x03 # Ver.: always
+    ZCL_ENERGY_PHASES_SCHEDULE_NOTIFICATION_COMMAND_ID =0x04 # Ver.: always
+    ZCL_ENERGY_PHASES_SCHEDULE_RESPONSE_COMMAND_ID =0x05 # Ver.: always
+    ZCL_POWER_PROFILE_SCHEDULE_CONSTRAINTS_REQUEST_COMMAND_ID =0x06 # Ver.: always
+    ZCL_ENERGY_PHASES_SCHEDULE_STATE_REQUEST_COMMAND_ID =0x07 # Ver.: always
+    ZCL_GET_POWER_PROFILE_PRICE_EXTENDED_RESPONSE_COMMAND_ID =0x08 # Ver.: always
+
+
+    # Command types for cluster: Appliance Control
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_SIGNAL_STATE_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_SIGNAL_STATE_NOTIFICATION_COMMAND_ID =0x01 # Ver.: always
+
+    # Client to server
+    ZCL_EXECUTION_OF_A_COMMAND_COMMAND_ID =0x00 # Ver.: always
+    ZCL_SIGNAL_STATE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_WRITE_FUNCTIONS_COMMAND_ID =0x02 # Ver.: always
+    ZCL_OVERLOAD_PAUSE_RESUME_COMMAND_ID =0x03 # Ver.: always
+    ZCL_OVERLOAD_PAUSE_COMMAND_ID =0x04 # Ver.: always
+    ZCL_OVERLOAD_WARNING_COMMAND_ID =0x05 # Ver.: always
+
+
+    # Command types for cluster: Poll Control
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_CHECK_IN_COMMAND_ID =0x00 # Ver.: always
+
+    # Client to server
+    ZCL_CHECK_IN_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_FAST_POLL_STOP_COMMAND_ID =0x01 # Ver.: always
+    ZCL_SET_LONG_POLL_INTERVAL_COMMAND_ID =0x02 # Ver.: always
+    ZCL_SET_SHORT_POLL_INTERVAL_COMMAND_ID =0x03 # Ver.: always
+
+
+    # Command types for cluster: Door Lock
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_LOCK_DOOR_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_UNLOCK_DOOR_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_TOGGLE_RESPONSE_COMMAND_ID =0x02 # Ver.: since ha-1.2-05-3520-29
+    ZCL_UNLOCK_WITH_TIMEOUT_RESPONSE_COMMAND_ID =0x03 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_LOG_RECORD_RESPONSE_COMMAND_ID =0x04 # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_PIN_RESPONSE_COMMAND_ID =0x05 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_PIN_RESPONSE_COMMAND_ID =0x06 # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_PIN_RESPONSE_COMMAND_ID =0x07 # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_ALL_PINS_RESPONSE_COMMAND_ID =0x08 # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_USER_STATUS_RESPONSE_COMMAND_ID =0x09 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_USER_STATUS_RESPONSE_COMMAND_ID =0x0A # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_WEEKDAY_SCHEDULE_RESPONSE_COMMAND_ID =0x0B # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_WEEKDAY_SCHEDULE_RESPONSE_COMMAND_ID =0x0C # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_WEEKDAY_SCHEDULE_RESPONSE_COMMAND_ID =0x0D # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_YEARDAY_SCHEDULE_RESPONSE_COMMAND_ID =0x0E # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_YEARDAY_SCHEDULE_RESPONSE_COMMAND_ID =0x0F # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_YEARDAY_SCHEDULE_RESPONSE_COMMAND_ID =0x10 # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_HOLIDAY_SCHEDULE_RESPONSE_COMMAND_ID =0x11 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_HOLIDAY_SCHEDULE_RESPONSE_COMMAND_ID =0x12 # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_HOLIDAY_SCHEDULE_RESPONSE_COMMAND_ID =0x13 # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_USER_TYPE_RESPONSE_COMMAND_ID =0x14 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_USER_TYPE_RESPONSE_COMMAND_ID =0x15 # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_RFID_RESPONSE_COMMAND_ID =0x16 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_RFID_RESPONSE_COMMAND_ID =0x17 # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_RFID_RESPONSE_COMMAND_ID =0x18 # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_ALL_RFIDS_RESPONSE_COMMAND_ID =0x19 # Ver.: since ha-1.2-05-3520-29
+    ZCL_OPERATION_EVENT_NOTIFICATION_COMMAND_ID =0x20 # Ver.: since ha-1.2-05-3520-29
+    ZCL_PROGRAMMING_EVENT_NOTIFICATION_COMMAND_ID =0x21 # Ver.: since ha-1.2-05-3520-29
+
+    # Client to server
+    ZCL_LOCK_DOOR_COMMAND_ID =0x00 # Ver.: always
+    ZCL_UNLOCK_DOOR_COMMAND_ID =0x01 # Ver.: always
+    ZCL_TOGGLE_COMMAND_ID =0x02 # Ver.: since ha-1.2-05-3520-29
+    ZCL_UNLOCK_WITH_TIMEOUT_COMMAND_ID =0x03 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_LOG_RECORD_COMMAND_ID =0x04 # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_PIN_COMMAND_ID =0x05 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_PIN_COMMAND_ID =0x06 # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_PIN_COMMAND_ID =0x07 # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_ALL_PINS_COMMAND_ID =0x08 # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_USER_STATUS_COMMAND_ID =0x09 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_USER_STATUS_COMMAND_ID =0x0A # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_WEEKDAY_SCHEDULE_COMMAND_ID =0x0B # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_WEEKDAY_SCHEDULE_COMMAND_ID =0x0C # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_WEEKDAY_SCHEDULE_COMMAND_ID =0x0D # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_YEARDAY_SCHEDULE_COMMAND_ID =0x0E # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_YEARDAY_SCHEDULE_COMMAND_ID =0x0F # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_YEARDAY_SCHEDULE_COMMAND_ID =0x10 # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_HOLIDAY_SCHEDULE_COMMAND_ID =0x11 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_HOLIDAY_SCHEDULE_COMMAND_ID =0x12 # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_HOLIDAY_SCHEDULE_COMMAND_ID =0x13 # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_USER_TYPE_COMMAND_ID =0x14 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_USER_TYPE_COMMAND_ID =0x15 # Ver.: since ha-1.2-05-3520-29
+    ZCL_SET_RFID_COMMAND_ID =0x16 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_RFID_COMMAND_ID =0x17 # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_RFID_COMMAND_ID =0x18 # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_ALL_RFIDS_COMMAND_ID =0x19 # Ver.: since ha-1.2-05-3520-29
+
+
+    # Command types for cluster: Window Covering
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Client to server
+    ZCL_WINDOW_COVERING_UP_OPEN_COMMAND_ID =0x00 # Ver.: always
+    ZCL_WINDOW_COVERING_DOWN_CLOSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_WINDOW_COVERING_STOP_COMMAND_ID =0x02 # Ver.: always
+    ZCL_WINDOW_COVERING_GO_TO_LIFT_VALUE_COMMAND_ID =0x04 # Ver.: always
+    ZCL_WINDOW_COVERING_GO_TO_LIFT_PERCENTAGE_COMMAND_ID =0x05 # Ver.: always
+    ZCL_WINDOW_COVERING_GO_TO_TILT_VALUE_COMMAND_ID =0x07 # Ver.: always
+    ZCL_WINDOW_COVERING_GO_TO_TILT_PERCENTAGE_COMMAND_ID =0x08 # Ver.: always
+
+
+    # Command types for cluster: Thermostat
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_CURRENT_WEEKLY_SCHEDULE_COMMAND_ID =0x00 # Ver.: since ha-1.2-05-3520-29
+    ZCL_RELAY_STATUS_LOG_COMMAND_ID =0x01 # Ver.: since ha-1.2-05-3520-29
+
+    # Client to server
+    ZCL_SETPOINT_RAISE_LOWER_COMMAND_ID =0x00 # Ver.: always
+    ZCL_SET_WEEKLY_SCHEDULE_COMMAND_ID =0x01 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_WEEKLY_SCHEDULE_COMMAND_ID =0x02 # Ver.: since ha-1.2-05-3520-29
+    ZCL_CLEAR_WEEKLY_SCHEDULE_COMMAND_ID =0x03 # Ver.: since ha-1.2-05-3520-29
+    ZCL_GET_RELAY_STATUS_LOG_COMMAND_ID =0x04 # Ver.: since ha-1.2-05-3520-29
+
+
+    # Command types for cluster: Color Control
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Client to server
+    ZCL_MOVE_TO_HUE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_MOVE_HUE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_STEP_HUE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_MOVE_TO_SATURATION_COMMAND_ID =0x03 # Ver.: always
+    ZCL_MOVE_SATURATION_COMMAND_ID =0x04 # Ver.: always
+    ZCL_STEP_SATURATION_COMMAND_ID =0x05 # Ver.: always
+    ZCL_MOVE_TO_HUE_AND_SATURATION_COMMAND_ID =0x06 # Ver.: always
+    ZCL_MOVE_TO_COLOR_COMMAND_ID =0x07 # Ver.: always
+    ZCL_MOVE_COLOR_COMMAND_ID =0x08 # Ver.: always
+    ZCL_STEP_COLOR_COMMAND_ID =0x09 # Ver.: always
+    ZCL_MOVE_TO_COLOR_TEMPERATURE_COMMAND_ID =0x0A # Ver.: always
+    ZCL_ENHANCED_MOVE_TO_HUE_COMMAND_ID =0x40 # Ver.: since zll-1.0-11-0037-10
+    ZCL_ENHANCED_MOVE_HUE_COMMAND_ID =0x41 # Ver.: since zll-1.0-11-0037-10
+    ZCL_ENHANCED_STEP_HUE_COMMAND_ID =0x42 # Ver.: since zll-1.0-11-0037-10
+    ZCL_ENHANCED_MOVE_TO_HUE_AND_SATURATION_COMMAND_ID =0x43 # Ver.: since zll-1.0-11-0037-10
+    ZCL_COLOR_LOOP_SET_COMMAND_ID =0x44 # Ver.: since zll-1.0-11-0037-10
+    ZCL_STOP_MOVE_STEP_COMMAND_ID =0x47 # Ver.: since zll-1.0-11-0037-10
+    ZCL_MOVE_COLOR_TEMPERATURE_COMMAND_ID =0x4B # Ver.: since zll-1.0-11-0037-10
+    ZCL_STEP_COLOR_TEMPERATUE_COMMAND_ID =0x4C # Ver.: since zll-1.0-11-0037-10
+
+
+    # Command types for cluster: IAS Zone
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_ZONE_STATUS_CHANGE_NOTIFICATION_COMMAND_ID =0x00 # Ver.: always
+    ZCL_ZONE_ENROLL_REQUEST_COMMAND_ID =0x01 # Ver.: always
+    ZCL_INITIATE_NORMAL_OPERATION_MODE_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_INITIATE_TEST_MODE_RESPONSE_COMMAND_ID =0x03 # Ver.: always
+
+    # Client to server
+    ZCL_ZONE_ENROLL_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_INITIATE_NORMAL_OPERATION_MODE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_INITIATE_TEST_MODE_COMMAND_ID =0x02 # Ver.: always
+
+
+    # Command types for cluster: IAS ACE
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Server to client
+    ZCL_ARM_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_GET_ZONE_ID_MAP_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_GET_ZONE_INFORMATION_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_ZONE_STATUS_CHANGED_COMMAND_ID =0x03 # Ver.: always
+    ZCL_PANEL_STATUS_CHANGED_COMMAND_ID =0x04 # Ver.: always
+    ZCL_GET_PANEL_STATUS_RESPONSE_COMMAND_ID =0x05 # Ver.: since ha-1.2.1-05-3520-30
+    ZCL_SET_BYPASSED_ZONE_LIST_COMMAND_ID =0x06 # Ver.: since ha-1.2.1-05-3520-30
+    ZCL_BYPASS_RESPONSE_COMMAND_ID =0x07 # Ver.: since ha-1.2.1-05-3520-30
+    ZCL_GET_ZONE_STATUS_RESPONSE_COMMAND_ID =0x08 # Ver.: since ha-1.2.1-05-3520-30
+
+    # Client to server
+    ZCL_ARM_COMMAND_ID =0x00 # Ver.: always
+    ZCL_BYPASS_COMMAND_ID =0x01 # Ver.: always
+    ZCL_EMERGENCY_COMMAND_ID =0x02 # Ver.: always
+    ZCL_FIRE_COMMAND_ID =0x03 # Ver.: always
+    ZCL_PANIC_COMMAND_ID =0x04 # Ver.: always
+    ZCL_GET_ZONE_ID_MAP_COMMAND_ID =0x05 # Ver.: always
+    ZCL_GET_ZONE_INFORMATION_COMMAND_ID =0x06 # Ver.: always
+    ZCL_GET_PANEL_STATUS_COMMAND_ID =0x07 # Ver.: since ha-1.2.1-05-3520-30
+    ZCL_GET_BYPASSED_ZONE_LIST_COMMAND_ID =0x08 # Ver.: since ha-1.2.1-05-3520-30
+    ZCL_GET_ZONE_STATUS_COMMAND_ID =0x09 # Ver.: since ha-1.2.1-05-3520-30
+
+
+    # Command types for cluster: IAS WD
+    # Cluster specification level: zcl-1.0-07-5123-03
+
+    # Client to server
+    ZCL_START_WARNING_COMMAND_ID =0x00 # Ver.: always
+    ZCL_SQUAWK_COMMAND_ID =0x01 # Ver.: always
+
+
+    # Command types for cluster: Generic Tunnel
+    # Cluster specification level: cba-1.0-05-3516-12
+
+    # Server to client
+    ZCL_MATCH_PROTOCOL_ADDRESS_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_ADVERTISE_PROTOCOL_ADDRESS_COMMAND_ID =0x01 # Ver.: always
+
+    # Client to server
+    ZCL_MATCH_PROTOCOL_ADDRESS_COMMAND_ID =0x00 # Ver.: always
+
+
+    # Command types for cluster: BACnet Protocol Tunnel
+    # Cluster specification level: cba-1.0-05-3516-12
+
+    # Client to server
+    ZCL_TRANSFER_NPDU_COMMAND_ID =0x00 # Ver.: always
+
+
+    # Command types for cluster: 11073 Protocol Tunnel
+    # Cluster specification level: hc-1.0-07-5360-15
+
+    # Client to server
+    ZCL_TRANSFER_A_P_D_U_COMMAND_ID =0x00 # Ver.: always
+    ZCL_CONNECT_REQUEST_COMMAND_ID =0x01 # Ver.: always
+    ZCL_DISCONNECT_REQUEST_COMMAND_ID =0x02 # Ver.: always
+    ZCL_CONNECT_STATUS_NOTIFICATION_COMMAND_ID =0x03 # Ver.: always
+
+
+    # Command types for cluster: ISO 7816 Protocol Tunnel
+    # Cluster specification level: ta-1.0-07-5307-07
+
+    # Client to server
+    ZCL_INSERT_SMART_CARD_COMMAND_ID =0x01 # Ver.: always
+    ZCL_EXTRACT_SMART_CARD_COMMAND_ID =0x02 # Ver.: always
+
+    # Either direction
+    ZCL_TRANSFER_APDU_COMMAND_ID =0x00 # Ver.: always
+
+
+    # Command types for cluster: Price
+    # Cluster specification level: se-1.2a-07-5356-19
+
+    # Server to client
+    ZCL_PUBLISH_PRICE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_PUBLISH_BLOCK_PERIOD_COMMAND_ID =0x01 # Ver.: since se-1.1-07-5356-16
+    ZCL_PUBLISH_CONVERSION_FACTOR_COMMAND_ID =0x02 # Ver.: since se-1.1a-07-5356-17
+    ZCL_PUBLISH_CALORIFIC_VALUE_COMMAND_ID =0x03 # Ver.: since se-1.1a-07-5356-17
+    ZCL_PUBLISH_TARIFF_INFORMATION_COMMAND_ID =0x04 # Ver.: since se-1.2a-07-5356-19
+    ZCL_PUBLISH_PRICE_MATRIX_COMMAND_ID =0x05 # Ver.: since se-1.2a-07-5356-19
+    ZCL_PUBLISH_BLOCK_THRESHOLDS_COMMAND_ID =0x06 # Ver.: since se-1.2a-07-5356-19
+    ZCL_PUBLISH_C_O2_VALUE_COMMAND_ID =0x07 # Ver.: since se-1.2a-07-5356-19
+    ZCL_PUBLISH_TIER_LABELS_COMMAND_ID =0x08 # Ver.: since se-1.2a-07-5356-19
+    ZCL_PUBLISH_BILLING_PERIOD_COMMAND_ID =0x09 # Ver.: since se-1.2a-07-5356-19
+    ZCL_PUBLISH_CONSOLIDATED_BILL_COMMAND_ID =0x0A # Ver.: since se-1.2a-07-5356-19
+    ZCL_PUBLISH_CPP_EVENT_COMMAND_ID =0x0B # Ver.: since se-1.2a-07-5356-19
+    ZCL_PUBLISH_CREDIT_PAYMENT_COMMAND_ID =0x0C # Ver.: since se-1.2a-07-5356-19
+    ZCL_PUBLISH_CURRENCY_CONVERSION_COMMAND_ID =0x0D # Ver.: since se-1.2a-07-5356-19
+    ZCL_CANCEL_TARIFF_COMMAND_ID =0x0E # Ver.: since se-1.2a-07-5356-19
+
+    # Client to server
+    ZCL_GET_CURRENT_PRICE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_GET_SCHEDULED_PRICES_COMMAND_ID =0x01 # Ver.: always
+    ZCL_PRICE_ACKNOWLEDGEMENT_COMMAND_ID =0x02 # Ver.: since se-1.1-07-5356-16
+    ZCL_GET_BLOCK_PERIODS_COMMAND_ID =0x03 # Ver.: since se-1.1-07-5356-16
+    ZCL_GET_CONVERSION_FACTOR_COMMAND_ID =0x04 # Ver.: since se-1.1a-07-5356-17
+    ZCL_GET_CALORIFIC_VALUE_COMMAND_ID =0x05 # Ver.: since se-1.1a-07-5356-17
+    ZCL_GET_TARIFF_INFORMATION_COMMAND_ID =0x06 # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_PRICE_MATRIX_COMMAND_ID =0x07 # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_BLOCK_THRESHOLDS_COMMAND_ID =0x08 # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_C_O2_VALUE_COMMAND_ID =0x09 # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_TIER_LABELS_COMMAND_ID =0x0A # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_BILLING_PERIOD_COMMAND_ID =0x0B # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_CONSOLIDATED_BILL_COMMAND_ID =0x0C # Ver.: since se-1.2a-07-5356-19
+    ZCL_CPP_EVENT_RESPONSE_COMMAND_ID =0x0D # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_CREDIT_PAYMENT_COMMAND_ID =0x0E # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_CURRENCY_CONVERSION_COMMAND_COMMAND_ID =0x0F # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_TARIFF_CANCELLATION_COMMAND_ID =0x10 # Ver.: since se-1.2a-07-5356-19
+
+
+    # Command types for cluster: Demand Response and Load Control
+    # Cluster specification level: se-1.2a-07-5356-19
+
+    # Server to client
+    ZCL_LOAD_CONTROL_EVENT_COMMAND_ID =0x00 # Ver.: always
+    ZCL_CANCEL_LOAD_CONTROL_EVENT_COMMAND_ID =0x01 # Ver.: always
+    ZCL_CANCEL_ALL_LOAD_CONTROL_EVENTS_COMMAND_ID =0x02 # Ver.: always
+
+    # Client to server
+    ZCL_REPORT_EVENT_STATUS_COMMAND_ID =0x00 # Ver.: always
+    ZCL_GET_SCHEDULED_EVENTS_COMMAND_ID =0x01 # Ver.: always
+
+
+    # Command types for cluster: Simple Metering
+    # Cluster specification level: se-1.2a-07-5356-19
+
+    # Server to client
+    ZCL_GET_PROFILE_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_REQUEST_MIRROR_COMMAND_ID =0x01 # Ver.: always
+    ZCL_REMOVE_MIRROR_COMMAND_ID =0x02 # Ver.: always
+    ZCL_REQUEST_FAST_POLL_MODE_RESPONSE_COMMAND_ID =0x03 # Ver.: since se-1.1-07-5356-16
+    ZCL_SCHEDULE_SNAPSHOT_RESPONSE_COMMAND_ID =0x04 # Ver.: since se-1.2a-07-5356-19
+    ZCL_TAKE_SNAPSHOT_RESPONSE_COMMAND_ID =0x05 # Ver.: since se-1.2a-07-5356-19
+    ZCL_PUBLISH_SNAPSHOT_COMMAND_ID =0x06 # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_SAMPLED_DATA_RESPONSE_COMMAND_ID =0x07 # Ver.: since se-1.2a-07-5356-19
+    ZCL_CONFIGURE_MIRROR_COMMAND_ID =0x08 # Ver.: since se-1.2a-07-5356-19
+    ZCL_CONFIGURE_NOTIFICATION_SCHEME_COMMAND_ID =0x09 # Ver.: since se-1.2a-07-5356-19
+    ZCL_CONFIGURE_NOTIFICATION_FLAGS_COMMAND_ID =0x0A # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_NOTIFIED_MESSAGE_COMMAND_ID =0x0B # Ver.: since se-1.2a-07-5356-19
+    ZCL_SUPPLY_STATUS_RESPONSE_COMMAND_ID =0x0C # Ver.: since se-1.2a-07-5356-19
+    ZCL_START_SAMPLING_RESPONSE_COMMAND_ID =0x0D # Ver.: since se-1.2a-07-5356-19
+
+    # Client to server
+    ZCL_GET_PROFILE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_REQUEST_MIRROR_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_MIRROR_REMOVED_COMMAND_ID =0x02 # Ver.: always
+    ZCL_REQUEST_FAST_POLL_MODE_COMMAND_ID =0x03 # Ver.: since se-1.1-07-5356-16
+    ZCL_SCHEDULE_SNAPSHOT_COMMAND_ID =0x04 # Ver.: since se-1.2a-07-5356-19
+    ZCL_TAKE_SNAPSHOT_COMMAND_ID =0x05 # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_SNAPSHOT_COMMAND_ID =0x06 # Ver.: since se-1.2a-07-5356-19
+    ZCL_START_SAMPLING_COMMAND_ID =0x07 # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_SAMPLED_DATA_COMMAND_ID =0x08 # Ver.: since se-1.2a-07-5356-19
+    ZCL_MIRROR_REPORT_ATTRIBUTE_RESPONSE_COMMAND_ID =0x09 # Ver.: since se-1.2a-07-5356-19
+    ZCL_RESET_LOAD_LIMIT_COUNTER_COMMAND_ID =0x0A # Ver.: since se-1.2a-07-5356-19
+    ZCL_CHANGE_SUPPLY_COMMAND_ID =0x0B # Ver.: since se-1.2a-07-5356-19
+    ZCL_LOCAL_CHANGE_SUPPLY_COMMAND_ID =0x0C # Ver.: since se-1.2a-07-5356-19
+    ZCL_SET_SUPPLY_STATUS_COMMAND_ID =0x0D # Ver.: since se-1.2a-07-5356-19
+    ZCL_SET_UNCONTROLLED_FLOW_THRESHOLD_COMMAND_ID =0x0E # Ver.: since se-1.2a-07-5356-19
+
+
+    # Command types for cluster: Messaging
+    # Cluster specification level: se-1.2a-07-5356-19
+
+    # Server to client
+    ZCL_DISPLAY_MESSAGE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_CANCEL_MESSAGE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_DISPLAY_PROTECTED_MESSAGE_COMMAND_ID =0x02 # Ver.: since se-1.2a-07-5356-19
+    ZCL_CANCEL_ALL_MESSAGES_COMMAND_ID =0x03 # Ver.: since se-1.2a-07-5356-19
+
+    # Client to server
+    ZCL_GET_LAST_MESSAGE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_MESSAGE_CONFIRMATION_COMMAND_ID =0x01 # Ver.: always
+    ZCL_GET_MESSAGE_CANCELLATION_COMMAND_ID =0x02 # Ver.: since se-1.2a-07-5356-19
+
+
+    # Command types for cluster: Tunneling
+    # Cluster specification level: se-1.2a-07-5356-19
+
+    # Server to client
+    ZCL_REQUEST_TUNNEL_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_TRANSFER_DATA_SERVER_TO_CLIENT_COMMAND_ID =0x01 # Ver.: always
+    ZCL_TRANSFER_DATA_ERROR_SERVER_TO_CLIENT_COMMAND_ID =0x02 # Ver.: always
+    ZCL_ACK_TRANSFER_DATA_SERVER_TO_CLIENT_COMMAND_ID =0x03 # Ver.: always
+    ZCL_READY_DATA_SERVER_TO_CLIENT_COMMAND_ID =0x04 # Ver.: always
+    ZCL_SUPPORTED_TUNNEL_PROTOCOLS_RESPONSE_COMMAND_ID =0x05 # Ver.: since se-1.1a-07-5356-17
+    ZCL_TUNNEL_CLOSURE_NOTIFICATION_COMMAND_ID =0x06 # Ver.: since se-1.1a-07-5356-17
+
+    # Client to server
+    ZCL_REQUEST_TUNNEL_COMMAND_ID =0x00 # Ver.: always
+    ZCL_CLOSE_TUNNEL_COMMAND_ID =0x01 # Ver.: always
+    ZCL_TRANSFER_DATA_CLIENT_TO_SERVER_COMMAND_ID =0x02 # Ver.: always
+    ZCL_TRANSFER_DATA_ERROR_CLIENT_TO_SERVER_COMMAND_ID =0x03 # Ver.: always
+    ZCL_ACK_TRANSFER_DATA_CLIENT_TO_SERVER_COMMAND_ID =0x04 # Ver.: always
+    ZCL_READY_DATA_CLIENT_TO_SERVER_COMMAND_ID =0x05 # Ver.: always
+    ZCL_GET_SUPPORTED_TUNNEL_PROTOCOLS_COMMAND_ID =0x06 # Ver.: since se-1.1a-07-5356-17
+
+
+    # Command types for cluster: Prepayment
+    # Cluster specification level: se-1.2a-07-5356-19
+
+    # Server to client
+    ZCL_PUBLISH_PREPAY_SNAPSHOT_COMMAND_ID =0x01 # Ver.: since se-1.2a-07-5356-19
+    ZCL_CHANGE_PAYMENT_MODE_RESPONSE_COMMAND_ID =0x02 # Ver.: since se-1.2a-07-5356-19
+    ZCL_CONSUMER_TOP_UP_RESPONSE_COMMAND_ID =0x03 # Ver.: since se-1.2a-07-5356-19
+    ZCL_PUBLISH_TOP_UP_LOG_COMMAND_ID =0x05 # Ver.: since se-1.2a-07-5356-19
+    ZCL_PUBLISH_DEBT_LOG_COMMAND_ID =0x06 # Ver.: since se-1.2a-07-5356-19
+
+    # Client to server
+    ZCL_SELECT_AVAILABLE_EMERGENCY_CREDIT_COMMAND_ID =0x00 # Ver.: always
+    ZCL_CHANGE_DEBT_COMMAND_ID =0x02 # Ver.: since se-1.2a-07-5356-19
+    ZCL_EMERGENCY_CREDIT_SETUP_COMMAND_ID =0x03 # Ver.: since se-1.2a-07-5356-19
+    ZCL_CONSUMER_TOP_UP_COMMAND_ID =0x04 # Ver.: since se-1.2a-07-5356-19
+    ZCL_CREDIT_ADJUSTMENT_COMMAND_ID =0x05 # Ver.: since se-1.2a-07-5356-19
+    ZCL_CHANGE_PAYMENT_MODE_COMMAND_ID =0x06 # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_PREPAY_SNAPSHOT_COMMAND_ID =0x07 # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_TOP_UP_LOG_COMMAND_ID =0x08 # Ver.: since se-1.2a-07-5356-19
+    ZCL_SET_LOW_CREDIT_WARNING_LEVEL_COMMAND_ID =0x09 # Ver.: since se-1.2a-07-5356-19
+    ZCL_GET_DEBT_REPAYMENT_LOG_COMMAND_ID =0x0A # Ver.: since se-1.2a-07-5356-19
+    ZCL_SET_MAXIMUM_CREDIT_LIMIT_COMMAND_ID =0x0B # Ver.: since se-1.2a-07-5356-19
+    ZCL_SET_OVERALL_DEBT_CAP_COMMAND_ID =0x0C # Ver.: since se-1.2a-07-5356-19
+
+
+    # Command types for cluster: Energy Management
+    # Cluster specification level: se-1.2a-07-5356-19
+
+    # Server to client
+    ZCL_REPORT_EVENT_STATUS_COMMAND_ID =0x00 # Ver.: always
+
+    # Client to server
+    ZCL_MANAGE_EVENT_COMMAND_ID =0x00 # Ver.: always
+
+
+    # Command types for cluster: Calendar
+    # Cluster specification level: se-1.2a-07-5356-19
+
+    # Server to client
+    ZCL_PUBLISH_CALENDAR_COMMAND_ID =0x00 # Ver.: always
+    ZCL_PUBLISH_DAY_PROFILE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_PUBLISH_WEEK_PROFILE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_PUBLISH_SEASONS_COMMAND_ID =0x03 # Ver.: always
+    ZCL_PUBLISH_SPECIAL_DAYS_COMMAND_ID =0x04 # Ver.: always
+    ZCL_CANCEL_CALENDAR_COMMAND_ID =0x05 # Ver.: always
+
+    # Client to server
+    ZCL_GET_CALENDAR_COMMAND_ID =0x00 # Ver.: always
+    ZCL_GET_DAY_PROFILES_COMMAND_ID =0x01 # Ver.: always
+    ZCL_GET_WEEK_PROFILES_COMMAND_ID =0x02 # Ver.: always
+    ZCL_GET_SEASONS_COMMAND_ID =0x03 # Ver.: always
+    ZCL_GET_SPECIAL_DAYS_COMMAND_ID =0x04 # Ver.: always
+    ZCL_GET_CALENDAR_CANCELLATION_COMMAND_ID =0x05 # Ver.: always
+
+
+    # Command types for cluster: Device Management
+    # Cluster specification level: se-1.2a-07-5356-19
+
+    # Server to client
+    ZCL_PUBLISH_CHANGE_OF_TENANCY_COMMAND_ID =0x00 # Ver.: always
+    ZCL_PUBLISH_CHANGE_OF_SUPPLIER_COMMAND_ID =0x01 # Ver.: always
+    ZCL_REQUEST_NEW_PASSWORD_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_UPDATE_SITE_ID_COMMAND_ID =0x03 # Ver.: always
+    ZCL_SET_EVENT_CONFIGURATION_COMMAND_ID =0x04 # Ver.: always
+    ZCL_GET_EVENT_CONFIGURATION_COMMAND_ID =0x05 # Ver.: always
+    ZCL_UPDATE_C_I_N_COMMAND_ID =0x06 # Ver.: always
+
+    # Client to server
+    ZCL_GET_CHANGE_OF_TENANCY_COMMAND_ID =0x00 # Ver.: always
+    ZCL_GET_CHANGE_OF_SUPPLIER_COMMAND_ID =0x01 # Ver.: always
+    ZCL_REQUEST_NEW_PASSWORD_COMMAND_ID =0x02 # Ver.: always
+    ZCL_GET_SITE_ID_COMMAND_ID =0x03 # Ver.: always
+    ZCL_REPORT_EVENT_CONFIGURATION_COMMAND_ID =0x04 # Ver.: always
+    ZCL_GET_C_I_N_COMMAND_ID =0x05 # Ver.: always
+
+
+    # Command types for cluster: Events
+    # Cluster specification level: se-1.2a-07-5356-19
+
+    # Server to client
+    ZCL_PUBLISH_EVENT_COMMAND_ID =0x00 # Ver.: always
+    ZCL_PUBLISH_EVENT_LOG_COMMAND_ID =0x01 # Ver.: always
+    ZCL_CLEAR_EVENT_LOG_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+
+    # Client to server
+    ZCL_GET_EVENT_LOG_COMMAND_ID =0x00 # Ver.: always
+    ZCL_CLEAR_EVENT_LOG_REQUEST_COMMAND_ID =0x01 # Ver.: always
+
+
+    # Command types for cluster: MDU Pairing
+    # Cluster specification level: se-1.2a-07-5356-19
+
+    # Server to client
+    ZCL_PAIRING_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+
+    # Client to server
+    ZCL_PAIRING_REQUEST_COMMAND_ID =0x00 # Ver.: always
+
+
+    # Command types for cluster: Key Establishment
+    # Cluster specification level: se-1.2a-07-5356-19
+
+    # Server to client
+    ZCL_INITIATE_KEY_ESTABLISHMENT_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_EPHEMERAL_DATA_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_CONFIRM_KEY_DATA_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+
+    # Client to server
+    ZCL_INITIATE_KEY_ESTABLISHMENT_REQUEST_COMMAND_ID =0x00 # Ver.: always
+    ZCL_EPHEMERAL_DATA_REQUEST_COMMAND_ID =0x01 # Ver.: always
+    ZCL_CONFIRM_KEY_DATA_REQUEST_COMMAND_ID =0x02 # Ver.: always
+
+    # Either direction
+    ZCL_TERMINATE_KEY_ESTABLISHMENT_COMMAND_ID =0x03 # Ver.: always
+
+
+    # Command types for cluster: Information
+    # Cluster specification level: ta-1.0-07-5307-07
+
+    # Server to client
+    ZCL_REQUEST_INFORMATION_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_PUSH_INFORMATION_COMMAND_ID =0x01 # Ver.: always
+    ZCL_SEND_PREFERENCE_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_SERVER_REQUEST_PREFERENCE_COMMAND_ID =0x03 # Ver.: always
+    ZCL_REQUEST_PREFERENCE_CONFIRMATION_COMMAND_ID =0x04 # Ver.: always
+    ZCL_UPDATE_RESPONSE_COMMAND_ID =0x05 # Ver.: always
+    ZCL_DELETE_RESPONSE_COMMAND_ID =0x06 # Ver.: always
+
+    # Client to server
+    ZCL_REQUEST_INFORMATION_COMMAND_ID =0x00 # Ver.: always
+    ZCL_PUSH_INFORMATION_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_SEND_PREFERENCE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_REQUEST_PREFERENCE_RESPONSE_COMMAND_ID =0x03 # Ver.: always
+    ZCL_UPDATE_COMMAND_ID =0x04 # Ver.: always
+    ZCL_DELETE_COMMAND_ID =0x05 # Ver.: always
+    ZCL_CONFIGURE_NODE_DESCRIPTION_COMMAND_ID =0x06 # Ver.: always
+    ZCL_CONFIGURE_DELIVERY_ENABLE_COMMAND_ID =0x07 # Ver.: always
+    ZCL_CONFIGURE_PUSH_INFORMATION_TIMER_COMMAND_ID =0x08 # Ver.: always
+    ZCL_CONFIGURE_SET_ROOT_ID_COMMAND_ID =0x09 # Ver.: always
+
+
+    # Command types for cluster: Data Sharing
+    # Cluster specification level: ta-1.0-07-5307-07
+
+    # Server to client
+    ZCL_WRITE_FILE_REQUEST_COMMAND_ID =0x00 # Ver.: always
+    ZCL_MODIFY_FILE_REQUEST_COMMAND_ID =0x01 # Ver.: always
+    ZCL_MODIFY_RECORD_REQUEST_COMMAND_ID =0x02 # Ver.: always
+    ZCL_FILE_TRANSMISSION_COMMAND_ID =0x03 # Ver.: always
+    ZCL_RECORD_TRANSMISSION_COMMAND_ID =0x04 # Ver.: always
+
+    # Client to server
+    ZCL_READ_FILE_REQUEST_COMMAND_ID =0x00 # Ver.: always
+    ZCL_READ_RECORD_REQUEST_COMMAND_ID =0x01 # Ver.: always
+    ZCL_WRITE_FILE_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+
+
+    # Command types for cluster: Gaming
+    # Cluster specification level: ta-1.0-07-5307-07
+
+    # Server to client
+    ZCL_GAME_ANNOUNCEMENT_COMMAND_ID =0x00 # Ver.: always
+    ZCL_GENERAL_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+
+    # Client to server
+    ZCL_SEARCH_GAME_COMMAND_ID =0x00 # Ver.: always
+    ZCL_JOIN_GAME_COMMAND_ID =0x01 # Ver.: always
+    ZCL_START_GAME_COMMAND_ID =0x02 # Ver.: always
+    ZCL_PAUSE_GAME_COMMAND_ID =0x03 # Ver.: always
+    ZCL_RESUME_GAME_COMMAND_ID =0x04 # Ver.: always
+    ZCL_QUIT_GAME_COMMAND_ID =0x05 # Ver.: always
+    ZCL_END_GAME_COMMAND_ID =0x06 # Ver.: always
+    ZCL_START_OVER_COMMAND_ID =0x07 # Ver.: always
+    ZCL_ACTION_CONTROL_COMMAND_ID =0x08 # Ver.: always
+    ZCL_DOWNLOAD_GAME_COMMAND_ID =0x09 # Ver.: always
+
+
+    # Command types for cluster: Data Rate Control
+    # Cluster specification level: ta-1.0-07-5307-07
+
+    # Server to client
+    ZCL_DATA_RATE_CONTROL_COMMAND_ID =0x00 # Ver.: always
+
+    # Client to server
+    ZCL_PATH_CREATION_COMMAND_ID =0x00 # Ver.: always
+    ZCL_DATA_RATE_NOTIFICATION_COMMAND_ID =0x01 # Ver.: always
+    ZCL_PATH_DELETION_COMMAND_ID =0x02 # Ver.: always
+
+
+    # Command types for cluster: Voice over ZigBee
+    # Cluster specification level: ta-1.0-07-5307-07
+
+    # Server to client
+    ZCL_ESTABLISHMENT_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_VOICE_TRANSMISSION_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_CONTROL_COMMAND_ID =0x02 # Ver.: always
+
+    # Client to server
+    ZCL_ESTABLISHMENT_REQUEST_COMMAND_ID =0x00 # Ver.: always
+    ZCL_VOICE_TRANSMISSION_COMMAND_ID =0x01 # Ver.: always
+    ZCL_VOICE_TRANSMISSION_COMPLETION_COMMAND_ID =0x02 # Ver.: always
+    ZCL_CONTROL_RESPONSE_COMMAND_ID =0x03 # Ver.: always
+
+
+    # Command types for cluster: Chatting
+    # Cluster specification level: ta-1.0-07-5307-07
+
+    # Server to client
+    ZCL_START_CHAT_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_JOIN_CHAT_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_USER_LEFT_COMMAND_ID =0x02 # Ver.: always
+    ZCL_USER_JOINED_COMMAND_ID =0x03 # Ver.: always
+    ZCL_SEARCH_CHAT_RESPONSE_COMMAND_ID =0x04 # Ver.: always
+    ZCL_SWITCH_CHAIRMAN_REQUEST_COMMAND_ID =0x05 # Ver.: always
+    ZCL_SWITCH_CHAIRMAN_CONFIRM_COMMAND_ID =0x06 # Ver.: always
+    ZCL_SWITCH_CHAIRMAN_NOTIFICATION_COMMAND_ID =0x07 # Ver.: always
+    ZCL_GET_NODE_INFORMATION_RESPONSE_COMMAND_ID =0x08 # Ver.: always
+
+    # Client to server
+    ZCL_JOIN_CHAT_REQUEST_COMMAND_ID =0x00 # Ver.: always
+    ZCL_LEAVE_CHAT_REQUEST_COMMAND_ID =0x01 # Ver.: always
+    ZCL_SEARCH_CHAT_REQUEST_COMMAND_ID =0x02 # Ver.: always
+    ZCL_SWITCH_CHAIRMAN_RESPONSE_COMMAND_ID =0x03 # Ver.: always
+    ZCL_START_CHAT_REQUEST_COMMAND_ID =0x04 # Ver.: always
+    ZCL_CHAT_MESSAGE_COMMAND_ID =0x05 # Ver.: always
+    ZCL_GET_NODE_INFORMATION_REQUEST_COMMAND_ID =0x06 # Ver.: always
+
+
+    # Command types for cluster: Payment
+    # Cluster specification level: ta-1.0-07-5307-07
+
+    # Server to client
+    ZCL_BUY_CONFIRM_COMMAND_ID =0x00 # Ver.: always
+    ZCL_RECEIPT_DELIVERY_COMMAND_ID =0x01 # Ver.: always
+    ZCL_TRANSACTION_END_COMMAND_ID =0x02 # Ver.: always
+
+    # Client to server
+    ZCL_BUY_REQUEST_COMMAND_ID =0x00 # Ver.: always
+    ZCL_ACCEPT_PAYMENT_COMMAND_ID =0x01 # Ver.: always
+    ZCL_PAYMENT_CONFIRM_COMMAND_ID =0x02 # Ver.: always
+
+
+    # Command types for cluster: Billing
+    # Cluster specification level: ta-1.0-07-5307-07
+
+    # Server to client
+    ZCL_CHECK_BILL_STATUS_COMMAND_ID =0x00 # Ver.: always
+    ZCL_SEND_BILL_RECORD_COMMAND_ID =0x01 # Ver.: always
+
+    # Client to server
+    ZCL_SUBSCRIBE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_UNSUBSCRIBE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_START_BILLING_SESSION_COMMAND_ID =0x02 # Ver.: always
+    ZCL_STOP_BILLING_SESSION_COMMAND_ID =0x03 # Ver.: always
+    ZCL_BILL_STATUS_NOTIFICATION_COMMAND_ID =0x04 # Ver.: always
+    ZCL_SESSION_KEEP_ALIVE_COMMAND_ID =0x05 # Ver.: always
+
+
+    # Command types for cluster: Appliance Events and Alert
+    # Cluster specification level: UNKNOWN
+
+    # Server to client
+    ZCL_GET_ALERTS_RESPONSE_COMMAND_ID =0x00 # Ver.: always
+    ZCL_ALERTS_NOTIFICATION_COMMAND_ID =0x01 # Ver.: always
+    ZCL_EVENTS_NOTIFICATION_COMMAND_ID =0x02 # Ver.: always
+
+    # Client to server
+    ZCL_GET_ALERTS_COMMAND_ID =0x00 # Ver.: always
+
+
+    # Command types for cluster: Appliance Statistics
+    # Cluster specification level: UNKNOWN
+
+    # Server to client
+    ZCL_LOG_NOTIFICATION_COMMAND_ID =0x00 # Ver.: always
+    ZCL_LOG_RESPONSE_COMMAND_ID =0x01 # Ver.: always
+    ZCL_LOG_QUEUE_RESPONSE_COMMAND_ID =0x02 # Ver.: always
+    ZCL_STATISTICS_AVAILABLE_COMMAND_ID =0x03 # Ver.: always
+
+    # Client to server
+    ZCL_LOG_REQUEST_COMMAND_ID =0x00 # Ver.: always
+    ZCL_LOG_QUEUE_REQUEST_COMMAND_ID =0x01 # Ver.: always
+
+
+    # Command types for cluster: Electrical Measurement
+    # Cluster specification level: UNKNOWN
+
+    # Server to client
+    ZCL_GET_PROFILE_INFO_RESPONSE_COMMAND_COMMAND_ID =0x00 # Ver.: always
+    ZCL_GET_MEASUREMENT_PROFILE_RESPONSE_COMMAND_COMMAND_ID =0x01 # Ver.: always
+
+    # Client to server
+    ZCL_GET_PROFILE_INFO_COMMAND_COMMAND_ID =0x00 # Ver.: always
+    ZCL_GET_MEASUREMENT_PROFILE_COMMAND_COMMAND_ID =0x01 # Ver.: always
+
+
+    # Command types for cluster: ZLL Commissioning
+    # Cluster specification level: zll-1.0-11-0037-10
+
+    # Server to client
+    ZCL_SCAN_RESPONSE_COMMAND_ID =0x01 # Ver.: since zll-1.0-11-0037-10
+    ZCL_DEVICE_INFORMATION_RESPONSE_COMMAND_ID =0x03 # Ver.: since zll-1.0-11-0037-10
+    ZCL_NETWORK_START_RESPONSE_COMMAND_ID =0x11 # Ver.: since zll-1.0-11-0037-10
+    ZCL_NETWORK_JOIN_ROUTER_RESPONSE_COMMAND_ID =0x13 # Ver.: since zll-1.0-11-0037-10
+    ZCL_NETWORK_JOIN_END_DEVICE_RESPONSE_COMMAND_ID =0x15 # Ver.: since zll-1.0-11-0037-10
+    ZCL_ENDPOINT_INFORMATION_COMMAND_ID =0x40 # Ver.: since zll-1.0-11-0037-10
+    ZCL_GET_GROUP_IDENTIFIERS_RESPONSE_COMMAND_ID =0x41 # Ver.: since zll-1.0-11-0037-10
+    ZCL_GET_ENDPOINT_LIST_RESPONSE_COMMAND_ID =0x42 # Ver.: since zll-1.0-11-0037-10
+
+    # Client to server
+    ZCL_SCAN_REQUEST_COMMAND_ID =0x00 # Ver.: since zll-1.0-11-0037-10
+    ZCL_DEVICE_INFORMATION_REQUEST_COMMAND_ID =0x02 # Ver.: since zll-1.0-11-0037-10
+    ZCL_IDENTIFY_REQUEST_COMMAND_ID =0x06 # Ver.: since zll-1.0-11-0037-10
+    ZCL_RESET_TO_FACTORY_NEW_REQUEST_COMMAND_ID =0x07 # Ver.: since zll-1.0-11-0037-10
+    ZCL_NETWORK_START_REQUEST_COMMAND_ID =0x10 # Ver.: since zll-1.0-11-0037-10
+    ZCL_NETWORK_JOIN_ROUTER_REQUEST_COMMAND_ID =0x12 # Ver.: since zll-1.0-11-0037-10
+    ZCL_NETWORK_JOIN_END_DEVICE_REQUEST_COMMAND_ID =0x14 # Ver.: since zll-1.0-11-0037-10
+    ZCL_NETWORK_UPDATE_REQUEST_COMMAND_ID =0x16 # Ver.: since zll-1.0-11-0037-10
+    ZCL_GET_GROUP_IDENTIFIERS_REQUEST_COMMAND_ID =0x41 # Ver.: since zll-1.0-11-0037-10
+    ZCL_GET_ENDPOINT_LIST_REQUEST_COMMAND_ID =0x42 # Ver.: since zll-1.0-11-0037-10
+
+
+    # Command types for cluster: Sample Mfg Specific Cluster
+    # Cluster specification level: UNKNOWN
+
+    # Client to server
+    ZCL_COMMAND_ONE_COMMAND_ID =0x00 # Ver.: always mfgCode: =0x1002

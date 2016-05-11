@@ -29,8 +29,6 @@ all: initember
 initember:
 	@(if [ -e "$(EMBER_BASE)" ] ; then \
 		[ ! -e "$(EMBER_APP_BASE)" ] && mkdir $(EMBER_APP_BASE); \
-		cp -a $(TARGET)/device-query-service.c $(EMBER_DEVICE_QUERY_SERVICE); \
-		cp -a $(TARGET)/find-and-bind-initiator.c $(EMBER_FIND_AND_BIND_INITIATOR); \
 		cp -a $(TARGET)/* $(EMBER_APP_BASE); \
 		if [ -e "$(EMBER_APP_BASE)/build" ] ; then rm -rf $(EMBER_APP_BASE)/build; fi; \
 	fi)

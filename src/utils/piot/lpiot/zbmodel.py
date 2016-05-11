@@ -1,20 +1,12 @@
 
-import re ;
-from zbdefine import ZCLCluster, ZCLAttribute ;
+from zbenum import ZCLCluster, ZCLAttribute, ZCLAttributeType ;
 from libps.psDebug import CliColor, DBG, ERR ;
 
-class ZbDiscoverState :
-    SIMPLE = 0 ;
-    BIND = 1 ;
-    CONFIG_REPORT = 2 ;
-    DONE = 3 ;
-
 class ZbNode :
-    def __init__(self, eui, nodeId, discover=ZbDiscoverState.SIMPLE) :
+    def __init__(self, eui, nodeId) :
         self.m_eui = eui ;
         self.m_id = nodeId ;
         self.m_fgActivity = False ;
-        self.m_discoverState = discover ;
         self.m_endpointArray = [] ;
     def getId(self) :
         return self.m_id ;
@@ -104,54 +96,9 @@ class ZbAttribute :
     def __init__(self, atId, atType, raw, value=None) :
         self.m_id = atId ;
         self.m_type = atType ;
-        self.m_raw = raw ;
+        self.m_raw = str(raw) ;
         self.m_value = value ;
     def getId(self) :
         return self.m_id ;
     def dumpAttribute(self, msg='') :
-        DBG(msg + ' %s %s %s %s' % (hex(self.getId()), hex(self.m_type), self.m_raw, str(self.m_value))) ;
-
-class ZbHandler :
-    def __init__(self, db) :
-        self.m_epId = 1 ;
-        self.m_db = db
-        self.m_nodeArray = [] ;
-    def dump(self) :
-        index = 1 ;
-        for node in self.m_nodeArray :
-            node.dumpNode('%2d' % index) ;
-            index += 1 ;
-    def getSwapEUI64(self, nodeId) :
-        return ''.join(reversed(re.findall('..', nodeId))) ;
-    def getNodeWithEUI(self, eui) :
-        for node in self.m_nodeArray :
-            if node.m_eui == eui :
-                return node ;
-        return None ;
-    def getNode(self, nodeId) :
-        if isinstance(nodeId, basestring) :
-            nodeId = int(nodeId, 16) ;
-        for node in self.m_nodeArray :
-            if node.getId() == nodeId :
-                return node ;
-        return None ;
-
-    def addChildNode(self, eui, nodeId) :
-        node = ZbNode(eui, int(nodeId, 16)) ;
-        node.setActivity(True) ;
-        self.m_nodeArray.append(node) ;
-        return node ;
-    def addCluster(self, ep, clId, clDir) :
-        ep.addCluster(ZbCluster(clId, clDir)) ;
-    def getMessageToReadBasicAttribute(self, node) :
-        attrList = [ ZCLAttribute.ZCL_APPLICATION_VERSION_ATTRIBUTE_ID ,
-                     ZCLAttribute.ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID ,
-                     ZCLAttribute.ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID ,
-                     ZCLAttribute.ZCL_APPLICATION_PROFILE_VERSION_ATTRIBUTE_ID ,
-                     ZCLAttribute.ZCL_SW_BUILD_ID_ATTRIBUTE_ID
-                     ] ;
-        msg = '' ;
-        for attr in attrList :
-            msg += 'zcl global read %s %s\n' % (hex(ZCLCluster.ZCL_BASIC_CLUSTER_ID), hex(attr)) ;
-            msg += 'send %s %s %s\n' % (hex(node.getId()), hex(self.m_epId), hex(node.getEndpointId())) ;
-        return msg ;
+        DBG(msg + ' %s %s %s %s' % (hex(self.getId()), hex(self.m_type), str(self.m_value), self.m_raw)) ;

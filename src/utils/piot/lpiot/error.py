@@ -5,3 +5,7 @@ class PiotError(Exception) :
 
 class PiotDatabaseError(PiotError) :
     pass ;
+
+class PiotZBParseError(PiotError) :
+	pass ;
+
