@@ -91,7 +91,7 @@ class ZbHandler :
     def dump(self) :
         index = 1 ;
         for node in self.m_nodeArray :
-            node.dumpNode('%2d' % index) ;
+            node.dump('%2d' % index) ;
             index += 1 ;
     def getSwapEUI64(self, nodeId) :
         return ''.join(reversed(re.findall('..', nodeId))) ;
@@ -115,6 +115,16 @@ class ZbHandler :
         return node ;
     def addCluster(self, ep, clId, clDir) :
         ep.addCluster(ZbCluster(clId, clDir)) ;
+    def addAttribute(self, node, epId, clId, attr) :
+        ep = node.getEndpoint(epId) ;
+        if ep :
+            cl = ep.getCluster(clId) ;
+            if cl :
+                at = cl.getAttribute(attr.getId()) ;
+                if at is None or at.isEqual(attr) :
+                    DBG('Changed %s:%s:%s %s' % (hex(epId), hex(clId), hex(attr.getId()), str(attr.getValue()))) ;
+                cl.upsertAttribute(attr) ;
+
     def getMessageToReadBasicAttribute(self, node) :
         attrList = [ ZCLAttribute.ZCL_APPLICATION_VERSION_ATTRIBUTE_ID ,
                      ZCLAttribute.ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID ,
@@ -127,3 +137,5 @@ class ZbHandler :
             msg += 'zcl global read %s %s\n' % (hex(ZCLCluster.ZCL_BASIC_CLUSTER_ID), hex(attr)) ;
             msg += 'send %s %s %s\n' % (hex(node.getId()), hex(self.m_epId), hex(node.getEndpointId())) ;
         return msg ;
+    def doConfiguration(self, node) :
+        pass ;

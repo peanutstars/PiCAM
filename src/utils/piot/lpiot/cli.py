@@ -12,8 +12,7 @@ except :
 
 class Cli :
     PROMPT = 'picam >'
-    CT_ZB = 'zb' ;
-    CT_DB = 'db' ;
+    CT_EMBER = 'ember' ;
     CT_PAIR = 'pair' ;
     CT_PRINT = 'print' ;
     def __init__(self, zbem) :
@@ -31,7 +30,7 @@ class Cli :
             if cmd[0] == 'quit' :
                 self.m_fgRun = False ;
                 self.m_zbem.quit() ;
-            elif cmd[0] == Cli.CT_ZB :
+            elif cmd[0] == Cli.CT_EMBER :
                 if len(cmd) > 1 :
                     self.m_zbem.sendMsg(' '.join(cmd[1:])) ;
             elif cmd[0] == Cli.CT_PAIR :

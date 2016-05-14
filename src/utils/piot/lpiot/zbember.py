@@ -6,6 +6,7 @@ import sys ;
 import subprocess ;
 import threading ;
 from lpiot.zbenum import ZCLCluster, ZCLAttribute, ZCLCommandId ;
+from lpiot.zbmodel import ZbJoinState ;
 from lpiot.zbhandler import ZbParse, ZbHandler ;
 from libps.psDebug import CliColor, DBG, ERR ;
 
@@ -67,8 +68,8 @@ class ZbEmber :
             # It brings up automatically by Device-Query-Service plugin for sending a simple descriptor request.
             # ( self.rxOnSimple,    r'Device-Query-Service EP\[([0-9a-fA-F]+)\] : found for 0x([0-9a-fA-F]+)') ,
             ( self.rxOnCluster,   r'Device-Query-Service (in|out) cluster 0x([0-9a-fA-F]+) for ep\[([0-9a-fA-F]+)\] of 0x([0-9a-fA-F]+) (.*)') ,
-            ( self.rxOnReadBasic, r'Device-Query-Service All endpoints discovered for 0x([0-9a-fA-F]+)') ,
-            ( self.rxOnMessage, r'T(.+):nodeId\[0x([0-9a-fA-F]+)\] RX len ([0-9a-fA-F]+), ep ([0-9a-fA-F]+), clus 0x([0-9a-fA-F]+) \((.+)\) mfgId ([0-9a-fA-F]+) FC ([0-9a-fA-F]+) seq ([0-9a-fA-F]+) cmd ([0-9a-fA-F]+) payload\[(.+)\]') ,
+            ( self.rxOnBasic,     r'Device-Query-Service All endpoints discovered for 0x([0-9a-fA-F]+)') ,
+            ( self.rxOnMessage,   r'T(.+):nodeId\[0x([0-9a-fA-F]+)\] RX len ([0-9a-fA-F]+), ep ([0-9a-fA-F]+), clus 0x([0-9a-fA-F]+) \((.+)\) mfgId ([0-9a-fA-F]+) FC ([0-9a-fA-F]+) seq ([0-9a-fA-F]+) cmd ([0-9a-fA-F]+) payload\[(.+)\]') ,
             ) ;
         # Remove prompt word
         if ZbEmber.PROMPT == msg[0:8] :
@@ -115,35 +116,48 @@ class ZbEmber :
         if ep and ep.getCluster(int(mo.group(2),16)) is None :
             self.m_zbHandler.addCluster(ep, int(mo.group(2),16), True if mo.group(1) == 'in' else False) ;
         return True ;
-    def rxOnReadBasic(self, mo) :
+    def rxOnBasic(self, mo) :
         rv = False ;
         node = self.m_zbHandler.getNode(mo.group(1)) ;
         if node :
             self.sendMsg(self.m_zbHandler.getMessageToReadBasicAttribute(node).strip(), 0.01) ;
+            node.setJoinState(ZbJoinState.BASIC) ;
             rv = True ;
         return rv ;
     def rxOnMessage(self, mo) :
         cmdPool = (
+            ( None, ZCLCluster.ZCL_OTA_BOOTLOAD_CLUSTER_ID, -1) ,
+            ( self.rxOnMsgChangedNotification, ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, ZCLCommandId.ZCL_ZONE_STATUS_CHANGE_NOTIFICATION_COMMAND_ID) ,
             ( self.rxOnMsgReadAttribute, -1, ZCLCommandId.ZCL_READ_ATTRIBUTES_RESPONSE_COMMAND_ID) ,
-            ( self.rxOnMsgChangeNotification, ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, ZCLCommandId.ZCL_ZONE_STATUS_CHANGE_NOTIFICATION_COMMAND_ID) ,
         ) ;
         node = self.m_zbHandler.getNode(mo.group(2)) ;
         rv = False ;
-        # if node :
-        epId = int(mo.group(4), 16)
-        clusterId = int(mo.group(5),16) ;
-        cmdId = int(mo.group(10), 16) ;
-        for item in cmdPool :
-            if item[1] == -1 :
-                if item[2] == cmdId :
-                    rv = item[0](node, epId, mo.group(11)) ;
-            elif item[1] == clusterId and item[2] == cmdId :
-                rv = item[0](node, epid, mo.group(11)) ;
+        if node :
+            ep = node.findEndpoint(int(mo.group(4), 16)) ;
+            if ep :
+                cl = ep.getCluster(int(mo.group(5),16)) ;
+                if cl :
+                    clusterId = cl.getId() ;
+                    cmdId = int(mo.group(10), 16) ;
+                    for item in cmdPool :
+                        if item[1] == clusterId and item[2] == cmdId :
+                            return item[0](node, ep, cl, mo.group(11)) ;
+                        if item[1] == clusterId and item[2] == -1 :
+                            # This cluster and command is passing.
+                            return False ;
+                        if item[1] == -1 :
+                            if item[2] == cmdId :
+                                return item[0](node, ep, cl, mo.group(11)) ;
         return rv ;
-        return rv ;
-    def rxOnMsgReadAttribute(self, node, epId, payload) :
+    def rxOnMsgReadAttribute(self, node, ep, cl, payload) :
+        fgDirty = False ;
         for a in ZbParse.doPayload(payload) :
-            a.dumpAttribute() ;
+            fgDirty |= cl.upsertAttribute(a) ;
+        if fgDirty :
+            DBG('Changed Attribute') ;
+        if node.getJoinState == ZbJoinState.BASIC :
+            if payload.find('00 40 ') == 0 :
+                self.m_zbHandler.doConfiguration(node) ;
         return True ;
-    def rxOnMsgChangeNotification(self, node, epId, payload) :
+    def rxOnMsgChangedNotification(self, node, ep, cl, payload) :
         return True ;
