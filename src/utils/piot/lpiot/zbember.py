@@ -131,6 +131,7 @@ class ZbEmber :
         cmdPool = (
             ( None, ZCLCluster.ZCL_OTA_BOOTLOAD_CLUSTER_ID, -1) ,
             ( self.rxOnMsgChangedNotification, ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, ZCLCommandId.ZCL_ZONE_STATUS_CHANGE_NOTIFICATION_COMMAND_ID) ,
+            ( self.rxOnMsgReportAttribute, -1, ZCLCommandId.ZCL_REPORT_ATTRIBUTES_COMMAND_ID) ,
             ( self.rxOnMsgReadAttribute, -1, ZCLCommandId.ZCL_READ_ATTRIBUTES_RESPONSE_COMMAND_ID) ,
         ) ;
         node = self.m_zbHandler.getNode(mo.group(2)) ;
@@ -152,9 +153,20 @@ class ZbEmber :
                             if item[2] == cmdId :
                                 return item[0](node, ep, cl, mo.group(11)) ;
         return rv ;
+    def rxOnMsgReportAttribute(self, node, ep, cl, payload) :
+        fgDirty = False ;
+        for a in ZbParse.doReportPayload(payload) :
+            fgDirty |= cl.upsertAttribute(a) ;
+        if fgDirty :
+            DBG('Changed Attribute') ;
+        if node.getJoinState() == ZbJoinState.BASIC :
+            if payload.find('00 40 ') == 0 :
+                # start to set configuration after 1 second.
+                threading.Timer(1, ZbConfig.doConfiguration, [self, node]).start() ;
+        return True ;
     def rxOnMsgReadAttribute(self, node, ep, cl, payload) :
         fgDirty = False ;
-        for a in ZbParse.doPayload(payload) :
+        for a in ZbParse.doReadPayload(payload) :
             fgDirty |= cl.upsertAttribute(a) ;
         if fgDirty :
             DBG('Changed Attribute') ;

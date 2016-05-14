@@ -22,7 +22,7 @@ class ZbJoinState :
 
 class ZbCoordinator :
     def __init__(self, eui, ch, pwr) :
-        self.m_eui = eui ; #''.join(reversed(re.findall('..', eui))) ;
+        self.m_eui = ''.join(reversed(re.findall('..', eui))) ;
         self.m_channel = ch ;
         self.m_power = pwr ;
     def getEUI(self) :
