@@ -1,4 +1,5 @@
 
+import re ;
 from zbenum import ZCLCluster, ZCLAttribute, ZCLAttributeType ;
 from libps.psDebug import CliColor, DBG, ERR ;
 
@@ -19,6 +20,22 @@ class ZbJoinState :
             return 'UnKnown State' ;
         return stringList[self.m_state] ;
 
+class ZbCoordinator :
+    def __init__(self, eui, ch, pwr) :
+        self.m_eui = eui ; #''.join(reversed(re.findall('..', eui))) ;
+        self.m_channel = ch ;
+        self.m_power = pwr ;
+    def getEUI(self) :
+        return self.m_eui ;
+    def getSwapEUI(self, separator='') :
+        return separator.join(reversed(re.findall('..', self.m_eui))) ;
+    def getChannel(self) :
+        return self.m_channel ;
+    def getPower(self) :
+        return self.m_power ;
+    def dump(self) :
+        return 'EUI:%s ch:%s pwr:%s' % (self.m_eui, self.m_channel, self.m_power) ;
+
 class ZbNode :
     def __init__(self, eui, nodeId) :
         self.m_eui = eui ;
@@ -26,6 +43,10 @@ class ZbNode :
         self.m_fgActivity = False ;
         self.m_joinState = ZbJoinState() ;
         self.m_endpointArray = [] ;
+    def getEUI(self) :
+        return self.m_eui ;
+    def getSwapEUI(self, separator='') :
+        return separator.join(reversed(re.findall('..', self.m_eui))) ;
     def getId(self) :
         return self.m_id ;
     def setActivity(self, fgActivity=False) :
@@ -64,6 +85,23 @@ class ZbNode :
             self.m_id = int(nodeId, 16) ;
         elif isinstance(nodeId, int) :
             self.m_id = nodeId ;
+    def getValue(self, epId, clId, atId) :
+        for ep in self.m_endpointArray :
+            if ep.getId() == epId :
+                cl = ep.getCluster(clId) ;
+                if cl :
+                    at = cl.getAttribute(atId) ;
+                    if at :
+                        return at.getValue() ;
+        return None ;
+    def hasCluster(self, epId, clId) :
+        for ep in self.m_endpointArray :
+            if ep.getId() == epId :
+                cl = ep.getCluster(clId) ;
+                if cl :
+                    return True ;
+        return False ;
+
     def dump(self, msg='') :
         msgnd = msg + ' %s %s %s %s' %(self.m_eui, hex(self.m_id), str(self.m_fgActivity), self.m_joinState.dump()) ;
         if len(self.m_endpointArray) > 0 :
@@ -91,6 +129,13 @@ class ZbEndpoint :
                 DBG('Already exist cluster %s' % hex(cluster.getId())) ;
                 return ;
         self.m_clusterArray.append(cluster) ;
+    def getValue(self, clId, atId) :
+        for cl in self.m_clusterArray :
+            if cl.getId() == clId :
+                at = cl.getAttribute(atId) ;
+                if at :
+                    return at.getValue() ;
+        return None ;
     def dump(self, msg='') :
         if len(self.m_clusterArray) > 0 :
             for cl in self.m_clusterArray :
@@ -128,6 +173,11 @@ class ZbCluster :
             idx += 1 ;
         self.m_attributeArray.append(attr) ;
         return True ;
+    def getValue(self, atId) :
+        for at in self.m_attributeArray :
+            if at.getId() == atId :
+                return at.getValue() ;
+        return None ;
     def dump(self, msg='') :
         if len(self.m_attributeArray) > 0 :
             for at in self.m_attributeArray :

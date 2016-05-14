@@ -1,9 +1,10 @@
 
-import re ;
+import imp ;
+import os ;
 import struct ;
 from error import * ;
 from zbenum import ZCLCluster, ZCLAttribute, ZCLAttributeType ;
-from zbmodel import ZbNode, ZbEndpoint, ZbCluster, ZbAttribute ;
+from zbmodel import ZbJoinState, ZbCoordinator, ZbNode, ZbEndpoint, ZbCluster, ZbAttribute ;
 from libps.psDebug import CliColor, DBG, ERR ;
 
 class ZbParse :
@@ -83,23 +84,85 @@ class ZbParse :
         return attrList ;
 
 
+class ZbConfig :
+    @staticmethod
+    def doVerify(configFile) :
+        if os.path.exists(configFile) :
+            # TODO : checking config file - syntax and import ....
+            return True ;
+            DBG('File Not Exist : %s' % configFile) ;
+        return False ;
+    @staticmethod
+    def doSendMessage(zbem, msgs) :
+        if type(msgs) is list :
+            coEUI = zbem.m_zbHandler.coordinator.getSwapEUI(' ') ;
+            # print msgs ;
+            for msg in msgs :
+                msg = msg.replace('COEUI', coEUI) ;
+                print '@', msg ;
+    @staticmethod
+    def getModule(name, path) :
+        try :
+            module = imp.load_source(name, path) ;
+        except SyntaxError, err :
+            ERR('Syntax Error : %s' % path) ;
+            DBG(err) ;
+            module = None ;
+        except Exception, err :
+            ERR('Exception Error : %s' % path)
+            DBG(err) ;
+            module = None ;
+        return module ;
+    @staticmethod
+    def doConfiguration(zbem, node) :
+        moduleName = '%s_%s' % (node.getValue(1, ZCLCluster.ZCL_BASIC_CLUSTER_ID, ZCLAttribute.ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID),
+                                node.getValue(1, ZCLCluster.ZCL_BASIC_CLUSTER_ID, ZCLAttribute.ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID)) ;
+        configFile = 'config/%s.py' % moduleName ;
+        DBG('Configuration : %s' % configFile) ;
+        if ZbConfig.doVerify(configFile):
+            module = ZbConfig.getModule(moduleName, configFile) ;
+            if module :
+                if hasattr(module, 'doInit') :
+                    instInit = getattr(module, 'doInit') ;
+                    ZbConfig.doSendMessage(zbem, instInit(node)) ;
+                if hasattr(module, 'doConfig') :
+                    instConfig = getattr(module, 'doConfig') ;
+                    ZbConfig.doSendMessage(zbem, instConfig(node)) ;
+                    node.setJoinState(ZbJoinState.CONFIG) ;
+                del module ;
+    @staticmethod
+    def doMethod(zbem, node, method) :
+        moduleName = '%s_%s' % (node.getValue(1, ZCLCluster.ZCL_BASIC_CLUSTER_ID, ZCLAttribute.ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID),
+                                node.getValue(1, ZCLCluster.ZCL_BASIC_CLUSTER_ID, ZCLAttribute.ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID)) ;
+        configFile = 'config/%s.py' % moduleName ;
+        if ZbConfig.doVerify(configFile):
+            module = ZbConfig.getModule(moduleName, configFile) ;
+            if module :
+                if hasattr(module, method) :
+                    inst = getattr(module, method) ;
+                    inst(node) ;
+                del module ;
+
 class ZbHandler :
     def __init__(self, db) :
         self.m_epId = 1 ;
         self.m_db = db
+        self.coordinator = None ;
         self.m_nodeArray = [] ;
     def dump(self) :
+        if self.coordinator :
+            DBG(self.coordinator.dump()) ;
         index = 1 ;
         for node in self.m_nodeArray :
             node.dump('%2d' % index) ;
             index += 1 ;
-    def getSwapEUI64(self, nodeId) :
-        return ''.join(reversed(re.findall('..', nodeId))) ;
     def getNodeWithEUI(self, eui) :
         for node in self.m_nodeArray :
             if node.m_eui == eui :
                 return node ;
         return None ;
+    def setCoordinator(self, eui, channel, power) :
+        self.coordinator = ZbCoordinator(eui, channel, power) ;
     def getNode(self, nodeId) :
         if isinstance(nodeId, basestring) :
             nodeId = int(nodeId, 16) ;
@@ -137,5 +200,3 @@ class ZbHandler :
             msg += 'zcl global read %s %s\n' % (hex(ZCLCluster.ZCL_BASIC_CLUSTER_ID), hex(attr)) ;
             msg += 'send %s %s %s\n' % (hex(node.getId()), hex(self.m_epId), hex(node.getEndpointId())) ;
         return msg ;
-    def doConfiguration(self, node) :
-        pass ;

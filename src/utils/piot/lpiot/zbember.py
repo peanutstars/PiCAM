@@ -7,7 +7,7 @@ import subprocess ;
 import threading ;
 from lpiot.zbenum import ZCLCluster, ZCLAttribute, ZCLCommandId ;
 from lpiot.zbmodel import ZbJoinState ;
-from lpiot.zbhandler import ZbParse, ZbHandler ;
+from lpiot.zbhandler import ZbParse, ZbConfig, ZbHandler ;
 from libps.psDebug import CliColor, DBG, ERR ;
 
 ENTER = '\n'
@@ -70,6 +70,7 @@ class ZbEmber :
             ( self.rxOnCluster,   r'Device-Query-Service (in|out) cluster 0x([0-9a-fA-F]+) for ep\[([0-9a-fA-F]+)\] of 0x([0-9a-fA-F]+) (.*)') ,
             ( self.rxOnBasic,     r'Device-Query-Service All endpoints discovered for 0x([0-9a-fA-F]+)') ,
             ( self.rxOnMessage,   r'T(.+):nodeId\[0x([0-9a-fA-F]+)\] RX len ([0-9a-fA-F]+), ep ([0-9a-fA-F]+), clus 0x([0-9a-fA-F]+) \((.+)\) mfgId ([0-9a-fA-F]+) FC ([0-9a-fA-F]+) seq ([0-9a-fA-F]+) cmd ([0-9a-fA-F]+) payload\[(.+)\]') ,
+            ( self.rxOnCoInfo,    r'node \[\(>\)([0-9a-fA-F]+)\] chan \[([0-9]+)\] pwr \[([0-9a-fA-F]+)\]') ,
             ) ;
         # Remove prompt word
         if ZbEmber.PROMPT == msg[0:8] :
@@ -90,7 +91,6 @@ class ZbEmber :
             DBG('Device left, but keeping device data.') ;
             if node :
                 node.setActivity(False) ;
-            # self.sendMsg('plugin device-database device erase {%s}' % self.m_zbHandler.getSwapEUI64(mo.group(2))) ;
         elif mo.group(4).find(' rejoin') >= 0 :
             # TODO :
             # It should be to read basic cluster attributes for firmware version and others ...
@@ -107,6 +107,9 @@ class ZbEmber :
         else :
             DBG(CliColor.RED + 'Unknown State' + CliColor.NONE) ;
         return rv ;
+    def rxOnCoInfo(self, mo) :
+        self.m_zbHandler.setCoordinator(mo.group(1), int(mo.group(2)), int(mo.group(3))) ;
+        return True ;
     def rxOnSimple(self, mo) :
         self.sendMsg('zdo simple 0x%s %s' % (mo.group(2), mo.group(1)), 0.01) ;
         return True ;
@@ -155,9 +158,10 @@ class ZbEmber :
             fgDirty |= cl.upsertAttribute(a) ;
         if fgDirty :
             DBG('Changed Attribute') ;
-        if node.getJoinState == ZbJoinState.BASIC :
+        if node.getJoinState() == ZbJoinState.BASIC :
             if payload.find('00 40 ') == 0 :
-                self.m_zbHandler.doConfiguration(node) ;
+                # start to set configuration after 1 second.
+                threading.Timer(1, ZbConfig.doConfiguration, [self, node]).start() ;
         return True ;
     def rxOnMsgChangedNotification(self, node, ep, cl, payload) :
         return True ;
