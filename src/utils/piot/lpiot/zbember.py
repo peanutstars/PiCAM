@@ -130,7 +130,8 @@ class ZbEmber :
     def rxOnMessage(self, mo) :
         cmdPool = (
             ( None, ZCLCluster.ZCL_OTA_BOOTLOAD_CLUSTER_ID, -1) ,
-            ( self.rxOnMsgChangedNotification, ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, ZCLCommandId.ZCL_ZONE_STATUS_CHANGE_NOTIFICATION_COMMAND_ID) ,
+            # ( self.rxOnMsgChangedNotification, ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, ZCLCommandId.ZCL_ZONE_STATUS_CHANGE_NOTIFICATION_COMMAND_ID) ,
+            ( self.rxOnIasZoneEnrollRequest,   ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, ZCLCommandId.ZCL_ZONE_ENROLL_REQUEST_COMMAND_ID) ,
             ( self.rxOnMsgReportAttribute, -1, ZCLCommandId.ZCL_REPORT_ATTRIBUTES_COMMAND_ID) ,
             ( self.rxOnMsgReadAttribute, -1, ZCLCommandId.ZCL_READ_ATTRIBUTES_RESPONSE_COMMAND_ID) ,
         ) ;
@@ -175,5 +176,8 @@ class ZbEmber :
                 # start to set configuration after 1 second.
                 threading.Timer(1, ZbConfig.doConfiguration, [self, node]).start() ;
         return True ;
-    def rxOnMsgChangedNotification(self, node, ep, cl, payload) :
+    # def rxOnMsgChangedNotification(self, node, ep, cl, payload) :
+    #     return True ;
+    def rxOnIasZoneEnrollRequest(self, node, ep, cl, payload) :
+        self.m_zbHandler.setNodeXInfo(node, payload) ;
         return True ;

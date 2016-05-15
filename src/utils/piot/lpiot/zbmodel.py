@@ -42,6 +42,8 @@ class ZbNode :
         self.m_id = nodeId ;
         self.m_fgActivity = False ;
         self.m_joinState = ZbJoinState() ;
+        self.m_zoneType = None ;
+        self.m_MfgId = None ;
         self.m_endpointArray = [] ;
     def getEUI(self) :
         return self.m_eui ;
@@ -55,6 +57,14 @@ class ZbNode :
         self.m_joinState.setState(state) ;
     def getJoinState(self) :
         return self.m_joinState.getState() ;
+    def setZoneType(self, zt) :
+        self.m_zoneType = zt ;
+    def getZoneType(self) :
+        return self.m_zoneType ;
+    def setMfgId(self, id) :
+        self.m_MfgId = id ;
+    def getMfgId(self) :
+        return self.m_MfgId ;
     def getEndpoint(self, epId) :
         for ep in self.m_endpointArray :
             if ep.getId() == epId :
@@ -101,9 +111,13 @@ class ZbNode :
                 if cl :
                     return True ;
         return False ;
-
+    @staticmethod
+    def intToString(value, digit) :
+        fmt = '%%0%dX' % digit ;
+        strValue = fmt % value ;
+        return ''.join(reversed(re.findall('..', strValue)))
     def dump(self, msg='') :
-        msgnd = msg + ' %s %s %s %s' %(self.m_eui, hex(self.m_id), str(self.m_fgActivity), self.m_joinState.dump()) ;
+        msgnd = msg + ' %s %s %s Mfg[%04X] %s' %(self.m_eui, hex(self.m_id), str(self.m_fgActivity), self.m_MfgId, self.m_joinState.dump()) ;
         if len(self.m_endpointArray) > 0 :
             for ep in self.m_endpointArray :
                 ep.dump(msgnd) ;

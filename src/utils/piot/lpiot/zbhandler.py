@@ -26,46 +26,46 @@ class ZbParse :
             if attrType < ZCLAttributeType.ZCL_INT8S_ATTRIBUTE_TYPE :
                 at = attrType & 0x07 ;
                 if at == 0 :
-                    attrValue = struct.unpack('>B', raw.decode('hex'))[0] ;
+                    attrValue = struct.unpack('<B', raw.decode('hex'))[0] ;
                 elif at == 1 :
-                    attrValue = struct.unpack('>H', raw.decode('hex'))[0] ;
+                    attrValue = struct.unpack('<H', raw.decode('hex'))[0] ;
                 elif at == 2 :
                     _raw = '00' + raw ;
-                    attrValue = struct.unpack('>I', _raw.decode('hex'))[0] >> 8 ;
+                    attrValue = struct.unpack('<I', _raw.decode('hex'))[0] >> 8 ;
                 elif at == 3 :
-                    attrValue = struct.unpack('>I', raw.decode('hex'))[0] ;
+                    attrValue = struct.unpack('<I', raw.decode('hex'))[0] ;
                 elif at == 4 :
                     _raw = '000000' + raw ;
-                    attrValue = struct.unpack('>Q', _raw.decode('hex'))[0] >> 24 ;
+                    attrValue = struct.unpack('<Q', _raw.decode('hex'))[0] >> 24 ;
                 elif at == 5 :
                     _raw = '0000' + raw ;
-                    attrValue = struct.unpack('>Q', _raw.decode('hex'))[0] >> 16 ;
+                    attrValue = struct.unpack('<Q', _raw.decode('hex'))[0] >> 16 ;
                 elif at == 6 :
                     _raw = '00' + raw ;
-                    attrValue = struct.unpack('>Q', _raw.decode('hex'))[0] >> 8 ;
+                    attrValue = struct.unpack('<Q', _raw.decode('hex'))[0] >> 8 ;
                 else :
-                    attrValue = struct.unpack('>Q', raw.decode('hex'))[0] ;
+                    attrValue = struct.unpack('<Q', raw.decode('hex'))[0] ;
             else :
                 if attrType == ZCLAttributeType.ZCL_INT8S_ATTRIBUTE_TYPE :
-                    attrValue = struct.unpack('>b', raw.decode('hex'))[0] ;
+                    attrValue = struct.unpack('<b', raw.decode('hex'))[0] ;
                 elif attrType == ZCLAttributeType.ZCL_INT16S_ATTRIBUTE_TYPE :
-                    attrValue = struct.unpack('>h', raw.decode('hex'))[0] ;
+                    attrValue = struct.unpack('<h', raw.decode('hex'))[0] ;
                 elif attrType == ZCLAttributeType.ZCL_INT24S_ATTRIBUTE_TYPE :
                     _raw = '00' + raw ;
-                    attrValue = struct.unpack('>i', _raw.decode('hex'))[0] >> 8 ;
+                    attrValue = struct.unpack('<i', _raw.decode('hex'))[0] >> 8 ;
                 elif attrType == ZCLAttributeType.ZCL_INT32S_ATTRIBUTE_TYPE :
-                    attrValue = struct.unpack('>i', raw.decode('hex'))[0] ;
+                    attrValue = struct.unpack('<i', raw.decode('hex'))[0] ;
                 elif attrType == ZCLAttributeType.ZCL_INT40S_ATTRIBUTE_TYPE :
                     _raw = '000000' + raw ;
-                    attrValue = struct.unpack('>q', _raw.decode('hex'))[0] >> 24 ;
+                    attrValue = struct.unpack('<q', _raw.decode('hex'))[0] >> 24 ;
                 elif attrType == ZCLAttributeType.ZCL_INT48S_ATTRIBUTE_TYPE :
                     _raw = '0000' + raw ;
-                    attrValue = struct.unpack('>q', _raw.decode('hex'))[0] >> 16 ;
+                    attrValue = struct.unpack('<q', _raw.decode('hex'))[0] >> 16 ;
                 elif attrType == ZCLAttributeType.ZCL_INT56S_ATTRIBUTE_TYPE :
                     _raw = '00' + raw ;
-                    attrValue = struct.unpack('>q', _raw.decode('hex'))[0] >> 8 ;
+                    attrValue = struct.unpack('<q', _raw.decode('hex'))[0] >> 8 ;
                 elif attrType == ZCLAttributeType.ZCL_INT56S_ATTRIBUTE_TYPE :
-                    attrValue = struct.unpack('>q', raw.decode('hex'))[0] ;
+                    attrValue = struct.unpack('<q', raw.decode('hex'))[0] ;
         return attrValue ;
     @staticmethod
     def doReportPayload(payload) :
@@ -115,8 +115,10 @@ class ZbConfig :
     def doSendMessage(zbem, msgs) :
         if type(msgs) is list :
             coEUI = zbem.m_zbHandler.coordinator.getSwapEUI() ;
+            swapCoEUI = zbem.m_zbHandler.coordinator.getEUI() ;
             print msgs ;
             for msg in msgs :
+                msg = msg.replace('IASCIE', swapCoEUI) ;
                 msg = msg.replace('COEUI', coEUI) ;
                 zbem.sendMsg(msg) ;
     @staticmethod
@@ -189,12 +191,15 @@ class ZbHandler :
             if node.getId() == nodeId :
                 return node ;
         return None ;
-
     def addChildNode(self, eui, nodeId) :
         node = ZbNode(eui, int(nodeId, 16)) ;
         node.setActivity(True) ;
         self.m_nodeArray.append(node) ;
         return node ;
+    def setNodeXInfo(self, node, payload) :
+        arr = payload.split() ;
+        node.setZoneType(int(arr[1]+arr[0],16)) ;
+        node.setMfgId(int(arr[3]+arr[2],16)) ;
     def addCluster(self, ep, clId, clDir) :
         ep.addCluster(ZbCluster(clId, clDir)) ;
     def addAttribute(self, node, epId, clId, attr) :
