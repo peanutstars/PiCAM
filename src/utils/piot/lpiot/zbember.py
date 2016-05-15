@@ -63,14 +63,15 @@ class ZbEmber :
 
     def processMessage(self, msg) :
         RegxPool = (
-            ( self.rxOnInfo,      r'EMBER_NETWORK_UP 0x0000' ) ,
-            ( self.rxOnNewJoin,   r'emberAfTrustCenterJoinCallback@newNodeId<0x([0-9a-fA-F]+)> newNodeEui64<([0-9a-fA-F]+)> parentOfNewNode<0x([0-9a-fA-F]+)> EmberDeviceUpdate<(.*)> EmberJoinDecision<(.*)>') ,
+            ( self.rxOnMessage,   r'T(.+):nodeId\[0x([0-9a-fA-F]+)\] RX len ([0-9a-fA-F]+), ep ([0-9a-fA-F]+), clus 0x([0-9a-fA-F]+) \((.+)\) mfgId ([0-9a-fA-F]+) FC ([0-9a-fA-F]+) seq ([0-9a-fA-F]+) cmd ([0-9a-fA-F]+) payload\[(.+)\]') ,
+            ( self.rxOnZoneNotification, r'emberAfIasZoneClusterZoneStatusChangeNotificationCallback@nodeId<0x([0-9a-fA-F]+)> zoneStatus<0x([0-9a-fA-F]+)> extStatus<0x([0-9a-fA-F]+)> zoneId<0x([0-9a-fA-F]+)> delay<([0-9]+)>') ,
             # It brings up automatically by Device-Query-Service plugin for sending a simple descriptor request.
             # ( self.rxOnSimple,    r'Device-Query-Service EP\[([0-9a-fA-F]+)\] : found for 0x([0-9a-fA-F]+)') ,
+            ( self.rxOnNewJoin,   r'emberAfTrustCenterJoinCallback@newNodeId<0x([0-9a-fA-F]+)> newNodeEui64<([0-9a-fA-F]+)> parentOfNewNode<0x([0-9a-fA-F]+)> EmberDeviceUpdate<(.*)> EmberJoinDecision<(.*)>') ,
             ( self.rxOnCluster,   r'Device-Query-Service (in|out) cluster 0x([0-9a-fA-F]+) for ep\[([0-9a-fA-F]+)\] of 0x([0-9a-fA-F]+) (.*)') ,
             ( self.rxOnBasic,     r'Device-Query-Service All endpoints discovered for 0x([0-9a-fA-F]+)') ,
-            ( self.rxOnMessage,   r'T(.+):nodeId\[0x([0-9a-fA-F]+)\] RX len ([0-9a-fA-F]+), ep ([0-9a-fA-F]+), clus 0x([0-9a-fA-F]+) \((.+)\) mfgId ([0-9a-fA-F]+) FC ([0-9a-fA-F]+) seq ([0-9a-fA-F]+) cmd ([0-9a-fA-F]+) payload\[(.+)\]') ,
             ( self.rxOnCoInfo,    r'node \[\(>\)([0-9a-fA-F]+)\] chan \[([0-9]+)\] pwr \[([0-9a-fA-F]+)\]') ,
+            ( self.rxOnInfo,      r'EMBER_NETWORK_UP 0x0000' ) ,
             ) ;
         # Remove prompt word
         if ZbEmber.PROMPT == msg[0:8] :
@@ -127,11 +128,19 @@ class ZbEmber :
             node.setJoinState(ZbJoinState.BASIC) ;
             rv = True ;
         return rv ;
+    def rxOnZoneNotification(self, mo) :
+        nodeId = int(mo.group(1),16) ;
+        status = int(mo.group(2),16) ;
+        ext    = int(mo.group(3),16) ;
+        zoneId = int(mo.group(4),16) ;
+        delay  = int(mo.group(5)) ;
+        return self.m_zbHandler.setZoneNotification(nodeId, status, ext, zoneId, delay) ;
     def rxOnMessage(self, mo) :
         cmdPool = (
             ( None, ZCLCluster.ZCL_OTA_BOOTLOAD_CLUSTER_ID, -1) ,
             # ( self.rxOnMsgChangedNotification, ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, ZCLCommandId.ZCL_ZONE_STATUS_CHANGE_NOTIFICATION_COMMAND_ID) ,
             ( self.rxOnIasZoneEnrollRequest,   ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, ZCLCommandId.ZCL_ZONE_ENROLL_REQUEST_COMMAND_ID) ,
+            ( self.rxOnConfigResponse, -1, ZCLCommandId.ZCL_CONFIGURE_REPORTING_RESPONSE_COMMAND_ID) ,
             ( self.rxOnMsgReportAttribute, -1, ZCLCommandId.ZCL_REPORT_ATTRIBUTES_COMMAND_ID) ,
             ( self.rxOnMsgReadAttribute, -1, ZCLCommandId.ZCL_READ_ATTRIBUTES_RESPONSE_COMMAND_ID) ,
         ) ;
@@ -178,6 +187,10 @@ class ZbEmber :
         return True ;
     # def rxOnMsgChangedNotification(self, node, ep, cl, payload) :
     #     return True ;
+    def rxOnConfigResponse(self, node, ep, cl, payload) :
+        if self.m_zbHandler.updateConfigurationResponse(node) :
+            threading.Timer(1, ZbConfig.doRefresh, [self, node]).start() ;
+        return True ;
     def rxOnIasZoneEnrollRequest(self, node, ep, cl, payload) :
         self.m_zbHandler.setNodeXInfo(node, payload) ;
         return True ;

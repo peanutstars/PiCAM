@@ -10,10 +10,17 @@ class ZbJoinState :
     DONE = 3 ;
     def __init__(self, state=SIMPLE) :
         self.m_state = state ;
+        self.m_requestedReportCount = 0 ;
+        self.m_responsedReportCount = 0 ;
     def setState(self, state) :
         self.m_state = state ;
     def getState(self) :
         return self.m_state ;
+    def setRequestedCount(self, count) :
+        self.m_requestedReportCount = count ;
+    def increaseResponsedCount(self) :
+        self.m_responsedReportCount += 1 ;
+        return self.m_requestedReportCount == self.m_responsedReportCount ;
     def dump(self) :
         stringList = ['Simple', 'Basic', 'Config', 'Done'] ;
         if self.m_state < 0 or self.m_state > ZbJoinState.DONE :
@@ -36,12 +43,30 @@ class ZbCoordinator :
     def dump(self) :
         return 'EUI:%s ch:%s pwr:%s' % (self.m_eui, self.m_channel, self.m_power) ;
 
+class IASZoneStatus :
+    def __init__(self) :
+        self.m_status = -1 ;
+        self.m_extended = -1 ;
+        self.m_zoneId = -1 ;
+        self.m_delay = -1 ;
+    def upsert(self, status, ext, zoneId, delay) :
+        if self.m_status == status and self.m_extended == ext and self.m_zoneId == zoneId and self.m_delay == delay :
+            return False ;
+        self.m_status = status ;
+        self.m_extended = ext ;
+        self.m_zoneId = zoneId ;
+        self.m_delay = delay ;
+        return True ;
+    def dump(self, msg='') :
+        return msg + 'Zone[%04X,%02X,%02X,%d]' % (self.m_status, self.m_extended, self.m_zoneId, self.m_delay) ;
+
 class ZbNode :
     def __init__(self, eui, nodeId) :
         self.m_eui = eui ;
         self.m_id = nodeId ;
         self.m_fgActivity = False ;
         self.m_joinState = ZbJoinState() ;
+        self.m_zoneStatus = IASZoneStatus() ;
         self.m_zoneType = None ;
         self.m_MfgId = None ;
         self.m_endpointArray = [] ;
@@ -57,6 +82,8 @@ class ZbNode :
         self.m_joinState.setState(state) ;
     def getJoinState(self) :
         return self.m_joinState.getState() ;
+    def setZoneStatus(self, status, ext, zoneId, delay) :
+        self.m_zoneStatus.upsert(status, ext, zoneId, delay) ;
     def setZoneType(self, zt) :
         self.m_zoneType = zt ;
     def getZoneType(self) :
@@ -117,7 +144,7 @@ class ZbNode :
         strValue = fmt % value ;
         return ''.join(reversed(re.findall('..', strValue)))
     def dump(self, msg='') :
-        msgnd = msg + ' %s %s %s Mfg[%04X] %s' %(self.m_eui, hex(self.m_id), str(self.m_fgActivity), self.m_MfgId, self.m_joinState.dump()) ;
+        msgnd = msg + ' %s %s %s Mfg[%04X] Join.%s %s' % (self.m_eui, hex(self.m_id), str(self.m_fgActivity), self.m_MfgId, self.m_joinState.dump(), self.m_zoneStatus.dump()) ;
         if len(self.m_endpointArray) > 0 :
             for ep in self.m_endpointArray :
                 ep.dump(msgnd) ;

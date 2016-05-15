@@ -112,15 +112,20 @@ class ZbConfig :
             DBG('File Not Exist : %s' % configFile) ;
         return False ;
     @staticmethod
-    def doSendMessage(zbem, msgs) :
+    def doSendMessage(zbem, msgs, node=None) :
         if type(msgs) is list :
             coEUI = zbem.m_zbHandler.coordinator.getSwapEUI() ;
             swapCoEUI = zbem.m_zbHandler.coordinator.getEUI() ;
-            print msgs ;
+            # print msgs ;
+            countReport = 0 ;
             for msg in msgs :
                 msg = msg.replace('IASCIE', swapCoEUI) ;
                 msg = msg.replace('COEUI', coEUI) ;
                 zbem.sendMsg(msg) ;
+                countReport += msg.count('send-me-a-report') ;
+            if node :
+                node.m_joinState.setRequestedCount(countReport) ;
+
     @staticmethod
     def getModule(name, path) :
         try :
@@ -136,6 +141,7 @@ class ZbConfig :
         return module ;
     @staticmethod
     def doConfiguration(zbem, node) :
+        rv = False ;
         moduleName = '%s_%s' % (node.getValue(1, ZCLCluster.ZCL_BASIC_CLUSTER_ID, ZCLAttribute.ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID),
                                 node.getValue(1, ZCLCluster.ZCL_BASIC_CLUSTER_ID, ZCLAttribute.ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID)) ;
         configFile = 'config/%s.py' % moduleName ;
@@ -146,13 +152,17 @@ class ZbConfig :
                 if hasattr(module, 'doInit') :
                     instInit = getattr(module, 'doInit') ;
                     ZbConfig.doSendMessage(zbem, instInit(node)) ;
+                    rv |= True ;
                 if hasattr(module, 'doConfig') :
                     instConfig = getattr(module, 'doConfig') ;
-                    ZbConfig.doSendMessage(zbem, instConfig(node)) ;
+                    ZbConfig.doSendMessage(zbem, instConfig(node), node) ;
                     node.setJoinState(ZbJoinState.CONFIG) ;
+                    rv |= True ;
                 del module ;
+        return rv ;
     @staticmethod
     def doMethod(zbem, node, method) :
+        rv = False ;
         moduleName = '%s_%s' % (node.getValue(1, ZCLCluster.ZCL_BASIC_CLUSTER_ID, ZCLAttribute.ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID),
                                 node.getValue(1, ZCLCluster.ZCL_BASIC_CLUSTER_ID, ZCLAttribute.ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID)) ;
         configFile = 'config/%s.py' % moduleName ;
@@ -162,7 +172,13 @@ class ZbConfig :
                 if hasattr(module, method) :
                     inst = getattr(module, method) ;
                     inst(node) ;
+                    rv = True ;
                 del module ;
+        return rv ;
+    @staticmethod
+    def doRefresh(zbem, node) :
+        node.setJoinState(ZbJoinState.DONE) ;
+        return ZbConfig.doMethod(zbem, node, 'doRefresh') ;
 
 class ZbHandler :
     def __init__(self, db) :
@@ -211,7 +227,12 @@ class ZbHandler :
                 if at is None or at.isEqual(attr) :
                     DBG('Changed %s:%s:%s %s' % (hex(epId), hex(clId), hex(attr.getId()), str(attr.getValue()))) ;
                 cl.upsertAttribute(attr) ;
-
+    def setZoneNotification(self, nodeId, status, ext, zoneId, delay) :
+        node = self.getNode(nodeId) ;
+        if node :
+            node.setZoneStatus(status, ext, zoneId, delay) ;
+            return True ;
+        return False ;
     def getMessageToReadBasicAttribute(self, node) :
         attrList = [ ZCLAttribute.ZCL_APPLICATION_VERSION_ATTRIBUTE_ID ,
                      ZCLAttribute.ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID ,
@@ -224,3 +245,5 @@ class ZbHandler :
             msg += 'zcl global read %s %s\n' % (hex(ZCLCluster.ZCL_BASIC_CLUSTER_ID), hex(attr)) ;
             msg += 'send %s %s %s\n' % (hex(node.getId()), hex(self.m_epId), hex(node.getEndpointId())) ;
         return msg ;
+    def updateConfigurationResponse(self, node) :
+        return node.m_joinState.increaseResponsedCount() ;
