@@ -1571,27 +1571,6 @@ boolean emberAfPreCliSendCallback(EmberApsFrame* apsFrame,
 {
   return FALSE;
 }
-/** @brief Pre Command Received
- *
- * This callback is the second in the Application Framework's message processing
- * chain. At this point in the processing of incoming over-the-air messages, the
- * application has determined that the incoming message is a ZCL command. It
- * parses enough of the message to populate an EmberAfClusterCommand struct. The
- * Application Framework defines this struct value in a local scope to the
- * command processing but also makes it available through a global pointer
- * called emberAfCurrentCommand, in app/framework/util/util.c. When command
- * processing is complete, this pointer is cleared.
- *
- * @param cmd   Ver.: always
- */
-boolean emberAfPreCommandReceivedCustomCallback(EmberAfClusterCommand* cmd)
-{
-  boolean rv = FALSE ;
-  if (cmd->apsFrame->clusterId == ZCL_IAS_ZONE_CLUSTER_ID && cmd->commandId == ZCL_ZONE_STATUS_CHANGE_NOTIFICATION_COMMAND_ID) {
-    rv = TRUE ;
-  }
-  return rv ;
-}
 
 /** @brief Pre Message Received
  *
@@ -2125,3 +2104,43 @@ boolean emberAfWriteAttributesResponseCallback(EmberAfClusterId clusterId,
 {
   return FALSE;
 }
+/** @brief IAS Zone Cluster Zone Enroll Request
+ *
+ * 
+ *
+ * @param zoneType   Ver.: always
+ * @param manufacturerCode   Ver.: always
+ */
+boolean emberAfIasZoneClusterZoneEnrollRequestCallback(int16u zoneType,
+	                                                   int16u manufacturerCode)
+{
+	EmberStatus status;
+	DBG("zoneType<0x%X> manufacturerCode<0x%X>", zoneType, manufacturerCode) ;
+	emberAfFillCommandIasZoneClusterZoneEnrollResponse(EMBER_ZCL_IAS_ENROLL_RESPONSE_CODE_SUCCESS,
+			                                           0 /*zoneId*/);
+	// Need to send this command with our source EUI because the server will
+	// check our EUI64 against his CIE Address to see if we're his CIE.
+	emberAfGetCommandApsFrame()->options |= EMBER_APS_OPTION_SOURCE_EUI64;
+	status = emberAfSendResponse();
+	emberAfCorePrintln("Sent enroll response, status: 0x%X", status);  
+	return TRUE;
+}
+
+/** @brief IAS Zone Cluster Zone Status Change Notification
+ *
+ * 
+ *
+ * @param zoneStatus   Ver.: always
+ * @param extendedStatus   Ver.: always
+ * @param zoneId   Ver.: since ha-1.2-05-3520-29
+ * @param delay   Ver.: since ha-1.2-05-3520-29
+ */
+boolean emberAfIasZoneClusterZoneStatusChangeNotificationCallback(int16u zoneStatus,
+                                                                  int8u extendedStatus,
+                                                                  int8u zoneId,
+                                                                  int16u delay)
+{
+	DBG("zoneStatus<0x%X> extStatus<0x%X> zoneId<0x%X> delay<%d>", zoneStatus, extendedStatus, zoneId, delay) ;
+	return TRUE ;
+}
+

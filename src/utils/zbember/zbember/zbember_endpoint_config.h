@@ -358,9 +358,11 @@ PGM EmberAfGenericClusterFunction emberAfFuncArrayOtaBootloadClusterServer[] = {
     { 0x0101, 0x00, COMMAND_MASK_OUTGOING_CLIENT }, /* Door Lock / LockDoor */ \
     { 0x0101, 0x01, COMMAND_MASK_OUTGOING_CLIENT }, /* Door Lock / UnlockDoor */ \
     { 0x0500, 0x00, COMMAND_MASK_OUTGOING_CLIENT }, /* IAS Zone / ZoneEnrollResponse */ \
+    { 0x0500, 0x00, COMMAND_MASK_INCOMING_CLIENT }, /* IAS Zone / ZoneStatusChangeNotification */ \
+    { 0x0500, 0x01, COMMAND_MASK_INCOMING_CLIENT }, /* IAS Zone / ZoneEnrollRequest */ \
     { 0x0B02, 0x00, COMMAND_MASK_OUTGOING_CLIENT }, /* Appliance Events and Alert / GetAlerts */ \
     { 0x0B03, 0x00, COMMAND_MASK_OUTGOING_CLIENT }, /* Appliance Statistics / LogRequest */ \
     { 0x0B03, 0x01, COMMAND_MASK_OUTGOING_CLIENT }, /* Appliance Statistics / LogQueueRequest */ \
   }
-#define EMBER_AF_GENERATED_COMMAND_COUNT (26)
+#define EMBER_AF_GENERATED_COMMAND_COUNT (28)
 #endif // __AF_ENDPOINT_CONFIG__

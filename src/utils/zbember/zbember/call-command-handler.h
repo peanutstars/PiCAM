@@ -19,4 +19,7 @@ EmberAfStatus emberAfIdentifyClusterServerCommandParse(EmberAfClusterCommand *cm
 // Cluster: Poll Control, client
 EmberAfStatus emberAfPollControlClusterClientCommandParse(EmberAfClusterCommand *cmd);
 
+// Cluster: IAS Zone, client
+EmberAfStatus emberAfIasZoneClusterClientCommandParse(EmberAfClusterCommand *cmd);
+
 #endif // __EMBER_AF_COMMAND_PARSE_HEADER__
