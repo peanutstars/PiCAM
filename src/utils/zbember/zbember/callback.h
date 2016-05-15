@@ -10044,7 +10044,8 @@ boolean emberAfIasZoneClusterZoneEnrollResponseCallback(int8u enrollResponseCode
  * @param zoneId   Ver.: since ha-1.2-05-3520-29
  * @param delay   Ver.: since ha-1.2-05-3520-29
  */
-boolean emberAfIasZoneClusterZoneStatusChangeNotificationCallback(int16u zoneStatus,
+boolean emberAfIasZoneClusterZoneStatusChangeNotificationCallback(EmberNodeId source,
+                                                                  int16u zoneStatus,
                                                                   int8u extendedStatus,
                                                                   int8u zoneId,
                                                                   int16u delay);

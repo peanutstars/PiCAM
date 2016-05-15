@@ -163,7 +163,8 @@ EmberAfStatus emberAfIasZoneClusterClientCommandParse(EmberAfClusterCommand *cmd
         } else {
           delay = emberAfGetInt16u(cmd->buffer, payloadOffset, cmd->bufLen);
         }
-        wasHandled = emberAfIasZoneClusterZoneStatusChangeNotificationCallback(zoneStatus,
+        wasHandled = emberAfIasZoneClusterZoneStatusChangeNotificationCallback(cmd->source,
+                                                                               zoneStatus,
                                                                                extendedStatus,
                                                                                zoneId,
                                                                                delay);

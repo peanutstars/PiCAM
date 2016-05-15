@@ -2135,12 +2135,13 @@ boolean emberAfIasZoneClusterZoneEnrollRequestCallback(int16u zoneType,
  * @param zoneId   Ver.: since ha-1.2-05-3520-29
  * @param delay   Ver.: since ha-1.2-05-3520-29
  */
-boolean emberAfIasZoneClusterZoneStatusChangeNotificationCallback(int16u zoneStatus,
+boolean emberAfIasZoneClusterZoneStatusChangeNotificationCallback(EmberNodeId source,
+                                                                  int16u zoneStatus,
                                                                   int8u extendedStatus,
                                                                   int8u zoneId,
                                                                   int16u delay)
 {
-	DBG("zoneStatus<0x%X> extStatus<0x%X> zoneId<0x%X> delay<%d>", zoneStatus, extendedStatus, zoneId, delay) ;
+	DBG("nodeId<0x%X> zoneStatus<0x%X> extStatus<0x%X> zoneId<0x%X> delay<%d>", source, zoneStatus, extendedStatus, zoneId, delay) ;
 	return TRUE ;
 }
 
