@@ -8,13 +8,13 @@ PIOT_DB_PATH = 'piot.sqlite3'
 QUERY_FOREIGN_KEYS_ENABLE = 'PRAGMA foreign_keys = ON;' ;
 QUERY_JOURNAL_MODE = 'PRAGMA journal_mode = MEMORY' ;
 QUERY_ZB_DEVICE_TABLE = \
-'''CREATE TABLE IF NOT EXISTS zb_device (eui char(16), nodeId int, capability int,
+'''CREATE TABLE IF NOT EXISTS zb_device (eui char(16), nodeId int, capability int, activity int,
 PRIMARY KEY (eui));'''
 QUERY_ZB_CLUSTER_TABLE = \
-'''CREATE TABLE IF NOT EXISTS zb_cluster (eui char(16), endpointId int, profileId int, clusterId int,
+'''CREATE TABLE IF NOT EXISTS zb_cluster (eui char(16), endpointId int, clusterId int, clusterDir int, profileId int,
 PRIMARY KEY (eui, endpointId, clusterId), FOREIGN KEY (eui) REFERENCES zb_device(eui) ON DELETE CASCADE);'''
 QUERY_ZB_ATTRIBUTE_TABLE = \
-'''CREATE TABLE IF NOT EXISTS zb_attribute (eui char(16), endpointId int, clusterId int, attributeId int, attributeType int, attributeData varchar(64),
+'''CREATE TABLE IF NOT EXISTS zb_attribute (eui char(16), endpointId int, clusterId int, attributeId int, attributeType int, attributeValue varchar(64),
 PRIMARY KEY (eui, endpointId, clusterId, attributeId),
 FOREIGN KEY (eui) REFERENCES zb_device(eui) ON DELETE CASCADE,
 FOREIGN KEY (eui, endpointId, clusterId) REFERENCES zb_cluster(eui, endpointId, clusterId) ON DELETE CASCADE);'''
@@ -84,6 +84,8 @@ class PiotDB :
                 self._dumpContentTable(t) ;
         else :
             self._dumpContentTable(table) ;
+    def dumpTableAll(self) :
+        self.dumpTable(['zb_device', 'zb_cluster', 'zb_attribute']) ;
 
     # Functions for zb_device table.
     def zbIsExistDevice(self, eui) :
@@ -94,18 +96,21 @@ class PiotDB :
             if capability != 0 :
                 query.append("UPDATE zb_device SET capability=%d WHERE eui='%s' AND capability!=%d;" % (capability, eui, capability)) ;
             query.append("UPDATE zb_device SET nodeId=%d WHERE eui='%s' AND nodeId!=%d;" % (nodeId, eui, nodeId)) ;
+            query.append("UPDATE zb_device SET activity=1 WHERE eui='%s';" % (eui)) ;
         else :
-            query = "INSERT OR IGNORE INTO zb_device (eui, nodeId, capability) VALUES ('%s', %d, %d);" % (eui, nodeId, capability) ;
+            query = "INSERT OR IGNORE INTO zb_device (eui, nodeId, capability, activity) VALUES ('%s', %d, %d, 1);" % (eui, nodeId, capability) ;
         self.queryUpdate(query) ;
+    def zbActivity(self, eui, act) :
+        self.queryUpdate("UPDATE zb_device SET activity=%d WHERE eui='%s';" % (1 if act != 0 else 0, eui)) ;
     def zbDelDevice(self, eui) :
         self.queryUpdate("DELETE FROM zb_device WHERE eui='%s';" % eui) ;
 
     # Functions for zb_cluster table.
     def zbIsExistCluster(self, eui, endpointId, clusterId) :
         return (len(self.queryScalar("SELECT * FROM zb_cluster WHERE eui='%s' AND endpointId=%d AND clusterId=%d;" % (eui, endpointId, clusterId)).fetchall()) > 0) ;
-    def zbAddCluster(self, eui, endpointId, profileId, clusterId) :
+    def zbAddCluster(self, eui, endpointId, profileId, clusterId, clusterDir) :
         if not self.zbIsExistCluster(eui, endpointId, clusterId) :
-            query = "INSERT OR IGNORE INTO zb_cluster (eui, endpointId, profileId, clusterId) VALUES ('%s', %d, %d, %d);" % (eui, endpointId, profileId, clusterId) ;
+            query = "INSERT OR IGNORE INTO zb_cluster (eui, endpointId, profileId, clusterId, clusterDir) VALUES ('%s', %d, %d, %d, %d);" % (eui, endpointId, profileId, clusterId, clusterDir) ;
             self.queryUpdate(query) ;
     def zbDelCluster(self, eui, endpointId, clusterId) :
         self.queryUpdate("DELETE FROM zb_cluster WHERE eui='%s' AND endpointId=%d AND clusterId=%d;" % (eui, endpointId, clusterId)) ;
@@ -113,14 +118,22 @@ class PiotDB :
     # Function for zb_attribute table.
     def zbIsExistAttribute(self, eui, endpointId, clusterId, attributeId) :
         return (len(self.queryScalar("SELECT * FROM zb_attribute WHERE eui='%s' AND endpointId=%d AND clusterId=%d AND attributeId=%d;" % (eui, endpointId, clusterId, attributeId)).fetchall()) > 0) ;
-    def zbAddAttribute(self, eui, endpointId, clusterId, attributeId, attributeType, attributeData) :
+    def zbAddAttribute(self, eui, endpointId, clusterId, attributeId, attributeType, attributeValue) :
         query = '' ;
         if self.zbIsExistAttribute(eui, endpointId, clusterId, attributeId) :
-            query = "UPDATE zb_attribute SET attributeData='%s' WHERE eui='%s' AND endpointId=%d AND clusterId=%d AND attributeId=%d;" % (attributeData, eui, endpointId, clusterId, attributeId) ;
+            query = "UPDATE zb_attribute SET attributeValue='%s' WHERE eui='%s' AND endpointId=%d AND clusterId=%d AND attributeId=%d;" % (attributeValue, eui, endpointId, clusterId, attributeId) ;
         else :
-            query = "INSERT OR IGNORE INTO zb_attribute (eui, endpointId, clusterId, attributeId, attributeType, attributeData) " + \
-                    "VALUES ('%s', %d, %d, %d, %d, '%s');" % (eui, endpointId, clusterId, attributeId, attributeType, attributeData) ;
+            query = "INSERT OR IGNORE INTO zb_attribute (eui, endpointId, clusterId, attributeId, attributeType, attributeValue) " + \
+                    "VALUES ('%s', %d, %d, %d, %d, '%s');" % (eui, endpointId, clusterId, attributeId, attributeType, attributeValue) ;
         self.queryUpdate(query) ;
+    def zbGetQueryAddAttribute(self, eui, endpointId, clusterId, attributeId, attributeType, attributeValue) :
+        query = '' ;
+        if self.zbIsExistAttribute(eui, endpointId, clusterId, attributeId) :
+            query = "UPDATE zb_attribute SET attributeValue='%s' WHERE eui='%s' AND endpointId=%d AND clusterId=%d AND attributeId=%d;" % (attributeValue, eui, endpointId, clusterId, attributeId) ;
+        else :
+            query = "INSERT OR IGNORE INTO zb_attribute (eui, endpointId, clusterId, attributeId, attributeType, attributeValue) " + \
+                    "VALUES ('%s', %d, %d, %d, %d, '%s');" % (eui, endpointId, clusterId, attributeId, attributeType, attributeValue) ;
+        return query ;
     def zbDelAttribute(self, eui, endpointId, clusterId, attributeId) :
         self.queryUpdate("DELETE FROM zb_attribute WHERE eui='%s' AND endpointId=%d AND clusterId=%d AND attributeId=%d;" % (eui, endpointId, clusterId, attributeId)) ;
 

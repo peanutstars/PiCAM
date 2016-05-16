@@ -213,6 +213,8 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         for node in self.m_nodeArray :
             node.dump('%2d' % index) ;
             index += 1 ;
+    def dbdump(self) :
+        self.m_db.dumpTableAll() ;
     def getNodeWithEUI(self, eui) :
         for node in self.m_nodeArray :
             if node.m_eui == eui :
@@ -227,11 +229,15 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
             if node.getId() == nodeId :
                 return node ;
         return None ;
-    def addChildNode(self, eui, nodeId) :
+    def addNode(self, eui, nodeId) :
         node = ZbNode(eui, int(nodeId, 16)) ;
         node.setActivity(True) ;
         self.m_nodeArray.append(node) ;
+        self.m_db.zbAddDevice(eui, node.getId(), 0) ;
         return node ;
+    def setActivity(self, node, activity) :
+        node.setActivity(activity) ;
+        self.m_db.zbActivity(node.getEUI(), activity) ;
     def setNodeXInfo(self, node, payload) :
         arr = payload.split() ;
         if len(arr) == 4 :
@@ -239,8 +245,9 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
             node.setMfgId(int(arr[3]+arr[2],16)) ;
             return True ;
         return False ;
-    def addCluster(self, ep, clId, clDir) :
+    def addCluster(self, node, ep, clId, clDir) :
         ep.addCluster(ZbCluster(clId, clDir)) ;
+        self.m_db.zbAddCluster(node.getEUI(), ep.getId(), 0, clId, clDir) ;
     def addAttribute(self, node, epId, clId, attr) :
         ep = node.getEndpoint(epId) ;
         if ep :
@@ -250,6 +257,15 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
                 if at is None or at.isEqual(attr) :
                     DBG('Changed %s:%s:%s %s' % (hex(epId), hex(clId), hex(attr.getId()), str(attr.getValue()))) ;
                 cl.upsertAttribute(attr) ;
+    def upsertAttribute(self, node, ep, cl, attrList) :
+        query = [] ;
+        for a in attrList :
+            if cl.upsertAttribute(a) :
+                query.append(self.m_db.zbGetQueryAddAttribute(node.getEUI(), ep.getId(), cl.getId(), a.getId(), a.getType(), a.getValue())) ;
+        if len(query) :
+            self.m_db.queryUpdate(query) ;
+            return True ;
+        return False ;
     def setZoneNotification(self, nodeId, status, ext, zoneId, delay) :
         node = self.getNode(nodeId) ;
         if node :

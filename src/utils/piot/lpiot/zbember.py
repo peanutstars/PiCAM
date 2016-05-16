@@ -47,7 +47,7 @@ class ZbEmber :
     def dump(self) :
         self.m_zbHandler.dump() ;
     def dbdump(self) :
-        pass ;
+        self.m_zbHandler.dbdump() ;
     @staticmethod
     def _sendMsg(param) :
         zbem = param[0] ;
@@ -91,7 +91,8 @@ class ZbEmber :
         if mo.group(4).find(' left') >= 0 :
             DBG('Device left, but keeping device data.') ;
             if node :
-                node.setActivity(False) ;
+                self.m_zbHandler.setActivity(node, False) ;
+
         elif mo.group(4).find(' rejoin') >= 0 :
             # TODO :
             # It should be to read basic cluster attributes for firmware version and others ...
@@ -100,7 +101,7 @@ class ZbEmber :
         elif mo.group(4).find(' join') >= 0 :
             rv = True ;
             if node is None :
-                node = self.m_zbHandler.addChildNode(mo.group(2), mo.group(1)) ;
+                node = self.m_zbHandler.addNode(mo.group(2), mo.group(1)) ;
             else :
                 # It could be changed nodeId, in case of joinning again after end-device leaved network by user.
                 node.setNodeId(mo.group(1)) ;
@@ -116,10 +117,13 @@ class ZbEmber :
         return True ;
     def rxOnCluster(self, mo) :
         node = self.m_zbHandler.getNode(mo.group(4)) ;
-        ep = node.getEndpoint(int(mo.group(3))) ;
-        if ep and ep.getCluster(int(mo.group(2),16)) is None :
-            self.m_zbHandler.addCluster(ep, int(mo.group(2),16), True if mo.group(1) == 'in' else False) ;
-        return True ;
+        if node :
+            ep = node.getEndpoint(int(mo.group(3))) ;
+            if ep and ep.getCluster(int(mo.group(2),16)) is None :
+                self.m_zbHandler.addCluster(node, ep, int(mo.group(2),16), True if mo.group(1) == 'in' else False) ;
+            return True ;
+        else :
+            return False ;
     def rxOnBasic(self, mo) :
         rv = False ;
         node = self.m_zbHandler.getNode(mo.group(1)) ;
@@ -174,11 +178,8 @@ class ZbEmber :
                 self.m_zbHandler.doConfiguration(self, node) ;
         return True ;
     def rxOnMsgReadAttribute(self, node, ep, cl, payload) :
-        fgDirty = False ;
-        for a in self.m_zbHandler.doReadPayload(payload) :
-            fgDirty |= cl.upsertAttribute(a) ;
-        if fgDirty :
-            DBG('Changed Attribute') ;
+        if self.m_zbHandler.upsertAttribute(node, ep, cl, self.m_zbHandler.doReadPayload(payload)) :
+            DBG('Attribute Updated') ;
         if node.getJoinState() == ZbJoinState.BASIC :
             if payload.find('00 40 ') == 0 :
                 self.m_zbHandler.doConfiguration(self, node) ;

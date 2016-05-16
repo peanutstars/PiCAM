@@ -220,6 +220,8 @@ class ZbAttribute :
     def isEqual(self, attr) :
         # if isinstance(attr, ZbAttribute) :
         return (self.m_id == attr.m_id and self.m_type == attr.m_type and self.m_value == attr.m_value) ;
+    def getType(self) :
+        return self.m_type ;
     def getValue(self) :
         return self.m_value ;
     def dump(self, msg='') :
