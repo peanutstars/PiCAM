@@ -7,7 +7,7 @@ import subprocess ;
 import threading ;
 from lpiot.zbenum import ZCLCluster, ZCLAttribute, ZCLCommandId ;
 from lpiot.zbmodel import ZbJoinState ;
-from lpiot.zbhandler import ZbParse, ZbConfig, ZbHandler ;
+from lpiot.zbhandler import ZbHandler ;
 from libps.psDebug import CliColor, DBG, ERR ;
 
 ENTER = '\n'
@@ -165,32 +165,31 @@ class ZbEmber :
         return rv ;
     def rxOnMsgReportAttribute(self, node, ep, cl, payload) :
         fgDirty = False ;
-        for a in ZbParse.doReportPayload(payload) :
+        for a in self.m_zbHandler.doReportPayload(payload) :
             fgDirty |= cl.upsertAttribute(a) ;
         if fgDirty :
             DBG('Changed Attribute') ;
         if node.getJoinState() == ZbJoinState.BASIC :
             if payload.find('00 40 ') == 0 :
-                # start to set configuration after 1 second.
-                threading.Timer(1, ZbConfig.doConfiguration, [self, node]).start() ;
+                self.m_zbHandler.doConfiguration(self, node) ;
         return True ;
     def rxOnMsgReadAttribute(self, node, ep, cl, payload) :
         fgDirty = False ;
-        for a in ZbParse.doReadPayload(payload) :
+        for a in self.m_zbHandler.doReadPayload(payload) :
             fgDirty |= cl.upsertAttribute(a) ;
         if fgDirty :
             DBG('Changed Attribute') ;
         if node.getJoinState() == ZbJoinState.BASIC :
             if payload.find('00 40 ') == 0 :
-                # start to set configuration after 1 second.
-                threading.Timer(1, ZbConfig.doConfiguration, [self, node]).start() ;
+                self.m_zbHandler.doConfiguration(self, node) ;
         return True ;
     # def rxOnMsgChangedNotification(self, node, ep, cl, payload) :
     #     return True ;
     def rxOnConfigResponse(self, node, ep, cl, payload) :
         if self.m_zbHandler.updateConfigurationResponse(node) :
-            threading.Timer(1, ZbConfig.doRefresh, [self, node]).start() ;
+            self.m_zbHandler.doRefresh(self, node) ;
         return True ;
     def rxOnIasZoneEnrollRequest(self, node, ep, cl, payload) :
-        self.m_zbHandler.setNodeXInfo(node, payload) ;
+        if self.m_zbHandler.setNodeXInfo(node, payload) == False :
+            return self.rxOnMsgReadAttribute(node, ep, cl, payload)
         return True ;

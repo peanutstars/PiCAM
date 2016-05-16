@@ -45,4 +45,16 @@ def doConfig(node) :
 
 def doRefresh(node) :
     print 'Refresh : %s' % __file__ ;
-    return [] ;
+    msgs = [] ;
+
+    if node.hasCluster(0x1, 0x500) :
+        # Read IAS Zone Attributes
+        msgIAS  = 'zcl global read 0x500 0x0\n' ;
+        msgIAS += 'send %s 0x1 0x1\n' % hex(node.getId()) ;
+        msgIAS += 'zcl global read 0x500 0x2\n' ;
+        msgIAS += 'send %s 0x1 0x1\n' % hex(node.getId()) ;
+        msgIAS += 'zcl global read 0x500 0x11\n' ;
+        msgIAS += 'send %s 0x1 0x1\n' % hex(node.getId()) ;
+        msgs.append(msgIAS) ;
+
+    return msgs ;

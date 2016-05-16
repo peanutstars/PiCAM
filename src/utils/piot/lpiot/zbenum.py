@@ -3680,6 +3680,7 @@ class ZCLAttributeType :
         0,  0,  0,  0,    0,  0,  0,  0,     1,  2,  3,  4,    5,  6,  7,  8, # 0X
         1,  0,  0,  0,    0,  0,  0,  0,     1,  2,  3,  4,    5,  6,  7,  8, # 1X
         1,  2,  3,  4,    5,  6,  7,  8,     1,  2,  3,  4,    5,  6,  7,  8, # 2X
+        1,  2, # 3X
     )
     ZCL_NO_DATA_ATTRIBUTE_TYPE                        = 0x00 # No data
     ZCL_DATA8_ATTRIBUTE_TYPE                          = 0x08 # 8-bit data
