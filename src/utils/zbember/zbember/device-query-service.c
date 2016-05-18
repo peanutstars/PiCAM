@@ -128,23 +128,23 @@ boolean emberAfPreZDOMessageReceivedCallback(EmberNodeId sender,
       emberAfPrintLittleEndianEui64(tempEui64);
       emberAfCorePrintln("");
     } else {
-      if (device->status == EMBER_AF_DEVICE_DISCOVERY_STATUS_NEW) 
+      //if (device->status == EMBER_AF_DEVICE_DISCOVERY_STATUS_NEW) 
 	  {
         emberAfCorePrint("%p added device to database: ", PLUGIN_NAME);
-        emberAfPrintLittleEndianEui64(tempEui64);
+        //emberAfPrintLittleEndianEui64(tempEui64);
+		emberAfPrintBigEndianEui64(tempEui64) ;
         emberAfCorePrintln(", capabilities: 0x%X", device->capabilities);
-        scheduleEvent(WITH_DELAY);
-      } else {
-		emberAfPluginDeviceDatabaseSetStatus(device->eui64, EMBER_AF_DEVICE_DISCOVERY_STATUS_NEW);
-        emberAfCorePrint("%p added device to database: ", PLUGIN_NAME);
-        emberAfPrintLittleEndianEui64(tempEui64);
-        emberAfCorePrintln(", capabilities: 0x%X , retry discover process", device->capabilities);
-        scheduleEvent(WITH_DELAY);
-	  }
+        //scheduleEvent(WITH_DELAY);
+      }
     }
     return TRUE;
   }
   return FALSE;
+}
+
+void emAfPluginDeviceQueryServiceStartCommand(void)
+{
+	scheduleEvent(RIGHT_NOW) ;
 }
 
 static void noteFailedDiscovery(const EmberAfDeviceInfo* device)

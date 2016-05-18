@@ -66,6 +66,7 @@ class ZbEmber :
             # It brings up automatically by Device-Query-Service plugin for sending a simple descriptor request.
             # ( self.rxOnSimple,    r'Device-Query-Service EP\[([0-9a-fA-F]+)\] : found for 0x([0-9a-fA-F]+)') ,
             ( self.rxOnNewJoin,   r'emberAfTrustCenterJoinCallback@newNodeId<0x([0-9a-fA-F]+)> newNodeEui64<([0-9a-fA-F]+)> parentOfNewNode<0x([0-9a-fA-F]+)> EmberDeviceUpdate<(.*)> EmberJoinDecision<(.*)>') ,
+            ( self.rcOnJoinStart, r'Device-Query-Service added device to database: \(>\)([0-9a-fA-F]+), capabilities: 0x([0-9a-fA-F]+)') ,
             ( self.rxOnCluster,   r'Device-Query-Service (in|out) cluster 0x([0-9a-fA-F]+) for ep\[([0-9a-fA-F]+)\] of 0x([0-9a-fA-F]+) (.*)') ,
             ( self.rxOnBasic,     r'Device-Query-Service All endpoints discovered for 0x([0-9a-fA-F]+)') ,
             ( self.rxOnCoInfo,    r'node \[\(>\)([0-9a-fA-F]+)\] chan \[([0-9]+)\] pwr \[([0-9a-fA-F]+)\]') ,
@@ -102,10 +103,22 @@ class ZbEmber :
             else :
                 # It could be changed nodeId, in case of joinning again after end-device leaved network by user.
                 node.setNodeId(mo.group(1)) ;
-            # self.sendMsg('zdo active %s' % hex(node.m_nodeId), 0.01) ;
+                self.m_zbHandler.setJoinState(node, ZbJoinState.SIMPLE) ;
         else :
             DBG(CliColor.RED + 'Unknown State' + CliColor.NONE) ;
         return rv ;
+    def rcOnJoinStart(self, mo) :
+        fgStart = False ;
+        node = self.m_zbHandler.getNodeWithEUI(mo.group(1)) ;
+        if node :
+            DBG('Already Exist Node') ;
+            if node.getJoinState() != ZbJoinState.DONE :
+                fgStart = True ;
+        else :
+            fgStart = True ;
+        if fgStart :
+            self.sendMsg('plugin device-query-service start') ;
+        return fgStart ;
     def rxOnCoInfo(self, mo) :
         self.m_zbHandler.setCoordinator(mo.group(1), int(mo.group(2)), int(mo.group(3))) ;
         return True ;

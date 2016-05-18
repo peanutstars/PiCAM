@@ -236,6 +236,7 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
     def initNodeFromDB(self) :
         for n in self.m_db.zbLoadDevice() :
             node = self.addNode(n[0], hex(n[1])) ;
+            node.setCapability(n[2]) ;
             node.setActivity(True if n[3] != 0 else False) ;
             node.setJoinState(n[4]) ;
             node.setMfgId(n[5])
@@ -271,14 +272,19 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         node = ZbNode(eui, int(nodeId, 16)) ;
         node.setActivity(True) ;
         self.m_nodeArray.append(node) ;
-        self.m_db.zbAddDevice(eui, node.getId(), 0) ;
+        self.m_db.zbAddDevice(eui, node.getId()) ;
         return node ;
+    def setCapability(self, node, capability) :
+        node.setCapability(capability) ;
+        self.m_db.zbCapability(node.getEUI(), capability) ;
     def setActivity(self, node, activity) :
         node.setActivity(activity) ;
         self.m_db.zbActivity(node.getEUI(), activity) ;
     def setJoinState(self, node, state) :
         node.setJoinState(state) ;
         self.m_db.zbJoinState(node.getEUI(), state) ;
+    def getJoinState(self, node) :
+        return node.getJoinState() ;
     def setNodeExtraInfo(self, node, payload) :
         arr = payload.split() ;
         if len(arr) == 4 :

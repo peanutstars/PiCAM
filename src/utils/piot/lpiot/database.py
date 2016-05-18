@@ -90,16 +90,16 @@ class PiotDB :
     # Functions for zb_device table.
     def zbIsExistDevice(self, eui) :
         return (len(self.queryScalar("SELECT * FROM zb_device WHERE eui='%s'" % eui).fetchall()) > 0) ;
-    def zbAddDevice(self, eui, nodeId, capability) :
+    def zbAddDevice(self, eui, nodeId) :
         query = [] ;
         if self.zbIsExistDevice(eui) :
-            if capability != 0 :
-                query.append("UPDATE zb_device SET capability=%d WHERE eui='%s' AND capability!=%d;" % (capability, eui, capability)) ;
             query.append("UPDATE zb_device SET nodeId=%d WHERE eui='%s' AND nodeId!=%d;" % (nodeId, eui, nodeId)) ;
             query.append("UPDATE zb_device SET activity=1 WHERE eui='%s';" % (eui)) ;
         else :
-            query = "INSERT OR IGNORE INTO zb_device (eui, nodeId, capability, activity, joinState) VALUES ('%s', %d, %d, 1, 0);" % (eui, nodeId, capability) ;
+            query = "INSERT OR IGNORE INTO zb_device (eui, nodeId, activity, joinState) VALUES ('%s', %d, 1, 0);" % (eui, nodeId) ;
         self.queryUpdate(query) ;
+    def zbCapability(self, eui, capability) :
+        self.queryUpdate("UPDATE zb_device SET capability=%d WHERE eui='%s';" % (capability, eui)) ;
     def zbActivity(self, eui, act) :
         self.queryUpdate("UPDATE zb_device SET activity=%d WHERE eui='%s';" % (1 if act != 0 else 0, eui)) ;
     def zbJoinState(self, eui, state) :

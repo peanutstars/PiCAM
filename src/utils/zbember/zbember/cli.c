@@ -1124,10 +1124,12 @@ EmberCommandEntry pluginEzmodeCommissioningCommands[] = {
   emberCommandEntryTerminator()
 };
 
+extern void emAfPluginDeviceQueryServiceStartCommand(void) ;
 EmberCommandEntry pluginDeviceQueryServiceCommands[] = {
   emberCommandEntryActionWithDetails("disable", emAfPluginDeviceQueryServiceEnableDisableCommand, "", "Disable the Device Query Service.", NULL),
   emberCommandEntryActionWithDetails("enable", emAfPluginDeviceQueryServiceEnableDisableCommand, "", "Enable the Device Query Service.", NULL),
   emberCommandEntryActionWithDetails("status", emAfPluginDeviceQueryServiceStatusCommand, "", "Print the current status of the device query service.", NULL),
+  emberCommandEntryActionWithDetails("start", emAfPluginDeviceQueryServiceStartCommand, "", "Start the device query service to join device.", NULL),
   emberCommandEntryTerminator()
 };
 

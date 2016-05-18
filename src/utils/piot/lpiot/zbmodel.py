@@ -33,6 +33,7 @@ class ZbNode(ZbJoinState) :
         self.m_eui = eui ;
         self.m_id = nodeId ;
         self.m_MfgId = None ;
+        self.m_capability = 0 ;
         self.m_fgActivity = False ;
         self.m_endpointArray = [] ;
     def getEUI(self) :
@@ -41,6 +42,8 @@ class ZbNode(ZbJoinState) :
         return separator.join(reversed(re.findall('..', self.m_eui))) ;
     def getId(self) :
         return self.m_id ;
+    def setCapability(self, capability) :
+        self.m_capability = capability ;
     def setActivity(self, fgActivity=False) :
         self.m_fgActivity = fgActivity ;
     def setMfgId(self, id) :
@@ -99,7 +102,7 @@ class ZbNode(ZbJoinState) :
         strValue = fmt % value ;
         return ''.join(reversed(re.findall('..', strValue)))
     def dump(self, msg='') :
-        msgnd = msg + ' %s %s %s Mfg[%04X] Join.%s' % (self.m_eui, hex(self.m_id), str(self.m_fgActivity), self.m_MfgId, ZbJoinState.dump(self)) ;
+        msgnd = msg + ' %s %s %s Mfg[%04X] Join.%s C%X' % (self.m_eui, hex(self.m_id), str(self.m_fgActivity), self.m_MfgId, ZbJoinState.dump(self), self.m_capability) ;
         if len(self.m_endpointArray) > 0 :
             for ep in self.m_endpointArray :
                 ep.dump(msgnd) ;
