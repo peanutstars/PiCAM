@@ -2141,7 +2141,6 @@ boolean emberAfIasZoneClusterZoneStatusChangeNotificationCallback(EmberNodeId so
                                                                   int8u zoneId,
                                                                   int16u delay)
 {
-	DBG("nodeId<0x%X> zoneStatus<0x%X> extStatus<0x%X> zoneId<0x%X> delay<%d>", source, zoneStatus, extendedStatus, zoneId, delay) ;
 	return TRUE ;
 }
 

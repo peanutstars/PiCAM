@@ -8,7 +8,7 @@ PIOT_DB_PATH = 'piot.sqlite3'
 QUERY_FOREIGN_KEYS_ENABLE = 'PRAGMA foreign_keys = ON;' ;
 QUERY_JOURNAL_MODE = 'PRAGMA journal_mode = MEMORY' ;
 QUERY_ZB_DEVICE_TABLE = \
-'''CREATE TABLE IF NOT EXISTS zb_device (eui char(16), nodeId int, capability int, activity int,
+'''CREATE TABLE IF NOT EXISTS zb_device (eui char(16), nodeId int, capability int, activity int, joinState int, mfgId int,
 PRIMARY KEY (eui));'''
 QUERY_ZB_CLUSTER_TABLE = \
 '''CREATE TABLE IF NOT EXISTS zb_cluster (eui char(16), endpointId int, clusterId int, clusterDir int, profileId int,
@@ -98,10 +98,14 @@ class PiotDB :
             query.append("UPDATE zb_device SET nodeId=%d WHERE eui='%s' AND nodeId!=%d;" % (nodeId, eui, nodeId)) ;
             query.append("UPDATE zb_device SET activity=1 WHERE eui='%s';" % (eui)) ;
         else :
-            query = "INSERT OR IGNORE INTO zb_device (eui, nodeId, capability, activity) VALUES ('%s', %d, %d, 1);" % (eui, nodeId, capability) ;
+            query = "INSERT OR IGNORE INTO zb_device (eui, nodeId, capability, activity, joinState) VALUES ('%s', %d, %d, 1, 0);" % (eui, nodeId, capability) ;
         self.queryUpdate(query) ;
     def zbActivity(self, eui, act) :
         self.queryUpdate("UPDATE zb_device SET activity=%d WHERE eui='%s';" % (1 if act != 0 else 0, eui)) ;
+    def zbJoinState(self, eui, state) :
+        self.queryUpdate("UPDATE zb_device SET joinState=%d WHERE eui='%s';" % (state, eui)) ;
+    def zbMfgId(self, eui, mfgId) :
+        self.queryUpdate("UPDATE zb_device SET mfgId=%d WHERE eui='%s';" % (mfgId, eui)) ;
     def zbDelDevice(self, eui) :
         self.queryUpdate("DELETE FROM zb_device WHERE eui='%s';" % eui) ;
 

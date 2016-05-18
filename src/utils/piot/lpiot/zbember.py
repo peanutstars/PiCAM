@@ -60,11 +60,9 @@ class ZbEmber :
             ZbEmber._sendMsg([self, msg]) ;
         else :
             threading.Timer(sec, ZbEmber._sendMsg, [[self, msg]]).start() ;
-
     def processMessage(self, msg) :
         RegxPool = (
             ( self.rxOnMessage,   r'T(.+):nodeId\[0x([0-9a-fA-F]+)\] RX len ([0-9a-fA-F]+), ep ([0-9a-fA-F]+), clus 0x([0-9a-fA-F]+) \((.+)\) mfgId ([0-9a-fA-F]+) FC ([0-9a-fA-F]+) seq ([0-9a-fA-F]+) cmd ([0-9a-fA-F]+) payload\[(.+)\]') ,
-            ( self.rxOnZoneNotification, r'emberAfIasZoneClusterZoneStatusChangeNotificationCallback@nodeId<0x([0-9a-fA-F]+)> zoneStatus<0x([0-9a-fA-F]+)> extStatus<0x([0-9a-fA-F]+)> zoneId<0x([0-9a-fA-F]+)> delay<([0-9]+)>') ,
             # It brings up automatically by Device-Query-Service plugin for sending a simple descriptor request.
             # ( self.rxOnSimple,    r'Device-Query-Service EP\[([0-9a-fA-F]+)\] : found for 0x([0-9a-fA-F]+)') ,
             ( self.rxOnNewJoin,   r'emberAfTrustCenterJoinCallback@newNodeId<0x([0-9a-fA-F]+)> newNodeEui64<([0-9a-fA-F]+)> parentOfNewNode<0x([0-9a-fA-F]+)> EmberDeviceUpdate<(.*)> EmberJoinDecision<(.*)>') ,
@@ -81,7 +79,6 @@ class ZbEmber :
             if mo :
                 DBG(mo.groups()) ;
                 return func(mo) ;
-
     def rxOnInfo(self, mo) :
         self.sendMsg('info') ;
         return True ;
@@ -129,25 +126,21 @@ class ZbEmber :
         node = self.m_zbHandler.getNode(mo.group(1)) ;
         if node :
             self.sendMsg(self.m_zbHandler.getMessageToReadBasicAttribute(node).strip(), 0.01) ;
-            node.setJoinState(ZbJoinState.BASIC) ;
+            self.m_zbHandler.setJoinState(node, ZbJoinState.BASIC) ;
             rv = True ;
         return rv ;
-    def rxOnZoneNotification(self, mo) :
-        nodeId = int(mo.group(1),16) ;
-        status = int(mo.group(2),16) ;
-        ext    = int(mo.group(3),16) ;
-        zoneId = int(mo.group(4),16) ;
-        delay  = int(mo.group(5)) ;
-        return self.m_zbHandler.setZoneNotification(nodeId, status, ext, zoneId, delay) ;
     def rxOnMessage(self, mo) :
-        cmdPool = (
-            ( None, ZCLCluster.ZCL_OTA_BOOTLOAD_CLUSTER_ID, -1) ,
-            # ( self.rxOnMsgChangedNotification, ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, ZCLCommandId.ZCL_ZONE_STATUS_CHANGE_NOTIFICATION_COMMAND_ID) ,
-            ( self.rxOnIasZoneEnrollRequest,   ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, ZCLCommandId.ZCL_ZONE_ENROLL_REQUEST_COMMAND_ID) ,
-            ( self.rxOnConfigResponse, -1, ZCLCommandId.ZCL_CONFIGURE_REPORTING_RESPONSE_COMMAND_ID) ,
+        profilePool = (
+            ( self.rxOnMsgConfigResponse,  -1, ZCLCommandId.ZCL_CONFIGURE_REPORTING_RESPONSE_COMMAND_ID) ,
             ( self.rxOnMsgReportAttribute, -1, ZCLCommandId.ZCL_REPORT_ATTRIBUTES_COMMAND_ID) ,
-            ( self.rxOnMsgReadAttribute, -1, ZCLCommandId.ZCL_READ_ATTRIBUTES_RESPONSE_COMMAND_ID) ,
+            ( self.rxOnMsgReadAttribute,   -1, ZCLCommandId.ZCL_READ_ATTRIBUTES_RESPONSE_COMMAND_ID) ,
         ) ;
+        clusterPool = (
+            ( self.rxOnMsgZoneChangedNotification, ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, ZCLCommandId.ZCL_ZONE_STATUS_CHANGE_NOTIFICATION_COMMAND_ID) ,
+            ( None,                                ZCLCluster.ZCL_OTA_BOOTLOAD_CLUSTER_ID, -1) ,
+            ( self.rxOnMsgIasZoneEnrollRequest,    ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, ZCLCommandId.ZCL_ZONE_ENROLL_REQUEST_COMMAND_ID) ,
+        ) ;
+        cmdPool = clusterPool if int(mo.group(8),16) & 1 else profilePool ;
         node = self.m_zbHandler.getNode(mo.group(2)) ;
         rv = False ;
         if node :
@@ -168,29 +161,29 @@ class ZbEmber :
                                 return item[0](node, ep, cl, mo.group(11)) ;
         return rv ;
     def rxOnMsgReportAttribute(self, node, ep, cl, payload) :
-        fgDirty = False ;
-        for a in self.m_zbHandler.doReportPayload(payload) :
-            fgDirty |= cl.upsertAttribute(a) ;
-        if fgDirty :
-            DBG('Changed Attribute') ;
-        if node.getJoinState() == ZbJoinState.BASIC :
-            if payload.find('00 40 ') == 0 :
-                self.m_zbHandler.doConfiguration(self, node) ;
+        attrList = self.m_zbHandler.doReportPayload(payload) ;
+        if self.m_zbHandler.upsertAttribute(node, ep, cl, attrList ) :
+            DBG('Attribute Updated from Report') ;
         return True ;
     def rxOnMsgReadAttribute(self, node, ep, cl, payload) :
         if self.m_zbHandler.upsertAttribute(node, ep, cl, self.m_zbHandler.doReadPayload(payload)) :
-            DBG('Attribute Updated') ;
+            DBG('Attribute Updated from Read Attribute') ;
         if node.getJoinState() == ZbJoinState.BASIC :
             if payload.find('00 40 ') == 0 :
                 self.m_zbHandler.doConfiguration(self, node) ;
         return True ;
-    # def rxOnMsgChangedNotification(self, node, ep, cl, payload) :
-    #     return True ;
-    def rxOnConfigResponse(self, node, ep, cl, payload) :
+    def rxOnMsgZoneChangedNotification(self, node, ep, cl, payload) :
+        attrList = self.m_zbHandler.doZoneChangedNotification(payload) ;
+        if self.m_zbHandler.upsertAttribute(node, ep, cl, attrList) :
+            DBG('Attribute Updated from Zone Changed Notification') ;
+        return True ;
+    def rxOnMsgConfigResponse(self, node, ep, cl, payload) :
         if self.m_zbHandler.updateConfigurationResponse(node) :
             self.m_zbHandler.doRefresh(self, node) ;
         return True ;
-    def rxOnIasZoneEnrollRequest(self, node, ep, cl, payload) :
-        if self.m_zbHandler.setNodeXInfo(node, payload) == False :
-            return self.rxOnMsgReadAttribute(node, ep, cl, payload)
+    def rxOnMsgIasZoneEnrollRequest(self, node, ep, cl, payload) :
+        self.m_zbHandler.setNodeExtraInfo(node, payload) ;
+        attrList = self.m_zbHandler.doIasZoneEnrollRequest(payload) ;
+        if self.m_zbHandler.upsertAttribute(node, ep, cl, attrList) :
+            DBG('Attribute Updated from Enroll Request') ;
         return True ;

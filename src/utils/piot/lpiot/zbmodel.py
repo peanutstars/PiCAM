@@ -27,33 +27,12 @@ class ZbJoinState :
             return 'UnKnown State' ;
         return stringList[self.m_state] ;
 
-class IASZoneStatus :
-    def __init__(self) :
-        # Enroll
-        self.m_zoneType = None ;
-        self.m_MfgId = None ;
-        # Notification
-        self.m_zoneStatus = -1 ;
-        self.m_zoneExtended = -1 ;
-        self.m_zoneId = -1 ;
-        self.m_zoneDelay = -1 ;
-    def upsertZone(self, status, ext, zoneId, delay) :
-        if self.m_zoneStatus == status and self.m_zoneExtended == ext and self.m_zoneId == zoneId and self.m_zoneDelay == delay :
-            return False ;
-        self.m_zoneStatus = status ;
-        self.m_zoneExtended = ext ;
-        self.m_zoneId = zoneId ;
-        self.m_zoneDelay = delay ;
-        return True ;
-    def dump(self, msg='') :
-        return msg + 'Zone[%04X,%02X,%02X,%d]' % (self.m_zoneStatus, self.m_zoneExtended, self.m_zoneId, self.m_zoneDelay) ;
-
-class ZbNode(ZbJoinState, IASZoneStatus) :
+class ZbNode(ZbJoinState) :
     def __init__(self, eui, nodeId) :
         ZbJoinState.__init__(self) ;
-        IASZoneStatus.__init__(self) ;
         self.m_eui = eui ;
         self.m_id = nodeId ;
+        self.m_MfgId = None ;
         self.m_fgActivity = False ;
         self.m_endpointArray = [] ;
     def getEUI(self) :
@@ -64,12 +43,6 @@ class ZbNode(ZbJoinState, IASZoneStatus) :
         return self.m_id ;
     def setActivity(self, fgActivity=False) :
         self.m_fgActivity = fgActivity ;
-    def setZoneStatus(self, status, ext, zoneId, delay) :
-        self.upsertZone(status, ext, zoneId, delay) ;
-    def setZoneType(self, zt) :
-        self.m_zoneType = zt ;
-    def getZoneType(self) :
-        return self.m_zoneType ;
     def setMfgId(self, id) :
         self.m_MfgId = id ;
     def getMfgId(self) :
@@ -126,7 +99,7 @@ class ZbNode(ZbJoinState, IASZoneStatus) :
         strValue = fmt % value ;
         return ''.join(reversed(re.findall('..', strValue)))
     def dump(self, msg='') :
-        msgnd = msg + ' %s %s %s Mfg[%04X] Join.%s %s' % (self.m_eui, hex(self.m_id), str(self.m_fgActivity), self.m_MfgId, ZbJoinState.dump(self), IASZoneStatus.dump(self)) ;
+        msgnd = msg + ' %s %s %s Mfg[%04X] Join.%s' % (self.m_eui, hex(self.m_id), str(self.m_fgActivity), self.m_MfgId, ZbJoinState.dump(self)) ;
         if len(self.m_endpointArray) > 0 :
             for ep in self.m_endpointArray :
                 ep.dump(msgnd) ;

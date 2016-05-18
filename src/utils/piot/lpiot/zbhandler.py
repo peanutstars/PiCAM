@@ -104,6 +104,23 @@ class ZbParse :
                 attrList.append(ZbAttribute(attrId, attrType, raw, ZbParse.convertRawtoValue(attrType, arr, raw))) ;
             arr = arr[length:] ;
         return attrList ;
+    @staticmethod
+    def doZoneChangedNotification(payload) :
+        # Payload : ZoneStatus0 ZoneStatus1 ExtendedStatus2 ZoneId3 Delay4 Delay5
+        attrList = [] ;
+        arr = payload.strip().split() ;
+        if len(arr) == 6 :
+            attrList.append(ZbAttribute(ZCLAttribute.ZCL_ZONE_STATUS_ATTRIBUTE_ID, ZCLAttributeType.ZCL_BITMAP16_ATTRIBUTE_TYPE, arr[0]+arr[1], int(arr[1]+arr[0],16))) ;
+            attrList.append(ZbAttribute(ZCLAttribute.ZCL_ZONE_ID_ATTRIBUTE_ID,     ZCLAttributeType.ZCL_INT8U_ATTRIBUTE_TYPE, arr[3], int(arr[3],16))) ;
+        return attrList ;
+    @staticmethod
+    def doIasZoneEnrollRequest(payload) :
+        # payload : ZoneType0 ZoneType1 MfgCode2 MfgCode3
+        attrList = [] ;
+        arr = payload.strip().split() ;
+        if len(arr) == 4 :
+            attrList.append(ZbAttribute(ZCLAttribute.ZCL_ZONE_TYPE_ATTRIBUTE_ID, ZCLAttributeType.ZCL_ENUM16_ATTRIBUTE_TYPE, arr[0]+arr[1], int(arr[1]+arr[0],16))) ;
+        return attrList ;
 
 
 class ZbConfig :
@@ -159,7 +176,7 @@ class ZbConfig :
                 if hasattr(module, 'doConfig') :
                     instConfig = getattr(module, 'doConfig') ;
                     ZbConfig._doSendMessage(zbem, instConfig(node), node) ;
-                    node.setJoinState(ZbJoinState.CONFIG) ;
+                    zbem.m_zbHandler.setJoinState(node, ZbJoinState.CONFIG) ;
                 del module ;
         threading.Timer(1, target, [zbem, node]).start() ;
 
@@ -177,7 +194,7 @@ class ZbConfig :
             del module ;
     @staticmethod
     def doRefresh(zbem, node) :
-        node.setJoinState(ZbJoinState.DONE) ;
+        zbem.m_zbHandler.setJoinState(node, ZbJoinState.DONE) ;
         threading.Timer(1, ZbConfig._doMethod, [zbem, node, 'doRefresh']).start() ;
 
 class ZbCoordinator :
@@ -238,11 +255,14 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
     def setActivity(self, node, activity) :
         node.setActivity(activity) ;
         self.m_db.zbActivity(node.getEUI(), activity) ;
-    def setNodeXInfo(self, node, payload) :
+    def setJoinState(self, node, state) :
+        node.setJoinState(state) ;
+        self.m_db.zbJoinState(node.getEUI(), state) ;
+    def setNodeExtraInfo(self, node, payload) :
         arr = payload.split() ;
         if len(arr) == 4 :
-            node.setZoneType(int(arr[1]+arr[0],16)) ;
             node.setMfgId(int(arr[3]+arr[2],16)) ;
+            self.m_db.zbMfgId(node.getEUI(), node.getMfgId()) ;
             return True ;
         return False ;
     def addCluster(self, node, ep, clId, clDir) :
