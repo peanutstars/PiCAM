@@ -25,6 +25,7 @@ install:
 	@rm -rf $(TARGETDIR)
 	$(MAKE) -C $(SRCDIR) install
 	$(MAKE) -C $(SCRIPTSDIR) install
+	@cp -a $(PIC_ROOT_DIR)/prebuild/* $(PIC_ROOT_DIR)/dpkg/
 
 dpkg: install
 	@$(SCRIPTSDIR)/mkdpkg.sh
