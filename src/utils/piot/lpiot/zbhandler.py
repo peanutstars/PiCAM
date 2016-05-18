@@ -224,6 +224,7 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         self.m_epId = 1 ;
         self.m_db = db
         self.m_nodeArray = [] ;
+        self.initNodeFromDB() ;
     def dump(self) :
         DBG(ZbCoordinator.dump(self)) ;
         index = 1 ;
@@ -232,6 +233,26 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
             index += 1 ;
     def dbdump(self) :
         self.m_db.dumpTableAll() ;
+    def initNodeFromDB(self) :
+        for n in self.m_db.zbLoadDevice() :
+            node = self.addNode(n[0], hex(n[1])) ;
+            node.setActivity(True if n[3] != 0 else False) ;
+            node.setJoinState(n[4]) ;
+            node.setMfgId(n[5])
+        for ec in self.m_db.zbLoadCluster() :
+            node = self.getNodeWithEUI(ec[0]) ;
+            if node :
+                ep = node.getEndpoint(ec[1]) ;
+                if ep :
+                    ep.addCluster(ZbCluster(ec[2], ec[3])) ;
+        for at in self.m_db.zbLoadAttribute() :
+            node = self.getNodeWithEUI(at[0]) ;
+            if node :
+                ep = node.getEndpoint(at[1]) ;
+                if ep :
+                    cl = ep.getCluster(at[2]) ;
+                    if cl :
+                        cl.upsertAttribute(ZbAttribute(at[3], at[4], 0, at[5])) ;
     def getNodeWithEUI(self, eui) :
         for node in self.m_nodeArray :
             if node.m_eui == eui :

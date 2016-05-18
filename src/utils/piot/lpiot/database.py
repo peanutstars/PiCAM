@@ -108,6 +108,13 @@ class PiotDB :
         self.queryUpdate("UPDATE zb_device SET mfgId=%d WHERE eui='%s';" % (mfgId, eui)) ;
     def zbDelDevice(self, eui) :
         self.queryUpdate("DELETE FROM zb_device WHERE eui='%s';" % eui) ;
+    def zbLoadDevice(self) :
+        deviceList = [] ;
+        cur = self.queryScalar('SELECT * FROM zb_device ORDER BY 1;') ;
+        if cur :
+            for row in cur.fetchall() :
+                deviceList.append(row) ;
+        return deviceList ;
 
     # Functions for zb_cluster table.
     def zbIsExistCluster(self, eui, endpointId, clusterId) :
@@ -118,6 +125,13 @@ class PiotDB :
             self.queryUpdate(query) ;
     def zbDelCluster(self, eui, endpointId, clusterId) :
         self.queryUpdate("DELETE FROM zb_cluster WHERE eui='%s' AND endpointId=%d AND clusterId=%d;" % (eui, endpointId, clusterId)) ;
+    def zbLoadCluster(self) :
+        epClList = [] ;
+        cur = self.queryScalar('SELECT * FROM zb_cluster ORDER BY 1;') ;
+        if cur :
+            for row in cur.fetchall() :
+                epClList.append(row) ;
+        return epClList ;
 
     # Function for zb_attribute table.
     def zbIsExistAttribute(self, eui, endpointId, clusterId, attributeId) :
@@ -140,6 +154,13 @@ class PiotDB :
         return query ;
     def zbDelAttribute(self, eui, endpointId, clusterId, attributeId) :
         self.queryUpdate("DELETE FROM zb_attribute WHERE eui='%s' AND endpointId=%d AND clusterId=%d AND attributeId=%d;" % (eui, endpointId, clusterId, attributeId)) ;
+    def zbLoadAttribute(self) :
+        attrList = [] ;
+        cur = self.queryScalar('SELECT * FROM zb_attribute ORDER BY 1;') ;
+        if cur :
+            for row in cur.fetchall() :
+                attrList.append(row) ;
+        return attrList ;
 
 
 if __name__ == '__main__':
