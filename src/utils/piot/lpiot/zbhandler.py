@@ -236,7 +236,7 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
     def initNodeFromDB(self) :
         for n in self.m_db.zbLoadDevice() :
             node = self.addNode(n[0], hex(n[1])) ;
-            node.setCapability(n[2]) ;
+            node.setCapability(n[2] if n[2] else -1) ;
             node.setActivity(True if n[3] != 0 else False) ;
             node.setJoinState(n[4]) ;
             node.setMfgId(n[5])

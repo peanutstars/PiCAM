@@ -15,7 +15,7 @@ checkArchitecture() {
 		x86_64)
 			Architecture="amd64"
 			;;
-		armv7l)
+		armv7l|armv6l)
 			Architecture="armhf"
 			;;
 		*)
