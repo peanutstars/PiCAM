@@ -130,6 +130,7 @@ boolean emberAfPreZDOMessageReceivedCallback(EmberNodeId sender,
     } else {
       //if (device->status == EMBER_AF_DEVICE_DISCOVERY_STATUS_NEW) 
 	  {
+//      emberAfPluginDeviceDatabaseSetStatus(device->eui64, EMBER_AF_DEVICE_DISCOVERY_STATUS_NEW);
         emberAfCorePrint("%p added device to database: ", PLUGIN_NAME);
         //emberAfPrintLittleEndianEui64(tempEui64);
 		emberAfPrintBigEndianEui64(tempEui64) ;
@@ -269,6 +270,7 @@ static void sendSimpleDescriptorRequest(const EmberAfDeviceInfo* device)
   if (endpoint == 0xFF) {
     emberAfCorePrintln("%p All endpoints discovered for 0x%2X", PLUGIN_NAME, currentNodeId);
     emberAfPluginDeviceDatabaseSetStatus(device->eui64, EMBER_AF_DEVICE_DISCOVERY_STATUS_DONE);
+    emberAfPluginDeviceDatabaseEraseDevice(currentEui64) ;
     scheduleEvent(WITH_DELAY);
     clearCurrentDevice();
     return;
