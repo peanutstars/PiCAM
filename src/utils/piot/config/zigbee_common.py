@@ -8,10 +8,6 @@ def doInit(node) :
 def doConfig(node) :
     print 'Configuration : %s' % __file__ ;
     msgs = [] ;
-    if node.hasCluster(0x1, 0x500) :
-        msgIAS  = 'zcl global write 0x500 0x10 0xf0 {IASCIE}\n' ;
-        msgIAS += 'send %s 0x1 0x1\n' % hex(node.getId()) ;
-        msgs.append(msgIAS) ;
 
     # for battery
     if node.hasCluster(0x1, 0x1) :

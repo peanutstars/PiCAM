@@ -14,6 +14,9 @@ class ZbJoinState :
         self.m_responsedReportCount = 0 ;
     def setJoinState(self, state) :
         self.m_state = state ;
+        if state == ZbJoinState.SIMPLE :
+            self.m_requestedReportCount = 0 ;
+            self.m_responsedReportCount = 0 ;
     def getJoinState(self) :
         return self.m_state ;
     def setRequestedCount(self, count) :

@@ -274,6 +274,10 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         self.m_nodeArray.append(node) ;
         self.m_db.zbAddDevice(eui, node.getId()) ;
         return node ;
+    def updateNode(self, node, nodeId) :
+        node.setActivity(True) ;
+        node.setNodeId(nodeId) ;
+        self.m_db.zbAddDevice(node.getEUI(), node.getId()) ;
     def setCapability(self, node, capability) :
         node.setCapability(capability) ;
         self.m_db.zbCapability(node.getEUI(), capability) ;
@@ -330,6 +334,11 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         for attr in attrList :
             msg += 'zcl global read %s %s\n' % (hex(ZCLCluster.ZCL_BASIC_CLUSTER_ID), hex(attr)) ;
             msg += 'send %s %s %s\n' % (hex(node.getId()), hex(self.m_epId), hex(node.getEndpointId())) ;
+
+        if node.hasCluster(0x1, ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID) :
+            msg += 'zcl global write 0x500 0x10 0xf0 {%s}\n' % self.getEUI() ;
+            msg += 'send %s 0x1 0x1\n' % hex(node.getId()) ;
+
         return msg ;
     def updateConfigurationResponse(self, node) :
         return node.increaseResponsedCount() ;

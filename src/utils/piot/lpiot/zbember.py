@@ -65,6 +65,7 @@ class ZbEmber :
             ( self.rxOnMessage,   r'T(.+):nodeId\[0x([0-9a-fA-F]+)\] RX len ([0-9a-fA-F]+), ep ([0-9a-fA-F]+), clus 0x([0-9a-fA-F]+) \((.+)\) mfgId ([0-9a-fA-F]+) FC ([0-9a-fA-F]+) seq ([0-9a-fA-F]+) cmd ([0-9a-fA-F]+) payload\[(.+)\]') ,
             # It brings up automatically by Device-Query-Service plugin for sending a simple descriptor request.
             # ( self.rxOnSimple,    r'Device-Query-Service EP\[([0-9a-fA-F]+)\] : found for 0x([0-9a-fA-F]+)') ,
+            ( self.rxOnIEEE,      r'IEEE Address response: \(>\)([0-9a-fA-F]+) for 0x([0-9a-fA-F]+)') ,
             ( self.rxOnNewJoin,   r'emberAfTrustCenterJoinCallback@newNodeId<0x([0-9a-fA-F]+)> newNodeEui64<([0-9a-fA-F]+)> parentOfNewNode<0x([0-9a-fA-F]+)> EmberDeviceUpdate<(.*)> EmberJoinDecision<(.*)>') ,
             ( self.rcOnJoinStart, r'Device-Query-Service added device to database: \(>\)([0-9a-fA-F]+), capabilities: 0x([0-9a-fA-F]+)') ,
             ( self.rxOnCluster,   r'Device-Query-Service (in|out) cluster 0x([0-9a-fA-F]+) for ep\[([0-9a-fA-F]+)\] of 0x([0-9a-fA-F]+) (.*)') ,
@@ -83,6 +84,13 @@ class ZbEmber :
     def rxOnInfo(self, mo) :
         self.sendMsg('info') ;
         return True ;
+    def rxOnIEEE(self, mo) :
+        node = self.m_zbHandler.getNodeWithEUI(mo.group(1)) ;
+        if node :
+            self.m_zbHandler.updateNode(node, int(mo.group(2),16)) ;
+        else :
+            # Send a ZDO Management Leave command to the target device.
+            self.sendMsg('zdo leave 0x%s 1 0' % mo.group(2), 0.01) ;
     def rxOnNewJoin(self, mo) :
         rv = False ;
         node = self.m_zbHandler.getNodeWithEUI(mo.group(2)) ;
@@ -102,8 +110,8 @@ class ZbEmber :
                 node = self.m_zbHandler.addNode(mo.group(2), mo.group(1)) ;
             else :
                 # It could be changed nodeId, in case of joinning again after end-device leaved network by user.
-                node.setNodeId(mo.group(1)) ;
                 self.m_zbHandler.setJoinState(node, ZbJoinState.SIMPLE) ;
+                self.m_zbHandler.updateNode(node, int(mo.group(1),16)) ;
         else :
             DBG(CliColor.RED + 'Unknown State' + CliColor.NONE) ;
         return rv ;
@@ -172,6 +180,8 @@ class ZbEmber :
                         if item[1] == -1 :
                             if item[2] == cmdId :
                                 return item[0](node, ep, cl, mo.group(11)) ;
+        else :
+            self.sendMsg('zdo ieee 0x%s' % mo.group(2), 0.01) ;
         return rv ;
     def rxOnMsgReportAttribute(self, node, ep, cl, payload) :
         attrList = self.m_zbHandler.doReportPayload(payload) ;
