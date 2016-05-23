@@ -44,5 +44,5 @@ checkArchitecture
 generateControl
 pushd $PIC_ROOT_DIR
 fakeroot dpkg --build dpkg
-mv dpkg.deb $Package-$Version.deb
+mv dpkg.deb $Package-$Version-$Architecture.deb
 popd
