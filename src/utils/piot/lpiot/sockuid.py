@@ -1,15 +1,14 @@
-#!/usr/bin/env python
 
 import asyncore ;
 import socket ;
 import threading ;
+from libps.psDebug import CliColor, DBG, ERR ;
 
 UID_QUIT = 'uidquit'
 UID_TOKEN = '\n'
 
 uidCount = 0 ;
 uidLock = threading.Lock() ;
-_uidmap = {} ;
 
 class UIDServer(asyncore.dispatcher) :
     def __init__(self, host, port) :
@@ -28,10 +27,10 @@ class UIDServer(asyncore.dispatcher) :
 class UIDHandler(asyncore.dispatcher_with_send) :
     def handle_read(self) :
         buffer = self.recv(16) ;
-        if buffer == UID_QUIT :
-            raise asyncore.ExitNow('UID Server is quitting') ;
-        elif buffer == UID_TOKEN :
+        if buffer == UID_TOKEN :
             self.out_buffer = self.getUID() ;
+        elif buffer == UID_QUIT :
+            raise asyncore.ExitNow('UID Server is quitting') ;
         if not self.out_buffer :
             self.close() ;
     def getUID(self) :
@@ -47,11 +46,12 @@ class UIDDaemon(threading.Thread) :
     def __init__(self, host, port) :
         threading.Thread.__init__(self) ;
         self.server = UIDServer(host, port) ;
+        self.start() ;
     def run(self) :
         try :
             asyncore.loop() ;
         except asyncore.ExitNow, e :
-            print e ;
+            DBG(e) ;
 
 class UIDClient :
     def __init__(self, host, port) :
@@ -77,12 +77,12 @@ if __name__ == '__main__':
 
     def main(argv) :
         if argv[0] == 'server' :
-            UIDDaemon(uidHost, uidPort).start() ;
+            UIDDaemon(uidHost, uidPort) ;
         elif argv[0] == 'client' :
-            print UIDClient(uidHost, uidPort).getUID('\n' if len(argv) == 1 else argv[1]) ;
+            DBG(UIDClient(uidHost, uidPort).getUID('\n' if len(argv) == 1 else argv[1])) ;
 
     if len(sys.argv) == 1 :
-        print 'usage : %s <server|client> [message]' % sys.argv[0] ;
+        DBG('usage : %s <server|client> [message]' % sys.argv[0]) ;
         raise SystemExit ;
 
     main(sys.argv[1:]) ;
