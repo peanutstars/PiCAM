@@ -13,7 +13,7 @@ UID_TOKEN = '\n'
 # uidLock = threading.Lock() ;
 
 class UIDDaemon(threading.Thread) :
-    CONNECT_TIMEOUT = 5 ;
+    CONNECT_TIMEOUT = 4 ;
     def __init__(self, host, port) :
         threading.Thread.__init__(self) ;
         if isinstance(port, int) :
@@ -35,36 +35,39 @@ class UIDDaemon(threading.Thread) :
     def run(self) :
         while self.fgRun :
             conn, address = self.sock.accept() ;
-
-            startTime = time.time() ;
-            poll = select.poll() ;
-            poll.register(conn, select.POLLIN | select.POLLHUP) ;
-            pollc = 1 ;
-            try :
-                buffer = [] ;
-                fgPollUnregister = False ;
-                while pollc > 0 and (time.time() - startTime) < UIDDaemon.CONNECT_TIMEOUT :
-                    events = poll.poll(1) ;
-                    for event in events :
-                        (rfd, event) = event ;
-                        if event & select.POLLIN :
-                            if rfd == conn.fileno() :
-                                data = conn.recv(1) ;
-                                if data != UID_TOKEN :
-                                    buffer.append(data) ;
-                                    continue ;
-                                else :
-                                    if len(buffer) == 0 :
-                                        conn.sendall(self.getUID()) ;
-                                    elif ''.join(buffer) == UID_QUIT :
-                                        self.fgRun = False ;
-                                    fgPollUnregister = True ;
-                        if fgPollUnregister or event & select.POLLHUP :
-                            poll.unregister(rfd) ;
-                            pollc -= 1 ;
-            finally :
-                conn.close() ;
+            # TODO : To make a thread, if needs
+            self.handler(conn) ;
         self.sock.close() ;
+    def handler(self, conn) :
+        startTime = time.time() ;
+        poll = select.poll() ;
+        poll.register(conn, select.POLLIN | select.POLLHUP) ;
+        pollc = 1 ;
+        try :
+            buffer = [] ;
+            fgPollUnregister = False ;
+            while pollc > 0 and (time.time() - startTime) < UIDDaemon.CONNECT_TIMEOUT :
+                events = poll.poll(1) ;
+                for event in events :
+                    (rfd, event) = event ;
+                    if event & select.POLLIN :
+                        if rfd == conn.fileno() :
+                            data = conn.recv(1) ;
+                            if data != UID_TOKEN :
+                                buffer.append(data) ;
+                                continue ;
+                            else :
+                                if len(buffer) == 0 :
+                                    conn.sendall(self.getUID()) ;
+                                elif ''.join(buffer) == UID_QUIT :
+                                    self.fgRun = False ;
+                                fgPollUnregister = True ;
+                    if fgPollUnregister or event & select.POLLHUP :
+                        poll.unregister(rfd) ;
+                        pollc -= 1 ;
+        finally :
+            conn.close() ;
+
 
 class UIDClient :
     def __init__(self, host, port) :
