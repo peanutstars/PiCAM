@@ -13,7 +13,7 @@ UID_TOKEN = '\n'
 # uidLock = threading.Lock() ;
 
 class UIDDaemon(threading.Thread) :
-    CONNECT_TIMEOUT = 4 ;
+    CONNECT_TIMEOUT = 3 ;
     def __init__(self, host, port) :
         threading.Thread.__init__(self) ;
         if isinstance(port, int) :
@@ -35,7 +35,7 @@ class UIDDaemon(threading.Thread) :
     def run(self) :
         while self.fgRun :
             conn, address = self.sock.accept() ;
-            # TODO : To make a thread, if needs
+            # TODO : To send a conn to worker pool and then process it in thread, if needs
             self.handler(conn) ;
         self.sock.close() ;
     def handler(self, conn) :
@@ -147,8 +147,8 @@ class UIDClient :
 #         finally :
 #             self.sock.close() ;
 #         return uid ;
-#
-#
+
+
 if __name__ == '__main__':
     import sys ;
     uidHost = '/tmp/picam/socket_uid' ;

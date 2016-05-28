@@ -135,8 +135,8 @@ class ZbConfig :
     @staticmethod
     def _doSendMessage(zbem, msgs, node=None) :
         if type(msgs) is list :
-            coEUI = zbem.m_zbHandler.getSwapEUI() ;
-            swapCoEUI = zbem.m_zbHandler.getEUI() ;
+            coEUI = zbem.m_zbHandle.getSwapEUI() ;
+            swapCoEUI = zbem.m_zbHandle.getEUI() ;
             # print msgs ;
             countReport = 0 ;
             for msg in msgs :
@@ -176,7 +176,7 @@ class ZbConfig :
                 if hasattr(module, 'doConfig') :
                     instConfig = getattr(module, 'doConfig') ;
                     ZbConfig._doSendMessage(zbem, instConfig(node), node) ;
-                    zbem.m_zbHandler.setJoinState(node, ZbJoinState.CONFIG) ;
+                    zbem.m_zbHandle.setJoinState(node, ZbJoinState.CONFIG) ;
                 del module ;
         threading.Timer(1, target, [zbem, node]).start() ;
 
@@ -194,7 +194,7 @@ class ZbConfig :
             del module ;
     @staticmethod
     def doRefresh(zbem, node) :
-        zbem.m_zbHandler.setJoinState(node, ZbJoinState.DONE) ;
+        zbem.m_zbHandle.setJoinState(node, ZbJoinState.DONE) ;
         threading.Timer(1, ZbConfig._doMethod, [zbem, node, 'doRefresh']).start() ;
 
 class ZbCoordinator :

@@ -14,13 +14,14 @@ ENTER = '\n'
 
 class ZbEmber :
     PROMPT = 'zbember>' ;
-    def __init__(self, db, cmd) :
+    def __init__(self, ipHandle, db, cmd) :
+        self.m_ipHandle = ipHandle ;
+        self.m_zbHandle = ZbHandler(db) ;
         self.m_cmd = cmd ;
         self.m_fgRun = True ;
         self.m_sentMsg = None ;
         self.m_thid = threading.Thread(target=self.emberMain);
         self.m_thid.start() ;
-        self.m_zbHandler = ZbHandler(db) ;
 
     def emberMain(self) :
         DBG(self.m_cmd) ;
@@ -45,9 +46,9 @@ class ZbEmber :
         self.m_fgRun = False ;
         os.killpg(os.getpgid(self.m_proc.pid), signal.SIGTERM) ;
     def dump(self) :
-        self.m_zbHandler.dump() ;
+        self.m_zbHandle.dump() ;
     def dbdump(self) :
-        self.m_zbHandler.dbdump() ;
+        self.m_zbHandle.dbdump() ;
     @staticmethod
     def _sendMsg(param) :
         zbem = param[0] ;
@@ -85,19 +86,19 @@ class ZbEmber :
         self.sendMsg('info') ;
         return True ;
     def rxOnIEEE(self, mo) :
-        node = self.m_zbHandler.getNodeWithEUI(mo.group(1)) ;
+        node = self.m_zbHandle.getNodeWithEUI(mo.group(1)) ;
         if node :
-            self.m_zbHandler.updateNode(node, int(mo.group(2),16)) ;
+            self.m_zbHandle.updateNode(node, int(mo.group(2),16)) ;
         else :
             # Send a ZDO Management Leave command to the target device.
             self.sendMsg('zdo leave 0x%s 1 0' % mo.group(2), 0.01) ;
     def rxOnNewJoin(self, mo) :
         rv = False ;
-        node = self.m_zbHandler.getNodeWithEUI(mo.group(2)) ;
+        node = self.m_zbHandle.getNodeWithEUI(mo.group(2)) ;
         if mo.group(4).find(' left') >= 0 :
             DBG('Device left, but keeping device data.') ;
             if node :
-                self.m_zbHandler.setActivity(node, False) ;
+                self.m_zbHandle.setActivity(node, False) ;
 
         elif mo.group(4).find(' rejoin') >= 0 :
             # TODO :
@@ -107,17 +108,17 @@ class ZbEmber :
         elif mo.group(4).find(' join') >= 0 :
             rv = True ;
             if node is None :
-                node = self.m_zbHandler.addNode(mo.group(2), mo.group(1)) ;
+                node = self.m_zbHandle.addNode(mo.group(2), mo.group(1)) ;
             else :
                 # It could be changed nodeId, in case of joinning again after end-device leaved network by user.
-                self.m_zbHandler.setJoinState(node, ZbJoinState.SIMPLE) ;
-                self.m_zbHandler.updateNode(node, int(mo.group(1),16)) ;
+                self.m_zbHandle.setJoinState(node, ZbJoinState.SIMPLE) ;
+                self.m_zbHandle.updateNode(node, int(mo.group(1),16)) ;
         else :
             DBG(CliColor.RED + 'Unknown State' + CliColor.NONE) ;
         return rv ;
     def rcOnJoinStart(self, mo) :
         fgStart = False ;
-        node = self.m_zbHandler.getNodeWithEUI(mo.group(1)) ;
+        node = self.m_zbHandle.getNodeWithEUI(mo.group(1)) ;
         if node :
             DBG('Already Exist Node') ;
             if node.getJoinState() != ZbJoinState.DONE :
@@ -128,26 +129,26 @@ class ZbEmber :
             self.sendMsg('plugin device-query-service start') ;
         return fgStart ;
     def rxOnCoInfo(self, mo) :
-        self.m_zbHandler.setCoordinator(mo.group(1), int(mo.group(2)), int(mo.group(3))) ;
+        self.m_zbHandle.setCoordinator(mo.group(1), int(mo.group(2)), int(mo.group(3))) ;
         return True ;
     def rxOnSimple(self, mo) :
         self.sendMsg('zdo simple 0x%s %s' % (mo.group(2), mo.group(1)), 0.01) ;
         return True ;
     def rxOnCluster(self, mo) :
-        node = self.m_zbHandler.getNode(mo.group(4)) ;
+        node = self.m_zbHandle.getNode(mo.group(4)) ;
         if node :
             ep = node.getEndpoint(int(mo.group(3))) ;
             if ep and ep.getCluster(int(mo.group(2),16)) is None :
-                self.m_zbHandler.addCluster(node, ep, int(mo.group(2),16), True if mo.group(1) == 'in' else False) ;
+                self.m_zbHandle.addCluster(node, ep, int(mo.group(2),16), True if mo.group(1) == 'in' else False) ;
             return True ;
         else :
             return False ;
     def rxOnBasic(self, mo) :
         rv = False ;
-        node = self.m_zbHandler.getNode(mo.group(1)) ;
+        node = self.m_zbHandle.getNode(mo.group(1)) ;
         if node :
-            self.sendMsg(self.m_zbHandler.getMessageToReadBasicAttribute(node).strip(), 0.01) ;
-            self.m_zbHandler.setJoinState(node, ZbJoinState.BASIC) ;
+            self.sendMsg(self.m_zbHandle.getMessageToReadBasicAttribute(node).strip(), 0.01) ;
+            self.m_zbHandle.setJoinState(node, ZbJoinState.BASIC) ;
             rv = True ;
         return rv ;
     def rxOnMessage(self, mo) :
@@ -162,7 +163,7 @@ class ZbEmber :
             ( self.rxOnMsgIasZoneEnrollRequest,    ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, ZCLCommandId.ZCL_ZONE_ENROLL_REQUEST_COMMAND_ID) ,
         ) ;
         cmdPool = clusterPool if int(mo.group(8),16) & 1 else profilePool ;
-        node = self.m_zbHandler.getNode(mo.group(2)) ;
+        node = self.m_zbHandle.getNode(mo.group(2)) ;
         rv = False ;
         if node :
             ep = node.findEndpoint(int(mo.group(4), 16)) ;
@@ -184,29 +185,29 @@ class ZbEmber :
             self.sendMsg('zdo ieee 0x%s' % mo.group(2), 0.01) ;
         return rv ;
     def rxOnMsgReportAttribute(self, node, ep, cl, payload) :
-        attrList = self.m_zbHandler.doReportPayload(payload) ;
-        if self.m_zbHandler.upsertAttribute(node, ep, cl, attrList ) :
+        attrList = self.m_zbHandle.doReportPayload(payload) ;
+        if self.m_zbHandle.upsertAttribute(node, ep, cl, attrList ) :
             DBG('Attribute Updated from Report') ;
         return True ;
     def rxOnMsgReadAttribute(self, node, ep, cl, payload) :
-        if self.m_zbHandler.upsertAttribute(node, ep, cl, self.m_zbHandler.doReadPayload(payload)) :
+        if self.m_zbHandle.upsertAttribute(node, ep, cl, self.m_zbHandle.doReadPayload(payload)) :
             DBG('Attribute Updated from Read Attribute') ;
         if node.getJoinState() == ZbJoinState.BASIC :
             if payload.find('00 40 ') == 0 :
-                self.m_zbHandler.doConfiguration(self, node) ;
+                self.m_zbHandle.doConfiguration(self, node) ;
         return True ;
     def rxOnMsgZoneChangedNotification(self, node, ep, cl, payload) :
-        attrList = self.m_zbHandler.doZoneChangedNotification(payload) ;
-        if self.m_zbHandler.upsertAttribute(node, ep, cl, attrList) :
+        attrList = self.m_zbHandle.doZoneChangedNotification(payload) ;
+        if self.m_zbHandle.upsertAttribute(node, ep, cl, attrList) :
             DBG('Attribute Updated from Zone Changed Notification') ;
         return True ;
     def rxOnMsgConfigResponse(self, node, ep, cl, payload) :
-        if self.m_zbHandler.updateConfigurationResponse(node) :
-            self.m_zbHandler.doRefresh(self, node) ;
+        if self.m_zbHandle.updateConfigurationResponse(node) :
+            self.m_zbHandle.doRefresh(self, node) ;
         return True ;
     def rxOnMsgIasZoneEnrollRequest(self, node, ep, cl, payload) :
-        self.m_zbHandler.setNodeExtraInfo(node, payload) ;
-        attrList = self.m_zbHandler.doIasZoneEnrollRequest(payload) ;
-        if self.m_zbHandler.upsertAttribute(node, ep, cl, attrList) :
+        self.m_zbHandle.setNodeExtraInfo(node, payload) ;
+        attrList = self.m_zbHandle.doIasZoneEnrollRequest(payload) ;
+        if self.m_zbHandle.upsertAttribute(node, ep, cl, attrList) :
             DBG('Attribute Updated from Enroll Request') ;
         return True ;

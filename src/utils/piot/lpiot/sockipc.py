@@ -1,6 +1,7 @@
 
 import asynchat ;
 import asyncore ;
+import select ;
 import socket ;
 import threading ;
 from libps.psDebug import CliColor, DBG, ERR ;
@@ -57,42 +58,111 @@ class IPCDaemon(threading.Thread) :
         except asyncore.ExitNow, e :
             DBG(e) ;
 
-class IPCClient(asynchat.async_chat, threading.Thread) :
+class IPCClient(threading.Thread) :
     def __init__(self, host, port=None, cbfunc=None) :
-        asynchat.async_chat.__init__(self) ;
         threading.Thread.__init__(self) ;
         if isinstance(port, int) :
-            self.create_socket(socket.AF_INET, socket.SOCK_STREAM) ;
-            self.connect((host,port)) ;
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) ;
+            self.sock.connect((host,port)) ;
         else :
-            self.create_socket(socket.AF_UNIX, socket.SOCK_STREAM) ;
-            self.connect(host) ;
-        self.set_terminator(IPC_TERMINATOR) ;
+            self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) ;
+            self.sock.connect(host) ;
+        self.fgAlive = True ;
         self.buffer = [] ;
         self.cbfunc = cbfunc ;
-        self.linked = True ;
         self.start() ;
-    def collect_incoming_data(self, data) :
-        self.buffer.append(data) ;
-    def found_terminator(self) :
-        msg = ''.join(self.buffer).strip() ;
-        self.buffer = [] ;
-        if len(msg) > 0 and self.cbfunc and hasattr(self.cbfunc, '__call__'):
-            print '#', msg ;
-            self.cbfunc(msg) ;
-        if msg == IPC_QUIT :
-            self.close() ;
-            self.stop() ;
+    def __doPollIn(self) :
+        rv = False ;
+        tmp = self.sock.recv(1) ;
+        if tmp != IPC_TERMINATOR :
+            self.buffer.append(tmp) ;
+        else :
+            msg = ''.join(self.buffer).strip() ;
+            self.buffer = [] ;
+            if self.cbfunc :
+                assert(hasattr(self.cbfunc, '__call__')) ;
+                self.cbfunc(msg) ;
+            if msg == IPC_QUIT :
+                rv = True ;
+        return rv ;
     def run(self) :
+        poll = select.poll() ;
+        poll.register(self.sock, select.POLLIN | select.POLLHUP) ;
+        pollc = 1 ;
         try :
-            asyncore.loop() ;
-        except asyncore.ExitNow, e :
-            DBG(e) ;
-        self.linked = False ;
+            sockFd = self.sock.fileno() ;
+            while self.fgAlive and pollc > 0 :
+                fgUnregister = False ;
+                events = poll.poll(1) ;
+                for event in events :
+                    (rfd, event) = event ;
+                    if event & select.POLLIN :
+                        if rfd == sockFd :
+                            fgUnregister = self.__doPollIn() ;
+                    if fgUnregister or event & select.POLLHUP :
+                        poll.unregister(rfd) ;
+                        pollc -= 1 ;
+            if pollc > 0 :
+                poll.unregister(sockFd) ;
+                pollc -= 1 ;
+        except :
+            DBG('Have Socket Errors') ;
+            self.stop() ;
+        finally :
+            del poll ;
+            self.sock.close() ;
     def stop(self) :
-        raise asyncore.ExitNow('IPC Client is quitting') ;
+        self.fgAlive = False ;
     def sendMsg(self, msg) :
-        self.push(msg + IPC_TERMINATOR) ;
+        try :
+            self.sock.sendall(msg + IPC_TERMINATOR) ;
+        except socket.error, e :
+            DBG('Have Socket Errors : %s' % e) ;
+            self.stop() ;
+    def isAlive(self) :
+        return self.fgAlive ;
+
+
+
+# class IPCClient(asynchat.async_chat, threading.Thread) :
+#     def __init__(self, host, port=None, cbfunc=None) :
+#         asynchat.async_chat.__init__(self) ;
+#         threading.Thread.__init__(self) ;
+#         if isinstance(port, int) :
+#             self.create_socket(socket.AF_INET, socket.SOCK_STREAM) ;
+#             self.connect((host,port)) ;
+#         else :
+#             self.create_socket(socket.AF_UNIX, socket.SOCK_STREAM) ;
+#             self.connect(host) ;
+#         self.set_terminator(IPC_TERMINATOR) ;
+#         self.buffer = [] ;
+#         self.cbfunc = cbfunc ;
+#         self.fgAlive = True ;
+#         self.start() ;
+#     def collect_incoming_data(self, data) :
+#         self.buffer.append(data) ;
+#     def found_terminator(self) :
+#         msg = ''.join(self.buffer).strip() ;
+#         self.buffer = [] ;
+#         if len(msg) > 0 and self.cbfunc and hasattr(self.cbfunc, '__call__'):
+#             print '#', msg ;
+#             self.cbfunc(msg) ;
+#         if msg == IPC_QUIT :
+#             self.close() ;
+#             self.fgAlive = False ;
+#             raise asyncore.ExitNow('IPC Client is quitting') ;
+#     def run(self) :
+#         while self.fgAlive :
+#             try :
+#                 asyncore.loop(1, count=1) ;
+#             except asyncore.ExitNow, e :
+#                 DBG(e) ;
+#     def stop(self) :
+#         self.close() ;
+#         self.fgAlive = False ;
+#
+#     def sendMsg(self, msg) :
+#         self.push(msg + IPC_TERMINATOR) ;
 
 if __name__ == '__main__':
     import sys ;
@@ -110,7 +180,7 @@ if __name__ == '__main__':
 
     def doClient() :
         client = IPCClient(ipcHost, ipcPort, receivedMsg) ;
-        while client.linked :
+        while client.fgAlive :
             msg = raw_input('> ').strip() ;
             client.sendMsg(msg) ;
 
