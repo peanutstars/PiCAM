@@ -6,6 +6,8 @@ import struct ;
 import threading ;
 import time ;
 from error import * ;
+from ipcpacket import IPMeta ;
+from sensormodel import SensorMeta, SensorEvent ;
 from zbenum import ZCLCluster, ZCLAttribute, ZCLAttributeType ;
 from zbmodel import ZbJoinState, ZbNode, ZbEndpoint, ZbCluster, ZbAttribute ;
 from libps.psDebug import CliColor, DBG, ERR ;
@@ -219,10 +221,11 @@ class ZbCoordinator :
 
 
 class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
-    def __init__(self, db) :
+    def __init__(self, db, ippHandle) :
         ZbCoordinator.__init__(self) ;
         self.m_epId = 1 ;
         self.m_db = db
+        self.m_ippHandle = ippHandle ;
         self.m_nodeArray = [] ;
         self.initNodeFromDB() ;
     def dump(self) :
@@ -273,20 +276,30 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         node.setActivity(True) ;
         self.m_nodeArray.append(node) ;
         self.m_db.zbAddDevice(eui, node.getId()) ;
+        # self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
+        #     SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, eui, hex(node.getId()), None, None).toString()) ;
         return node ;
     def updateNode(self, node, nodeId) :
         node.setActivity(True) ;
         node.setNodeId(nodeId) ;
         self.m_db.zbAddDevice(node.getEUI(), node.getId()) ;
+        self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
+            SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, node.getEUI(), node.getId(), None, None).toString()) ;
     def setCapability(self, node, capability) :
         node.setCapability(capability) ;
         self.m_db.zbCapability(node.getEUI(), capability) ;
+        # self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
+        #     SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, node.getEUI(), node.getId(), None, node.getExtra()).toString()) ;
     def setActivity(self, node, activity) :
         node.setActivity(activity) ;
         self.m_db.zbActivity(node.getEUI(), activity) ;
-    def setJoinState(self, node, state) :
-        node.setJoinState(state) ;
-        self.m_db.zbJoinState(node.getEUI(), state) ;
+        # self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
+        #     SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, node.getEUI(), node.getId(), None, node.getExtra()).toString()) ;
+    def setJoinState(self, node, joinState) :
+        node.setJoinState(joinState) ;
+        self.m_db.zbJoinState(node.getEUI(), joinState) ;
+        self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
+            SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, node.getEUI(), node.getId(), None, node.getExtra()).toString()) ;
     def getJoinState(self, node) :
         return node.getJoinState() ;
     def setNodeExtraInfo(self, node, payload) :

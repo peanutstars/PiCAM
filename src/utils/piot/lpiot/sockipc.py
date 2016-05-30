@@ -69,7 +69,7 @@ class IPCClient(threading.Thread) :
             self.sock.connect(host) ;
         self.fgAlive = True ;
         self.buffer = [] ;
-        self.lock = threading.Lock() ;
+        self.m_lockSend = threading.Lock() ;
         self.cbfunc = cbfunc ;
         self.start() ;
     def __doPollIn(self) :
@@ -117,7 +117,7 @@ class IPCClient(threading.Thread) :
     def stop(self) :
         self.fgAlive = False ;
     def sendMsg(self, msg) :
-        with self.lock :
+        with self.m_lockSend :
             try :
                 self.sock.sendall(msg + IPC_TERMINATOR) ;
             except socket.error, e :

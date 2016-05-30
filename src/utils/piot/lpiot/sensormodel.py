@@ -44,5 +44,6 @@ class SensorEvent :
         self.m_extra = extra ;
     def toString(self) :
         toStr  = self.m_datetime.strftime('%Y.%m.%d.%H.%M.%S') ;
-        toStr += '|%s|%s|%s|%s|%s' % (self.m_type, self.m_uid, self.m_fuid, str(self.m_value), json.dumps(self.m_extra)) ;
+        toStr += '|%s|%s|%s|%s|%s' % (self.m_type, self.m_uid, self.m_fuid, str(self.m_value),
+            json.dumps(self.m_extra, default=lambda o: o.__dict__) if self.m_extra else None) ;
         return toStr ;

@@ -50,9 +50,9 @@ class IPDaemon :
     def start(self) :
         UIDDaemon(IPMeta.UID_ADDRESS, IPMeta.UID_PORT) ;
         IPCDaemon(IPMeta.IPC_ADDRESS, IPMeta.IPC_PORT) ;
-        time.sleep(0.3) ;
+        time.sleep(0.1) ;
     def stop(self) :
-        time.sleep(0.3) ;
+        time.sleep(0.1) ;
         IPCClient(IPMeta.IPC_ADDRESS, IPMeta.IPC_PORT).sendMsg(IPMeta.IPC_QUIT) ;
         UIDClient(IPMeta.UID_ADDRESS, IPMeta.UID_PORT).getUID(IPMeta.UID_QUIT) ;
 
@@ -71,7 +71,7 @@ class IPHandler(IPCClient) :
         IPCClient.__init__(self, IPMeta.IPC_ADDRESS, IPMeta.IPC_PORT, self.__receivedPacket) ;
         self.m_callback  = cbFunc ;
         self.m_queryPool = {} ;
-        self.m_lock = threading.Lock() ;
+        self.m_lockQuery = threading.Lock() ;
     def __getUID(self) :
         return UIDClient(IPMeta.UID_ADDRESS, IPMeta.UID_PORT).getUID(IPMeta.TERMINATOR) ;
     def __receivedPacket(self, msg) :
@@ -88,7 +88,7 @@ class IPHandler(IPCClient) :
             if int(fieldId,16) != 0 :
                 if fieldType == IPMeta.REPLY :
                     # Caller of Request is only recevied Reply.
-                    with self.m_lock :
+                    with self.m_lockQuery :
                         try :
                             self.m_queryPool[fieldId][1] = payload ;
                             self.m_queryPool[fieldId][0].set() ;
@@ -104,7 +104,7 @@ class IPHandler(IPCClient) :
                     self.m_callback(fieldId, fieldSub, payload) ;
         elif msg == IPMeta.IPC_QUIT :
             DBG('Quit a IPC Client') ;
-            with self.m_lock :
+            with self.m_lockQuery :
                 for key in self.m_queryPool :
                     self.m_queryPool[key][0].set() ;
 
@@ -121,10 +121,10 @@ class IPHandler(IPCClient) :
             self.stop() ;
             return None ;
         self.sendMsg(fieldId+IPMeta.S_REQUEST_S + subType +IPMeta.SEPARATOR+ payload) ;
-        with self.m_lock :
+        with self.m_lockQuery :
             self.m_queryPool[fieldId] = [event, None] ;
         event.wait(None if timeout==0 else timeout) ;
-        with self.m_lock :
+        with self.m_lockQuery :
             reply = self.m_queryPool.pop(fieldId) ;
         if reply[1] == None :
             DBG('Query Timeout[%d] - %s, %s' % (timeout, subType, payload))
@@ -136,20 +136,20 @@ class IPHandler(IPCClient) :
 class IPProcHandler(IPHandler) :
     def __init__(self) :
         IPHandler.__init__(self, self.onReceivedPacket) ;
-        # self.m_lock = threading.Lock() ;
+        self.m_lockFunc = threading.Lock() ;
         self.m_funcPool = [] ;
 
     def onReceivedPacket(self, ipId, ipSType, ipPayload) :
-        with self.m_lock :
+        with self.m_lockFunc :
             for st, cb in self.m_funcPool :
                 if st == ipSType and hasattr(cb, '__call__') :
                     cb(ipId, ipSType, ipPayload) ;
 
     def register(self, subType, cbFunc) :
-        with self.m_lock :
+        with self.m_lockFunc :
             self.m_funcPool.append([subType, cbFunc]) ;
     def unregister(self, subType, cbFunc) :
-        with self.m_lock :
+        with self.m_lockFunc :
             self.m_funcPool = [ x for x in self.m_funcPool if not x == [subType, cbFunc]] ;
 
 

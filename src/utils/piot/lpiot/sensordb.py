@@ -9,14 +9,14 @@ SENSOR_LOG_DB_PATH = 'sensorlog.sqlite3' ;
 QUERY_FOREIGN_KEYS_ENABLE = 'PRAGMA foreign_keys = ON ;' ;
 QUERY_JOURNAL_MODE = 'PRAGMA journal_mode = MEMORY ;' ;
 QUERY_NODE_TABLE = \
-'''CREATE TABLE IF NOT EXIST sensor_node (eui char(20), fuid char(16), type char(8), value varchar(64), extra varchar(128),
+'''CREATE TABLE IF NOT EXIST sensor_node (eui char(20), fuid char(16), type char(8), value varchar(64), extra varchar(256),
 PRIMARY KEY(eui)) ;'''
 QUERY_CLUSTER_TABLE = \
-'''CREATE TABLE IF NOT EXIST sensor_cluster(eui char(20), fuid char(16), type char(8), value varchar(64), extra varchar(128),
+'''CREATE TABLE IF NOT EXIST sensor_cluster(eui char(20), fuid char(16), type char(8), value varchar(64), extra varchar(256),
 PRIMARY KEY(eui, fuid),
 FOREIGN KEY(eui) REFERENCES sensor_node(eui) ON DELETE CASCADE) ;'''
 QUERY_ATTRIBUTE_TABLE = \
-'''CREATE TABLE IF NOT EXIST sensor_attribute(eui char(20), fuid char(16), type char(8), value varchar(64), extra varchar(128),
+'''CREATE TABLE IF NOT EXIST sensor_attribute(eui char(20), fuid char(16), type char(8), value varchar(64), extra varchar(256),
 PRIMARY KEY(eui, fuid),
 FOREIGN KEY(eui) REFERENCES sensor_node(eui) ON DELETE CASCADE) ;'''
 

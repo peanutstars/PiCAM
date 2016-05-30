@@ -14,6 +14,8 @@ class ZbJoinState :
         self.m_responsedReportCount = 0 ;
     def setJoinState(self, state) :
         self.m_state = state ;
+        if hasattr(self, 'm_extra') :
+            self.m_extra.joinState = state ;
         if state == ZbJoinState.SIMPLE :
             self.m_requestedReportCount = 0 ;
             self.m_responsedReportCount = 0 ;
@@ -31,13 +33,17 @@ class ZbJoinState :
         return stringList[self.m_state] ;
 
 class ZbNode(ZbJoinState) :
+    class Extra :
+        def __init__(self, joinState) :
+            self.mfgId = None ;
+            self.capability = 0 ;
+            self.activity = False ;
+            self.joinState = joinState ;
     def __init__(self, eui, nodeId) :
         ZbJoinState.__init__(self) ;
         self.m_eui = eui ;
         self.m_id = nodeId ;
-        self.m_MfgId = None ;
-        self.m_capability = 0 ;
-        self.m_fgActivity = False ;
+        self.m_extra = ZbNode.Extra(self.getJoinState()) ;
         self.m_endpointArray = [] ;
     def getEUI(self) :
         return self.m_eui ;
@@ -45,14 +51,16 @@ class ZbNode(ZbJoinState) :
         return separator.join(reversed(re.findall('..', self.m_eui))) ;
     def getId(self) :
         return self.m_id ;
+    def getExtra(self) :
+        return self.m_extra ;
     def setCapability(self, capability) :
-        self.m_capability = capability ;
+        self.m_extra.capability = capability ;
     def setActivity(self, fgActivity=False) :
-        self.m_fgActivity = fgActivity ;
+        self.m_extra.activity = fgActivity ;
     def setMfgId(self, id) :
-        self.m_MfgId = id ;
+        self.m_extra.mfgId = id ;
     def getMfgId(self) :
-        return self.m_MfgId ;
+        return self.m_extra.mfgId ;
     def getEndpoint(self, epId) :
         for ep in self.m_endpointArray :
             if ep.getId() == epId :
@@ -105,7 +113,7 @@ class ZbNode(ZbJoinState) :
         strValue = fmt % value ;
         return ''.join(reversed(re.findall('..', strValue)))
     def dump(self, msg='') :
-        msgnd = msg + ' %s %s %s Mfg[%04X] Join.%s C%X' % (self.m_eui, hex(self.m_id), str(self.m_fgActivity), self.m_MfgId, ZbJoinState.dump(self), self.m_capability) ;
+        msgnd = msg + ' %s %s %s Mfg[%04X] Join.%s C%X' % (self.m_eui, hex(self.m_id), str(self.m_extra.activity), self.m_extra.mfgId, ZbJoinState.dump(self), self.m_extra.capability) ;
         if len(self.m_endpointArray) > 0 :
             for ep in self.m_endpointArray :
                 ep.dump(msgnd) ;
