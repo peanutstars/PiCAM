@@ -6,6 +6,8 @@ class PiotError(Exception) :
 class PiotDatabaseError(PiotError) :
     pass ;
 
+class SensorDBError(PiotError) :
+    pass ;
+
 class PiotZBParseError(PiotError) :
 	pass ;
-

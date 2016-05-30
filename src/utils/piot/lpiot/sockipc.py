@@ -69,6 +69,7 @@ class IPCClient(threading.Thread) :
             self.sock.connect(host) ;
         self.fgAlive = True ;
         self.buffer = [] ;
+        self.lock = threading.Lock() ;
         self.cbfunc = cbfunc ;
         self.start() ;
     def __doPollIn(self) :
@@ -105,20 +106,23 @@ class IPCClient(threading.Thread) :
             if pollc > 0 :
                 poll.unregister(sockFd) ;
                 pollc -= 1 ;
-        except :
-            DBG('Have Socket Errors') ;
-            self.stop() ;
+        except select.error, e :
+            DBG('Select Errors : %s' % e) ;
+        except socket.error, e :
+            DBG('Have Socket Errors : %s' % e) ;
         finally :
+            self.stop() ;
             del poll ;
             self.sock.close() ;
     def stop(self) :
         self.fgAlive = False ;
     def sendMsg(self, msg) :
-        try :
-            self.sock.sendall(msg + IPC_TERMINATOR) ;
-        except socket.error, e :
-            DBG('Have Socket Errors : %s' % e) ;
-            self.stop() ;
+        with self.lock :
+            try :
+                self.sock.sendall(msg + IPC_TERMINATOR) ;
+            except socket.error, e :
+                DBG('Have Socket Errors : %s' % e) ;
+                self.stop() ;
     def isAlive(self) :
         return self.fgAlive ;
 

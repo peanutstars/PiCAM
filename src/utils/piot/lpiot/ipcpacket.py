@@ -8,7 +8,7 @@ from lpiot.sockipc import IPCDaemon, IPCClient ;
 from libps.psDebug import CliColor, DBG, ERR ;
 
 
-class IPInfo :
+class IPMeta :
     '''
     IP Packet Infomation.
     '''
@@ -21,31 +21,42 @@ class IPInfo :
     IPC_QUIT = 'ipcquit' ;
     TERMINATOR = '\n' ;
 
+    NOTIFY       = 'N' ;
+    REQUEST      = 'R' ;
+    REPLY        = 'r' ;
+    SEPARATOR    = '|' ;
+    S_NOTIFY_S   = '|N|' ;
+    S_REQUEST_S  = '|R|' ;
+    S_REPLY_S    = '|r|' ;
+    SIZE_SUBTYPE = 6 ;
+
+    SUBTYPE_SYSTEM = 'SYSTEM' ;
+    SUBTYPE_SENSOR = 'SENSOR' ;
+    SUBTYPE_DB     = 'D    B' ;
+
+
 class IPDaemon :
     '''
     IPC Packet Deamon
     '''
     def __init__(self, fgForce=False) :
         if fgForce :
-            if not os.path.exists(IPInfo.BASE_ADDRESS) :
-                os.mkdir(IPInfo.BASE_ADDRESS) ;
-            if IPInfo.UID_PORT == None and os.path.exists(IPInfo.UID_ADDRESS) :
-                os.remove(IPInfo.UID_ADDRESS) ;
-            if IPInfo.IPC_PORT == None and os.path.exists(IPInfo.IPC_ADDRESS) :
-                os.remove(IPInfo.IPC_ADDRESS) ;
+            if not os.path.exists(IPMeta.BASE_ADDRESS) :
+                os.mkdir(IPMeta.BASE_ADDRESS) ;
+            if IPMeta.UID_PORT == None and os.path.exists(IPMeta.UID_ADDRESS) :
+                os.remove(IPMeta.UID_ADDRESS) ;
+            if IPMeta.IPC_PORT == None and os.path.exists(IPMeta.IPC_ADDRESS) :
+                os.remove(IPMeta.IPC_ADDRESS) ;
     def start(self) :
-        UIDDaemon(IPInfo.UID_ADDRESS, IPInfo.UID_PORT) ;
-        IPCDaemon(IPInfo.IPC_ADDRESS, IPInfo.IPC_PORT) ;
+        UIDDaemon(IPMeta.UID_ADDRESS, IPMeta.UID_PORT) ;
+        IPCDaemon(IPMeta.IPC_ADDRESS, IPMeta.IPC_PORT) ;
+        time.sleep(0.3) ;
     def stop(self) :
-        IPCClient(IPInfo.IPC_ADDRESS, IPInfo.IPC_PORT).sendMsg(IPInfo.IPC_QUIT) ;
-        UIDClient(IPInfo.UID_ADDRESS, IPInfo.UID_PORT).getUID(IPInfo.UID_QUIT) ;
+        time.sleep(0.3) ;
+        IPCClient(IPMeta.IPC_ADDRESS, IPMeta.IPC_PORT).sendMsg(IPMeta.IPC_QUIT) ;
+        UIDClient(IPMeta.UID_ADDRESS, IPMeta.UID_PORT).getUID(IPMeta.UID_QUIT) ;
 
 
-NOTIFY       = 'N' ;
-REQUEST      = 'R' ;
-REPLY        = 'r' ;
-SEPARATOR    = '|' ;
-SIZE_SUBTYPE = 6
 
 class IPHandler(IPCClient) :
     '''
@@ -57,12 +68,12 @@ class IPHandler(IPCClient) :
     # REPLY_DB_HEAD       12345678|r|DB    |
     # Callback Format : cbFunc(ID, SubType, Playload)
     def __init__(self, cbFunc=None) :
-        IPCClient.__init__(self, IPInfo.IPC_ADDRESS, IPInfo.IPC_PORT, self.__receivedPacket) ;
+        IPCClient.__init__(self, IPMeta.IPC_ADDRESS, IPMeta.IPC_PORT, self.__receivedPacket) ;
         self.m_callback  = cbFunc ;
         self.m_queryPool = {} ;
         self.m_lock = threading.Lock() ;
     def __getUID(self) :
-        return UIDClient(IPInfo.UID_ADDRESS, IPInfo.UID_PORT).getUID(IPInfo.TERMINATOR) ;
+        return UIDClient(IPMeta.UID_ADDRESS, IPMeta.UID_PORT).getUID(IPMeta.TERMINATOR) ;
     def __receivedPacket(self, msg) :
         '''
         receivedPacket() is called by IPCClient thread.
@@ -75,7 +86,7 @@ class IPHandler(IPCClient) :
             fieldSub  = field[2] ;
             payload = msg[18:] ;
             if int(fieldId,16) != 0 :
-                if fieldType == REPLY :
+                if fieldType == IPMeta.REPLY :
                     # Caller of Request is only recevied Reply.
                     with self.m_lock :
                         try :
@@ -84,24 +95,24 @@ class IPHandler(IPCClient) :
                         except KeyError :
                             # Maybe, it is not mine.
                             pass ;
-                elif fieldType == REQUEST :
+                elif fieldType == IPMeta.REQUEST :
                     if hasattr(self.m_callback, '__call__') :
                         self.m_callback(fieldId, fieldSub, payload) ;
             else :
                 # Notify
                 if hasattr(self.m_callback, '__call__') :
                     self.m_callback(fieldId, fieldSub, payload) ;
-        elif msg == IPInfo.IPC_QUIT :
+        elif msg == IPMeta.IPC_QUIT :
             DBG('Quit a IPC Client') ;
             with self.m_lock :
                 for key in self.m_queryPool :
                     self.m_queryPool[key][0].set() ;
 
     def sendNotify(self, subType, payload) :
-        assert (len(subType) == SIZE_SUBTYPE), 'subType length is not 6.'
-        self.sendMsg('00000000'+SEPARATOR+NOTIFY+SEPARATOR + subType +SEPARATOR+ payload) ;
+        assert (len(subType) == IPMeta.SIZE_SUBTYPE), 'subType length is not 6.'
+        self.sendMsg('00000000'+IPMeta.S_NOTIFY_S + subType +IPMeta.SEPARATOR+ payload) ;
     def sendQueryRequest(self, subType, payload, timeout=0) :
-        assert (len(subType) == SIZE_SUBTYPE), 'subType length is not 6.'
+        assert (len(subType) == IPMeta.SIZE_SUBTYPE), 'subType length is not 6.'
         event = threading.Event() ;
         try :
             fieldId = self.__getUID() ;
@@ -109,7 +120,7 @@ class IPHandler(IPCClient) :
             DBG('Have Socket Errors : %s' % e) ;
             self.stop() ;
             return None ;
-        self.sendMsg(fieldId+SEPARATOR+REQUEST+SEPARATOR + subType +SEPARATOR+ payload) ;
+        self.sendMsg(fieldId+IPMeta.S_REQUEST_S + subType +IPMeta.SEPARATOR+ payload) ;
         with self.m_lock :
             self.m_queryPool[fieldId] = [event, None] ;
         event.wait(None if timeout==0 else timeout) ;
@@ -119,8 +130,28 @@ class IPHandler(IPCClient) :
             DBG('Query Timeout[%d] - %s, %s' % (timeout, subType, payload))
         return reply[1] ;
     def sendQueryReply(self, fieldId, subType, payload) :
-        assert (len(subType) == SIZE_SUBTYPE), 'subType length is not 6.'
-        self.sendMsg(fieldId+SEPARATOR+REPLY+SEPARATOR + subType +SEPARATOR+ payload) ;
+        assert (len(subType) == IPMeta.SIZE_SUBTYPE), 'subType length is not 6.'
+        self.sendMsg(fieldId+IPMeta.S_REPLY_R + subType +IPMeta.SEPARATOR+ payload) ;
+
+class IPProcHandler(IPHandler) :
+    def __init__(self) :
+        IPHandler.__init__(self, self.onReceivedPacket) ;
+        # self.m_lock = threading.Lock() ;
+        self.m_funcPool = [] ;
+
+    def onReceivedPacket(self, ipId, ipSType, ipPayload) :
+        with self.m_lock :
+            for st, cb in self.m_funcPool :
+                if st == ipSType and hasattr(cb, '__call__') :
+                    cb(ipId, ipSType, ipPayload) ;
+
+    def register(self, subType, cbFunc) :
+        with self.m_lock :
+            self.m_funcPool.append([subType, cbFunc]) ;
+    def unregister(self, subType, cbFunc) :
+        with self.m_lock :
+            self.m_funcPool = [ x for x in self.m_funcPool if not x == [subType, cbFunc]] ;
+
 
 if __name__ == '__main__':
     import sys ;
@@ -146,6 +177,8 @@ if __name__ == '__main__':
             return self.sendQueryRequest('SUBTYP', 'Request', timeout) ;
         def doNotify(self, msg='') :
             self.sendNotify('subtyp', 'Notify %s' % msg) ;
+        def doNotifyQuit(self) :
+            self.sendNotify(IPMeta.SUBTYPE_SYSTEM, 'quit') ;
 
     if len(sys.argv) == 1 :
         print 'usage : %s <notify|request|reply|quit> [<timesec> <server> <loop>]' ;
@@ -154,7 +187,7 @@ if __name__ == '__main__':
     fgServer = 'server' in sys.argv ;
     fgLoop = 'loop' in sys.argv ;
 
-    if 'server' in sys.argv :
+    if fgServer :
         IPDaemon(True).start() ;
     if sys.argv[1] == 'quit' :
         IPDaemon(False).stop() ;
@@ -185,10 +218,13 @@ if __name__ == '__main__':
                 rv = h.doRequest(timesec) ;
 
         if sys.argv[1] == 'notify' :
-            h.doNotify() ;
-            while fgLoop and h.isAlive():
-                time.sleep(timesec) ;
-                h.doNotify(str(timesec)) ;
+            if sys.argv[2] == 'quit' :
+                h.doNotifyQuit() ;
+            else :
+                h.doNotify() ;
+                while fgLoop and h.isAlive():
+                    time.sleep(timesec) ;
+                    h.doNotify(str(timesec)) ;
 
         if not fgLoop and not fgReply:
             h.stop() ;

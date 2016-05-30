@@ -5,8 +5,8 @@ from error import PiotDatabaseError ;
 
 PIOT_DB_PATH = 'piot.sqlite3'
 
-QUERY_FOREIGN_KEYS_ENABLE = 'PRAGMA foreign_keys = ON;' ;
-QUERY_JOURNAL_MODE = 'PRAGMA journal_mode = MEMORY' ;
+QUERY_FOREIGN_KEYS_ENABLE = 'PRAGMA foreign_keys = ON ;' ;
+QUERY_JOURNAL_MODE = 'PRAGMA journal_mode = MEMORY ;' ;
 QUERY_ZB_DEVICE_TABLE = \
 '''CREATE TABLE IF NOT EXISTS zb_device (eui char(16), nodeId int, capability int, activity int, joinState int, mfgId int,
 PRIMARY KEY (eui));'''

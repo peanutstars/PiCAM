@@ -2,7 +2,7 @@
 import re ;
 import subprocess ;
 import threading ;
-from lpiot.ipcpacket import IPDaemon ;
+from lpiot.ipcpacket import IPMeta, IPDaemon ;
 from libps.psDebug import CliColor, DBG, ERR ;
 
 # raw_input() would be appended a  history function when import readline ;
@@ -16,8 +16,8 @@ class Cli :
     CT_EMBER = 'ember' ;
     CT_PAIR = 'pair' ;
     CT_PRINT = 'print' ;
-    def __init__(self, ipHandle, zbem) :
-        self.m_ipHandle = ipHandle ;
+    def __init__(self, ippHandle, zbem) :
+        self.m_ippHandle = ippHandle ;
         self.m_zbem = zbem ;
         self.m_fgRun = True ;
         self.m_thid = threading.Thread(target=self.cliMain);
@@ -32,6 +32,7 @@ class Cli :
             if cmd[0] == 'quit' :
                 self.m_fgRun = False ;
                 self.m_zbem.quit() ;
+                self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SYSTEM, 'quit') ;
                 IPDaemon().stop() ;
             elif cmd[0] == Cli.CT_EMBER :
                 if len(cmd) > 1 :

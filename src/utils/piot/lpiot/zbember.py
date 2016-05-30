@@ -14,8 +14,8 @@ ENTER = '\n'
 
 class ZbEmber :
     PROMPT = 'zbember>' ;
-    def __init__(self, ipHandle, db, cmd) :
-        self.m_ipHandle = ipHandle ;
+    def __init__(self, ippHandle, db, cmd) :
+        self.m_ippHandle = ippHandle ;
         self.m_zbHandle = ZbHandler(db) ;
         self.m_cmd = cmd ;
         self.m_fgRun = True ;
