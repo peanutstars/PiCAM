@@ -299,8 +299,8 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         #     SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, node.getEUI(), node.getId(), None, node.getExtra()).toString()) ;
     def setActivity(self, node, activity) :
         node.setActivity(activity) ;
-        # self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
-        #     SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, node.getEUI(), node.getId(), None, node.getExtra()).toString()) ;
+        self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
+            SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, node.getEUI(), node.getId(), None, node.getExtra()).toString()) ;
     def setJoinState(self, node, joinState) :
         node.setJoinState(joinState) ;
         self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
