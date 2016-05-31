@@ -10,7 +10,8 @@ include $(BASEDIR)/Rules.mk
 SUBDIRS		:=	vcapture \
 				rtspserver \
 				portmap \
-				zbember
+				zbember \
+				piot
 
 #------------------------------------------------------------------------------
 

@@ -6,7 +6,7 @@ include $(BASEDIR)/Rules.mk
 
 #------------------------------------------------------------------------------
 
-SCRIPT_FILES	:= 
+SCRIPT_FILES	:= *.py *.sh config lpiot
 
 INSTALLDIR		:=$(TBINDIR)
 
@@ -16,7 +16,8 @@ clean:
 
 install: all
 	@install -d $(INSTALLDIR)
-	@install $(SCRIPT_FILES) $(INSTALLDIR)
+	@(cp -a $(SCRIPT_FILES) $(INSTALLDIR))
+	@(find $(INSTALLDIR) -name "*.pyc" -exec rm {} \;)
 
 
 #------------------------------------------------------------------------------
