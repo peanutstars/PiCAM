@@ -20,6 +20,7 @@ class DBManager(threading.Thread) :
         self.m_sensorPool = [] ;
         self.m_queryPool = [] ;
         self.m_lockDB = threading.Lock() ;
+        self.m_eventQuery = threading.Event() ;
         self.m_lastUpdateTime = 0 ;
         self.fgRun = True ;
         self.start() ;
@@ -44,6 +45,7 @@ class DBManager(threading.Thread) :
                     else :
                         self.m_ippHandle.sendQueryReply(False, ipId, IPMeta.SUBTYPE_DB, 'Unknown Query(%s)' % payload) ;
                 self.m_queryPool = [] ;
+                self.m_eventQuery.clear() ;
 
     def receivedSystemEvent(self, ipId, ipSType, ipPayload) :
         DBG('[EVENT] %s %s %s' % (ipId, ipSType, ipPayload)) ;
@@ -58,13 +60,14 @@ class DBManager(threading.Thread) :
         DBG('[QUERY] %s %s %s' % (ipId, ipSType, ipPayload)) ;
         with self.m_lockDB :
             self.m_queryPool.append([ipId, ipPayload]) ;
+            self.m_eventQuery.set() ;
     def run(self) :
         DBG('Start of DBManager') ;
         while self.fgRun :
+            self.m_eventQuery.wait(DBManager.DB_IDLE_SECOND) ;
+            self.__flushQueryPool() ;
             if (time.time() - self.m_lastUpdateTime) > DBManager.DB_UPDATE_INTERVAL_SECOND :
                 self.__flushSensorPool() ;
-            self.__flushQueryPool() ;
-            time.sleep(DBManager.DB_IDLE_SECOND) ;
         self.__flushSensorPool() ;
         DBG('End of DBManager') ;
     def stop(self) :

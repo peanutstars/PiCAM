@@ -137,6 +137,7 @@ class IPHandler(IPCClient) :
         if reply[1] == None :
             DBG('Query Timeout[%d] - %s, %s' % (timeout, subType, payload))
             reply[1] = IPQueryResult(False, 'Timeout') ;
+        del event ;
         return PSJson.toOBJ2(reply[1]) ;
     def sendQueryReply(self, success, fieldId, subType, payload) :
         assert (len(subType) == IPMeta.SIZE_SUBTYPE), 'subType length is not 6.'
