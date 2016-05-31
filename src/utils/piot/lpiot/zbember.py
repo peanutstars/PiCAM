@@ -14,8 +14,8 @@ ENTER = '\n'
 
 class ZbEmber :
     PROMPT = 'zbember>' ;
-    def __init__(self, ippHandle, db, cmd) :
-        self.m_zbHandle = ZbHandler(db, ippHandle) ;
+    def __init__(self, ippHandle, cmd) :
+        self.m_zbHandle = ZbHandler(ippHandle) ;
         self.m_cmd = cmd ;
         self.m_fgRun = True ;
         self.m_sentMsg = None ;
@@ -46,8 +46,6 @@ class ZbEmber :
         os.killpg(os.getpgid(self.m_proc.pid), signal.SIGTERM) ;
     def dump(self) :
         self.m_zbHandle.dump() ;
-    def dbdump(self) :
-        self.m_zbHandle.dbdump() ;
     @staticmethod
     def _sendMsg(param) :
         zbem = param[0] ;

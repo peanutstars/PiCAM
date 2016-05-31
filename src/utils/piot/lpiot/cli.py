@@ -44,7 +44,16 @@ class Cli :
                 if cmd[1] == 'zigbee' :
                     self.m_zbem.dump() ;
                 elif cmd[1] == 'db' :
-                    self.m_zbem.dbdump() ;
+                    queryList = [IPMeta.QUERY_DB_GET_NODE, IPMeta.QUERY_DB_GET_CLUSTER, IPMeta.QUERY_DB_GET_ATTRIBUTE] ;
+                    for query in queryList :
+                        print ('### DB : %s' % query) ;
+                        reply = self.m_ippHandle.sendQueryRequest(IPMeta.SUBTYPE_DB, query) ;
+                        if reply.success :
+                            ii = 0 ;
+                            for row in reply.value :
+                                ii += 1 ;
+                                print ('%3d, %s' % (ii, row)) ;
+
                 else :
                     pass ;
 

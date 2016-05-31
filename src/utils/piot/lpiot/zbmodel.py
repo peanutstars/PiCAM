@@ -53,6 +53,9 @@ class ZbNode(ZbJoinState) :
         return self.m_id ;
     def getExtra(self) :
         return self.m_extra ;
+    def setExtra(self, extra) :
+        self.m_extra = extra ;
+        self.setJoinState(extra.joinState) ;
     def setCapability(self, capability) :
         self.m_extra.capability = capability ;
     def setActivity(self, fgActivity=False) :
@@ -197,19 +200,23 @@ class ZbCluster :
             DBG(msg + ' %s %s' % (hex(self.getId()), str(self.m_dir))) ;
 
 class ZbAttribute :
+    class Extra :
+        def __init__(self, atType, raw) :
+            self.type = atType ;
+            self.raw = str(raw) ;
     def __init__(self, atId, atType, raw, value=None) :
         self.m_id = atId ;
-        self.m_type = atType ;
-        self.m_raw = str(raw) ;
         self.m_value = value ;
+        self.m_extra = ZbAttribute.Extra(atType, raw) ;
     def getId(self) :
         return self.m_id ;
     def isEqual(self, attr) :
-        # if isinstance(attr, ZbAttribute) :
-        return (self.m_id == attr.m_id and self.m_type == attr.m_type and self.m_value == attr.m_value) ;
+        return (self.m_id == attr.m_id and self.m_extra.type == attr.m_extra.type and self.m_value == attr.m_value) ;
     def getType(self) :
-        return self.m_type ;
+        return self.m_extra.type ;
     def getValue(self) :
         return self.m_value ;
+    def getExtra(self) :
+        return self.m_extra ;
     def dump(self, msg='') :
-        DBG(msg + ' A[%s %s %s %s]' % (hex(self.getId()), hex(self.m_type), str(self.m_value), self.m_raw)) ;
+        DBG(msg + ' A[%s %s %s %s]' % (hex(self.getId()), hex(self.m_extra.type), str(self.m_value), self.m_extra.raw)) ;

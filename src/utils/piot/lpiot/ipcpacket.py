@@ -1,10 +1,12 @@
 
+import json ;
 import os ;
 import socket ;
 import threading ;
 import time ;
 from lpiot.sockuid import UIDDaemon, UIDClient ;
 from lpiot.sockipc import IPCDaemon, IPCClient ;
+from libps.psJson import PSJson ;
 from libps.psDebug import CliColor, DBG, ERR ;
 
 
@@ -34,6 +36,9 @@ class IPMeta :
     SUBTYPE_SENSOR = 'SENSOR' ;
     SUBTYPE_DB     = 'D    B' ;
 
+    QUERY_DB_GET_NODE = 'GetNode' ;
+    QUERY_DB_GET_CLUSTER = 'GetCluster' ;
+    QUERY_DB_GET_ATTRIBUTE = 'GetAttribute' ;
 
 class IPDaemon :
     '''
@@ -56,7 +61,10 @@ class IPDaemon :
         IPCClient(IPMeta.IPC_ADDRESS, IPMeta.IPC_PORT).sendMsg(IPMeta.IPC_QUIT) ;
         UIDClient(IPMeta.UID_ADDRESS, IPMeta.UID_PORT).getUID(IPMeta.UID_QUIT) ;
 
-
+class IPQueryResult :
+    def __init__(self, success, value) :
+        self.success = success ;
+        self.value = value ;
 
 class IPHandler(IPCClient) :
     '''
@@ -128,10 +136,12 @@ class IPHandler(IPCClient) :
             reply = self.m_queryPool.pop(fieldId) ;
         if reply[1] == None :
             DBG('Query Timeout[%d] - %s, %s' % (timeout, subType, payload))
-        return reply[1] ;
-    def sendQueryReply(self, fieldId, subType, payload) :
+            reply[1] = IPQueryResult(False, 'Timeout') ;
+        return PSJson.toOBJ2(reply[1]) ;
+    def sendQueryReply(self, success, fieldId, subType, payload) :
         assert (len(subType) == IPMeta.SIZE_SUBTYPE), 'subType length is not 6.'
-        self.sendMsg(fieldId+IPMeta.S_REPLY_R + subType +IPMeta.SEPARATOR+ payload) ;
+        self.sendMsg(fieldId+IPMeta.S_REPLY_S + subType +IPMeta.SEPARATOR+
+            json.dumps(IPQueryResult(success,payload), default=lambda o: o.__dict__)) ;
 
 class IPProcHandler(IPHandler) :
     def __init__(self) :
@@ -172,7 +182,7 @@ if __name__ == '__main__':
                     payload = 'Reply after %f seconds' % float(self.m_second) ;
                 else :
                     payload = 'Reply immediately'
-                self.sendQueryReply(packetId, subType, payload) ;
+                self.sendQueryReply(True, packetId, subType, payload) ;
         def doRequest(self, timeout=0) :
             return self.sendQueryRequest('SUBTYP', 'Request', timeout) ;
         def doNotify(self, msg='') :

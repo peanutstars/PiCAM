@@ -10,6 +10,7 @@ from ipcpacket import IPMeta ;
 from sensormodel import SensorMeta, SensorEvent ;
 from zbenum import ZCLCluster, ZCLAttribute, ZCLAttributeType ;
 from zbmodel import ZbJoinState, ZbNode, ZbEndpoint, ZbCluster, ZbAttribute ;
+from libps.psJson import PSJson ;
 from libps.psDebug import CliColor, DBG, ERR ;
 
 class ZbParse :
@@ -221,10 +222,9 @@ class ZbCoordinator :
 
 
 class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
-    def __init__(self, db, ippHandle) :
+    def __init__(self, ippHandle) :
         ZbCoordinator.__init__(self) ;
         self.m_epId = 1 ;
-        self.m_db = db
         self.m_ippHandle = ippHandle ;
         self.m_nodeArray = [] ;
         self.initNodeFromDB() ;
@@ -234,29 +234,39 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         for node in self.m_nodeArray :
             node.dump('%2d' % index) ;
             index += 1 ;
-    def dbdump(self) :
-        self.m_db.dumpTableAll() ;
     def initNodeFromDB(self) :
-        for n in self.m_db.zbLoadDevice() :
-            node = self.addNode(n[0], hex(n[1])) ;
-            node.setCapability(n[2] if n[2] else -1) ;
-            node.setActivity(True if n[3] != 0 else False) ;
-            node.setJoinState(n[4]) ;
-            node.setMfgId(n[5])
-        for ec in self.m_db.zbLoadCluster() :
-            node = self.getNodeWithEUI(ec[0]) ;
-            if node :
-                ep = node.getEndpoint(ec[1]) ;
-                if ep :
-                    ep.addCluster(ZbCluster(ec[2], ec[3])) ;
-        for at in self.m_db.zbLoadAttribute() :
-            node = self.getNodeWithEUI(at[0]) ;
-            if node :
-                ep = node.getEndpoint(at[1]) ;
-                if ep :
-                    cl = ep.getCluster(at[2]) ;
-                    if cl :
-                        cl.upsertAttribute(ZbAttribute(at[3], at[4], 0, at[5])) ;
+        reply = self.m_ippHandle.sendQueryRequest(IPMeta.SUBTYPE_DB, IPMeta.QUERY_DB_GET_NODE, 10) ;
+        if reply.success :
+            for row in reply.value :
+                arr = row.split('|') ;
+                if arr[3] == SensorMeta.SEN_TYPE_ZB_NODE :
+                    node = self.addNode(arr[0], hex(int(arr[2]))) ;
+                    node.setExtra(PSJson.toOBJ2(arr[5])) ;
+        reply = self.m_ippHandle.sendQueryRequest(IPMeta.SUBTYPE_DB, IPMeta.QUERY_DB_GET_CLUSTER, 10) ;
+        if reply.success :
+            for row in reply.value :
+                arr = row.split('|') ;
+                if arr[3] == SensorMeta.SEN_TYPE_ZB_CLUSTER :
+                    node = self.getNodeWithEUI(arr[0]) ;
+                    arrId = arr[2].split('.') ;
+                    if node and len(arrId) == 2 :
+                        ep = node.getEndpoint(int(arrId[0])) ;
+                        if ep :
+                            ep.addCluster(ZbCluster(int(arrId[1]), True if arr[4] == 'True' else False)) ;
+        reply = self.m_ippHandle.sendQueryRequest(IPMeta.SUBTYPE_DB, IPMeta.QUERY_DB_GET_ATTRIBUTE, 10) ;
+        if reply.success :
+            for row in reply.value :
+                arr = row.split('|') ;
+                if arr[3] == SensorMeta.SEN_TYPE_ZB_ATTRIBUTE :
+                    node = self.getNodeWithEUI(arr[0]) ;
+                    arrId = arr[2].split('.') ;
+                    if node and len(arrId) == 3 :
+                        ep = node.getEndpoint(int(arrId[0])) ;
+                        if ep :
+                            cl = ep.getCluster(int(arrId[1])) ;
+                            if cl :
+                                extra = PSJson.toOBJ2(arr[5]) ;
+                                cl.upsertAttribute(ZbAttribute(int(arrId[2]), extra.type, extra.raw, arr[4])) ;
     def getNodeWithEUI(self, eui) :
         for node in self.m_nodeArray :
             if node.m_eui == eui :
@@ -275,29 +285,24 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         node = ZbNode(eui, int(nodeId, 16)) ;
         node.setActivity(True) ;
         self.m_nodeArray.append(node) ;
-        self.m_db.zbAddDevice(eui, node.getId()) ;
-        # self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
-        #     SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, eui, hex(node.getId()), None, None).toString()) ;
+        self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
+            SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, eui, node.getId(), None, None).toString()) ;
         return node ;
     def updateNode(self, node, nodeId) :
         node.setActivity(True) ;
         node.setNodeId(nodeId) ;
-        self.m_db.zbAddDevice(node.getEUI(), node.getId()) ;
         self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
             SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, node.getEUI(), node.getId(), None, None).toString()) ;
     def setCapability(self, node, capability) :
         node.setCapability(capability) ;
-        self.m_db.zbCapability(node.getEUI(), capability) ;
         # self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
         #     SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, node.getEUI(), node.getId(), None, node.getExtra()).toString()) ;
     def setActivity(self, node, activity) :
         node.setActivity(activity) ;
-        self.m_db.zbActivity(node.getEUI(), activity) ;
         # self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
         #     SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, node.getEUI(), node.getId(), None, node.getExtra()).toString()) ;
     def setJoinState(self, node, joinState) :
         node.setJoinState(joinState) ;
-        self.m_db.zbJoinState(node.getEUI(), joinState) ;
         self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
             SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, node.getEUI(), node.getId(), None, node.getExtra()).toString()) ;
     def getJoinState(self, node) :
@@ -306,12 +311,14 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         arr = payload.split() ;
         if len(arr) == 4 :
             node.setMfgId(int(arr[3]+arr[2],16)) ;
-            self.m_db.zbMfgId(node.getEUI(), node.getMfgId()) ;
+            # self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
+            #     SensorEvent(SensorMeta.SEN_TYPE_ZB_NODE, node.getEUI(), node.getId(), None, node.getExtra()).toString()) ;
             return True ;
         return False ;
     def addCluster(self, node, ep, clId, clDir) :
         ep.addCluster(ZbCluster(clId, clDir)) ;
-        self.m_db.zbAddCluster(node.getEUI(), ep.getId(), 0, clId, clDir) ;
+        self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
+            SensorEvent(SensorMeta.SEN_TYPE_ZB_CLUSTER, node.getEUI(), '%s.%s' % (ep.getId(), clId), clDir, None).toString()) ;
     def addAttribute(self, node, epId, clId, attr) :
         ep = node.getEndpoint(epId) ;
         if ep :
@@ -322,14 +329,13 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
                     DBG('Changed %s:%s:%s %s' % (hex(epId), hex(clId), hex(attr.getId()), str(attr.getValue()))) ;
                 cl.upsertAttribute(attr) ;
     def upsertAttribute(self, node, ep, cl, attrList) :
-        query = [] ;
+        fgChanged = False ;
         for a in attrList :
             if cl.upsertAttribute(a) :
-                query.append(self.m_db.zbGetQueryAddAttribute(node.getEUI(), ep.getId(), cl.getId(), a.getId(), a.getType(), a.getValue())) ;
-        if len(query) :
-            self.m_db.queryUpdate(query) ;
-            return True ;
-        return False ;
+                self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
+                    SensorEvent(SensorMeta.SEN_TYPE_ZB_ATTRIBUTE, node.getEUI(), '%s.%s.%s' % (ep.getId(), cl.getId(), a.getId()), a.getValue(), a.getExtra()).toString()) ;
+                fgChanged = True ;
+        return fgChanged ;
     def setZoneNotification(self, nodeId, status, ext, zoneId, delay) :
         node = self.getNode(nodeId) ;
         if node :
