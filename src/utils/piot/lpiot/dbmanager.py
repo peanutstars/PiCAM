@@ -1,4 +1,6 @@
 
+import os ;
+import select ;
 import threading ;
 import time ;
 from lpiot.ipcpacket import IPMeta ;
@@ -6,6 +8,39 @@ from lpiot.sensormodel import SensorMeta ;
 from lpiot.sensordb import SensorDB, SensorLogDB ;
 from libps.psDebug import DBG, ERR ;
 # import ctypes ;
+
+class EventPipe :
+    '''
+    EventPipe is similar to thread.Event.
+    thread.Event call select function with a short timeout repeatedly.
+    It has a CPU load of 1 percent when used thread.Event on Raspberry Pi 1. But it's no problem on PC.
+    '''
+    def __init__(self) :
+        self.pin, self.pout = os.pipe() ;
+        self.poll = select.poll() ;
+        self.poll.register(self.pin, select.POLLIN|select.POLLHUP) ;
+    def __del__(self) :
+        self.poll.unregister(self.pin) ;
+        del self.poll ;
+        if self.m_in >= 0 :
+            os.close(self.m_in) ;
+        if self.m_out >= 0 :
+            os.close(self.m_out) ;
+    def wait(self, timeout=0) :
+        fgTimeout = False ;
+        events = self.poll.poll() if timeout == 0 else self.poll.poll(timeout*1000) ;
+        for event in events :
+            (rfd, event) = event ;
+            if event & select.POLLIN :
+                if rfd == self.pin :
+                    os.read(self.pin, 1) ;
+                    fgTimeout = True ;
+        return fgTimeout ;
+    def set(self) :
+        os.write(self.pout, '\n') ;
+    def clear(self) :
+        pass ;
+
 
 class DBManager(threading.Thread) :
     DB_UPDATE_INTERVAL_SECOND = 5 ;
@@ -21,7 +56,8 @@ class DBManager(threading.Thread) :
         self.m_sensorPool = [] ;
         self.m_queryPool = [] ;
         self.m_lockDB = threading.Lock() ;
-        self.m_eventQuery = threading.Event() ;
+        # self.m_eventQuery = threading.Event() ;
+        self.m_eventQuery = EventPipe() ;
         self.m_lastUpdateTime = 0 ;
         self.fgRun = True ;
         self.start() ;
