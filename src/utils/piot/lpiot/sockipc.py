@@ -94,7 +94,7 @@ class IPCClient(threading.Thread) :
             sockFd = self.sock.fileno() ;
             while self.fgAlive and pollc > 0 :
                 fgUnregister = False ;
-                events = poll.poll(1) ;
+                events = poll.poll(1000) ;
                 for event in events :
                     (rfd, event) = event ;
                     if event & select.POLLIN :

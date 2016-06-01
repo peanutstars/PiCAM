@@ -5,10 +5,11 @@ from lpiot.ipcpacket import IPMeta ;
 from lpiot.sensormodel import SensorMeta ;
 from lpiot.sensordb import SensorDB, SensorLogDB ;
 from libps.psDebug import DBG, ERR ;
+# import ctypes ;
 
 class DBManager(threading.Thread) :
     DB_UPDATE_INTERVAL_SECOND = 5 ;
-    DB_IDLE_SECOND = 0.25
+    DB_IDLE_SECOND = 1 ;
     def __init__(self, ippHandle) :
         threading.Thread.__init__(self) ;
         self.m_ippHandle = ippHandle ;
@@ -62,6 +63,7 @@ class DBManager(threading.Thread) :
             self.m_queryPool.append([ipId, ipPayload]) ;
             self.m_eventQuery.set() ;
     def run(self) :
+        # DBG('DBManager = %d' % ctypes.CDLL('libc.so.6').syscall(224)) ;
         DBG('Start of DBManager') ;
         while self.fgRun :
             self.m_eventQuery.wait(DBManager.DB_IDLE_SECOND) ;

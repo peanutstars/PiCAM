@@ -47,7 +47,7 @@ class UIDDaemon(threading.Thread) :
             buffer = [] ;
             fgPollUnregister = False ;
             while pollc > 0 and (time.time() - startTime) < UIDDaemon.CONNECT_TIMEOUT :
-                events = poll.poll(1) ;
+                events = poll.poll(1000) ;
                 for event in events :
                     (rfd, event) = event ;
                     if event & select.POLLIN :
