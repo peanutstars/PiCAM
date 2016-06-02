@@ -12,8 +12,8 @@ from libps.psDebug import DBG, ERR ;
 class EventPipe :
     '''
     EventPipe is similar to thread.Event.
-    thread.Event call select function with a short timeout repeatedly.
-    It has a CPU load of 1 percent when used thread.Event on Raspberry Pi 1. But it's no problem on PC.
+    threading.Event is calling a select function with a short timeout repeatedly.
+    It has a CPU load of 1 percent when used threading.Event on Raspberry Pi 1. But it's no problem on PC.
     '''
     def __init__(self) :
         self.pin, self.pout = os.pipe() ;

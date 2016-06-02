@@ -35,6 +35,7 @@ class IPMeta :
     SUBTYPE_SYSTEM = 'SYSTEM' ;
     SUBTYPE_SENSOR = 'SENSOR' ;
     SUBTYPE_DB     = 'D    B' ;
+    SUBTYPE_ZIGBEE = 'ZIGBEE' ;
 
     QUERY_DB_GET_NODE = 'GetNode' ;
     QUERY_DB_GET_CLUSTER = 'GetCluster' ;

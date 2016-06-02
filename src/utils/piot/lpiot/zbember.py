@@ -1,10 +1,12 @@
 
 import os ;
 import re ;
+import select ;
 import signal ;
 import sys ;
 import subprocess ;
 import threading ;
+from lpiot.ipcpacket import IPMeta ;
 from lpiot.zbenum import ZCLCluster, ZCLAttribute, ZCLCommandId ;
 from lpiot.zbmodel import ZbJoinState ;
 from lpiot.zbhandler import ZbHandler ;
@@ -15,31 +17,60 @@ ENTER = '\n'
 class ZbEmber :
     PROMPT = 'zbember>' ;
     def __init__(self, ippHandle, cmd) :
+        self.m_ippHandle = ippHandle ;
         self.m_zbHandle = ZbHandler(ippHandle) ;
         self.m_cmd = cmd ;
         self.m_fgRun = True ;
         self.m_sentMsg = None ;
-        self.m_thid = threading.Thread(target=self.emberMain);
+        self.m_thid = threading.Thread(target=self.emberLoop);
         self.m_thid.start() ;
+        self.m_ippHandle.register(IPMeta.SUBTYPE_ZIGBEE, self.receivedZigbeeQuery) ;
+        self.m_lockZigbee = threading.Lock() ;
+        self.m_queryPool = [] ;
 
-    def emberMain(self) :
+    def __flushQueryPool(self) :
+        if len(self.m_queryPool) > 0 :
+            with self.m_lockZigbee :
+                for ipId, payload in self.m_queryPool :
+                    argv = payload.split('|') ;
+                    # TODO : Query request
+                self.m_queryPool = [] ;
+    def receivedZigbeeQuery(self, ipId, ipSType, ipPayload) :
+        DBG('[QUERY] %s %s %s' % (ipId, ipSType, ipPayload)) ;
+        with self.m_lockDB :
+            self.m_queryPool.append([ipId, ipPayload]) ;
+            # It is just intended to awaken to send a terminator.
+            self.sendMsg(' ') ;
+
+    def emberLoop(self) :
         DBG(self.m_cmd) ;
+        poll = select.poll() ;
         self.m_proc = subprocess.Popen(self.m_cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, preexec_fn=os.setsid) ;
+        stdout_fileno = self.m_proc.stdout.fileno() ;
+        poll.register(stdout_fileno, select.POLLIN|select.POLLHUP) ;
         while self.m_fgRun :
-            line = self.m_proc.stdout.readline().strip() ;
-            if len(line) == 0 :
-                continue ;
-            if line == self.m_sentMsg :
-                self.m_sentMsg = None ;
-                continue ;
-            # self.m_sentMsg = None ;
-            if self.processMessage(line) :
-                DBG(CliColor.GREEN + line + CliColor.NONE) ;
-                continue ;
-            DBG(CliColor.YELLOW + line + CliColor.NONE) ;
+            events = poll.poll(1000) ;
+            # Processing events from zbember process.
+            for event in events :
+                (rfd, event) = event ;
+                if event & select.POLLIN and rfd == stdout_fileno :
+                    line = self.m_proc.stdout.readline().strip() ;
+                    # if len(line) == 0 :
+                    #     continue ;
+                    if line == self.m_sentMsg :
+                        self.m_sentMsg = None ;
+                        continue ;
+                    # self.m_sentMsg = None ;
+                    if self.processMessage(line) :
+                        DBG(CliColor.GREEN + line + CliColor.NONE) ;
+                    else :
+                        DBG(CliColor.YELLOW + line + CliColor.NONE) ;
+            # Processing events to request queries about zigbee node.
+            # It is singleton therefore no needs a additional mutex.
+            self.__flushQueryPool() ;
 
         self.m_proc.wait() ;
-        DBG('End of emberMain') ;
+        DBG('End of emberLoop') ;
 
     def quit(self) :
         self.m_fgRun = False ;
