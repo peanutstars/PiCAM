@@ -7,7 +7,7 @@ import threading ;
 import time ;
 from error import * ;
 from ipcpacket import IPMeta ;
-from sensormodel import SensorMeta, SensorEvent ;
+from sensormodel import SensorMeta, SensorEvent, SensorDevice ;
 from zbenum import ZCLCluster, ZCLAttribute, ZCLAttributeType ;
 from zbmodel import ZbJoinState, ZbNode, ZbEndpoint, ZbCluster, ZbAttribute ;
 from libps.psJson import PSJson ;
@@ -266,7 +266,9 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
                             cl = ep.getCluster(int(arrId[1])) ;
                             if cl :
                                 extra = PSJson.toOBJ2(arr[5]) ;
-                                cl.upsertAttribute(ZbAttribute(int(arrId[2]), extra.type, extra.raw, arr[4])) ;
+                                # cl.upsertAttribute(ZbAttribute(int(arrId[2]), extra.type, extra.raw, arr[4])) ;
+                                self.upsertAttribute(node, ep, cl, [ZbAttribute(int(arrId[2]), extra.type, extra.raw, arr[4])], False) ;
+
     def getNodeWithEUI(self, eui) :
         for node in self.m_nodeArray :
             if node.m_eui == eui :
@@ -283,6 +285,7 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         return None ;
     def addNode(self, eui, nodeId) :
         node = ZbNode(eui, int(nodeId, 16)) ;
+        node.setSensorDevice(SensorDevice(eui)) ;
         node.setActivity(True) ;
         self.m_nodeArray.append(node) ;
         self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
@@ -319,21 +322,68 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         ep.addCluster(ZbCluster(clId, clDir)) ;
         self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
             SensorEvent(SensorMeta.SEN_TYPE_ZB_CLUSTER, node.getEUI(), '%s.%s' % (ep.getId(), clId), clDir, None).toString()) ;
-    def addAttribute(self, node, epId, clId, attr) :
-        ep = node.getEndpoint(epId) ;
-        if ep :
-            cl = ep.getCluster(clId) ;
-            if cl :
-                at = cl.getAttribute(attr.getId()) ;
-                if at is None or at.isEqual(attr) :
-                    DBG('Changed %s:%s:%s %s' % (hex(epId), hex(clId), hex(attr.getId()), str(attr.getValue()))) ;
-                cl.upsertAttribute(attr) ;
-    def upsertAttribute(self, node, ep, cl, attrList) :
+    # deprecated function
+    # def addAttribute(self, node, epId, clId, attr) :
+    #     ep = node.getEndpoint(epId) ;
+    #     if ep :
+    #         cl = ep.getCluster(clId) ;
+    #         if cl :
+    #             at = cl.getAttribute(attr.getId()) ;
+    #             if at is None or at.isEqual(attr) :
+    #                 DBG('Changed %s:%s:%s %s' % (hex(epId), hex(clId), hex(attr.getId()), str(attr.getValue()))) ;
+    #             cl.upsertAttribute(attr) ;
+    def __updateSensorDevice(self, sensordevice, node, cl, attr) :
+        if sensordevice :
+            if cl.getId() < ZCLCluster.ZCL_SAMPLE_MFG_SPECIFIC_CLUSTER_ID :
+                funcPool = (
+                    (ZCLCluster.ZCL_BASIC_CLUSTER_ID, (
+                        (ZCLAttribute.ZCL_APPLICATION_VERSION_ATTRIBUTE_ID,             SensorDevice.setAppVersion) ,
+                        (ZCLAttribute.ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID,               SensorDevice.setManufacturer) ,
+                        (ZCLAttribute.ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID,                SensorDevice.setModel) ,
+                        (ZCLAttribute.ZCL_SW_BUILD_ID_ATTRIBUTE_ID,                     SensorDevice.setSwBuild))) ,
+                    (ZCLCluster.ZCL_POWER_CONFIG_CLUSTER_ID, (
+                        (ZCLAttribute.ZCL_BATTERY_VOLTAGE_ATTRIBUTE_ID,                 SensorDevice.setBattery))) ,
+                    (ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, (
+                        (ZCLAttribute.ZCL_ZONE_STATUS_ATTRIBUTE_ID,                     SensorDevice.setZoneStatus))) ,
+                    (ZCLCluster.ZCL_TEMP_MEASUREMENT_CLUSTER_ID, (
+                        (ZCLAttribute.ZCL_TEMP_MEASURED_VALUE_ATTRIBUTE_ID,             SensorDevice.setTemperature))) ,
+                    (ZCLCluster.ZCL_RELATIVE_HUMIDITY_MEASUREMENT_CLUSTER_ID, (
+                        (ZCLAttribute.ZCL_RELATIVE_HUMIDITY_MEASURED_VALUE_ATTRIBUTE_ID,SensorDevice.setHumidity))) ,
+                ) ;
+                for clpool in funcPool :
+                    if clpool[0] == cl.getId() :
+                        for item in clpool[1] :
+                            if item[0] == attr.getId() :
+                                item[1](sensordevice, attr.getValue()) ;
+                                return ;
+            else :
+                funcPool = (
+                    ( 0x110A, (0xFC02, ((0x0010, SensorDevice.setAccelActive) ,
+                                        (0x0012, SensorDevcie.setAccelX) ,
+                                        (0x0013, SensorDevcie.setAccelY) ,
+                                        (0x0014, SensorDevice.setAccelZ)))) ,
+                    ( 0x1002, (0xFC00, ((0x0010, SensorDevice.setAccelActive) ,
+                                        (0x0012, SensorDevcie.setAccelX) ,
+                                        (0x0013, SensorDevcie.setAccelY) ,
+                                        (0x0014, SensorDevice.setAccelZ)))) ,
+                ) ;
+                for mfgPool in funcPool :
+                    if mfgPool[0] == node.getMfgId() :
+                        for clpool in mfgPool[1] :
+                            if clpool[0] == cl.getId() :
+                                for item in clpool[1] :
+                                    if item[0] == attr.getId() :
+                                        item[1](sensordevice, attr.getValue()) ;
+                                        return ;
+
+    def upsertAttribute(self, node, ep, cl, attrList, notify=True) :
         fgChanged = False ;
         for a in attrList :
             if cl.upsertAttribute(a) :
-                self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
-                    SensorEvent(SensorMeta.SEN_TYPE_ZB_ATTRIBUTE, node.getEUI(), '%s.%s.%s' % (ep.getId(), cl.getId(), a.getId()), a.getValue(), a.getExtra()).toString()) ;
+                self.__updateSensorDevice(node.getSensorDevice(), node, cl, a) ;
+                if notify :
+                    self.m_ippHandle.sendNotify(IPMeta.SUBTYPE_SENSOR,
+                        SensorEvent(SensorMeta.SEN_TYPE_ZB_ATTRIBUTE, node.getEUI(), '%s.%s.%s' % (ep.getId(), cl.getId(), a.getId()), a.getValue(), a.getExtra()).toString()) ;
                 fgChanged = True ;
         return fgChanged ;
     def setZoneNotification(self, nodeId, status, ext, zoneId, delay) :
@@ -347,8 +397,7 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
                      ZCLAttribute.ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID ,
                      ZCLAttribute.ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID ,
                      ZCLAttribute.ZCL_APPLICATION_PROFILE_VERSION_ATTRIBUTE_ID ,
-                     ZCLAttribute.ZCL_SW_BUILD_ID_ATTRIBUTE_ID
-                     ] ;
+                     ZCLAttribute.ZCL_SW_BUILD_ID_ATTRIBUTE_ID ] ;
         msg = '' ;
         for attr in attrList :
             msg += 'zcl global read %s %s\n' % (hex(ZCLCluster.ZCL_BASIC_CLUSTER_ID), hex(attr)) ;
@@ -361,3 +410,7 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         return msg ;
     def updateConfigurationResponse(self, node) :
         return node.increaseResponsedCount() ;
+
+    # Query
+    def queryGetDevice(self, uid=None) :
+        pass ;

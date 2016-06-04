@@ -33,7 +33,11 @@ class ZbEmber :
             with self.m_lockZigbee :
                 for ipId, payload in self.m_queryPool :
                     argv = payload.split('|') ;
-                    # TODO : Query request
+                    if argv[0] == IPMeta.QUERY_ZB_GET_DEVICE :
+                        self.m_ippHandle.sendQueryReply(True, ipId, IPMeta.SUBTYPE_ZIGBEE, self.m_zbHandle.queryGetDevice()) ;
+                    else :
+                        self.m_ippHandle.sendQueryReply(False, ipId, IPMeta.SUBTYPE_ZIGBEE, 'Unknown Query(%s)' % payload) ;
+
                 self.m_queryPool = [] ;
     def receivedZigbeeQuery(self, ipId, ipSType, ipPayload) :
         DBG('[QUERY] %s %s %s' % (ipId, ipSType, ipPayload)) ;

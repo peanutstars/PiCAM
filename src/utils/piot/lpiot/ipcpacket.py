@@ -40,6 +40,7 @@ class IPMeta :
     QUERY_DB_GET_NODE = 'GetNode' ;
     QUERY_DB_GET_CLUSTER = 'GetCluster' ;
     QUERY_DB_GET_ATTRIBUTE = 'GetAttribute' ;
+    QUERY_ZB_GET_DEVICE = 'GetDevice' ;
 
 class IPDaemon :
     '''

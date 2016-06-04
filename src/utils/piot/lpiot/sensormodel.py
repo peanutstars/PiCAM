@@ -47,3 +47,41 @@ class SensorEvent :
         toStr += '|%s|%s|%s|%s|%s' % (self.m_type, self.m_uid, self.m_fuid, str(self.m_value),
             json.dumps(self.m_extra, default=lambda o: o.__dict__) if self.m_extra else None) ;
         return toStr ;
+
+class SensorDevice :
+    def __init__(self, uid, model, appversion, swbuild) :
+        self.uid = uid ;
+    def setName(self, name) :
+        self.name = name ;
+    def setManufacturer(self, manu) :
+        self.manufacturer = manu ;
+    def setModel(self, model) :
+        self.model = model ;
+    def setAppVersion(self, version) :
+        self.appversion = version ;
+    def setSwBuild(self, swbuild) :
+        self.swbuild = swbuild ;
+    def setBattery(self, battery) :
+        self.battery = battery ;
+    def setTemperature(self, temp) :
+        self.temperature = temp ;
+    def setHumidity(self, hum) :
+        self.humidity = hum ;
+    def setAccelActive(self, active) :
+        if not hasattr(self, 'acceleration') :
+            self.acceleration = {} ;
+        self.acceleration['active'] = active ;
+    def setAccelX(self, x) :
+        if not hasattr(self, 'acceleration') :
+            self.acceleration = {} ;
+        self.acceleration['x'] = x ;
+    def setAccelY(self, y) :
+        if not hasattr(self, 'acceleration') :
+            self.acceleration = {} ;
+        self.acceleration['y'] = y ;
+    def setAccelZ(self, z) :
+        if not hasattr(self, 'acceleration') :
+            self.acceleration = {} ;
+        self.acceleration['z'] = x ;
+    def setZoneStatus(self, zone) :
+        self.zonestatus = zone ;

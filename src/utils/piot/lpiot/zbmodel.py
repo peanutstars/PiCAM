@@ -44,6 +44,7 @@ class ZbNode(ZbJoinState) :
         self.m_eui = eui ;
         self.m_id = nodeId ;
         self.m_extra = ZbNode.Extra(self.getJoinState()) ;
+        self.m_sensorDevice = None ;
         self.m_endpointArray = [] ;
     def getEUI(self) :
         return self.m_eui ;
@@ -56,6 +57,10 @@ class ZbNode(ZbJoinState) :
     def setExtra(self, extra) :
         self.m_extra = extra ;
         self.setJoinState(extra.joinState) ;
+    def getSensorDevice(self) :
+        return self.m_sensorDevice ;
+    def setSensorDevice(self, obj) :
+        self.m_sensorDevice = obj ;
     def setCapability(self, capability) :
         self.m_extra.capability = capability ;
     def setActivity(self, fgActivity=False) :

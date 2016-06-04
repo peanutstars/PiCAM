@@ -73,11 +73,11 @@ class DBManager(threading.Thread) :
             with self.m_lockDB :
                 for ipId, payload in self.m_queryPool :
                     argv = payload.split('|') ;
-                    if argv[0] == 'GetNode' :
+                    if argv[0] == IPMeta.QUERY_DB_GET_NODE :
                         self.m_ippHandle.sendQueryReply(True, ipId, IPMeta.SUBTYPE_DB, self.m_sdb.queryGetTable('sensor_node')) ;
-                    elif argv[0] == 'GetCluster' :
+                    elif argv[0] == IPMeta.QUERY_DB_GET_CLUSTER :
                         self.m_ippHandle.sendQueryReply(True, ipId, IPMeta.SUBTYPE_DB, self.m_sdb.queryGetTable('sensor_cluster')) ;
-                    elif argv[0] == 'GetAttribute' :
+                    elif argv[0] == IPMeta.QUERY_DB_GET_ATTRIBUTE :
                         self.m_ippHandle.sendQueryReply(True, ipId, IPMeta.SUBTYPE_DB, self.m_sdb.queryGetTable('sensor_attribute')) ;
                     else :
                         self.m_ippHandle.sendQueryReply(False, ipId, IPMeta.SUBTYPE_DB, 'Unknown Query(%s)' % payload) ;
