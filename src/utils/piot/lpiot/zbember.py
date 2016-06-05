@@ -34,7 +34,7 @@ class ZbEmber :
                 for ipId, payload in self.m_queryPool :
                     argv = payload.split('|') ;
                     if argv[0] == IPMeta.QUERY_ZB_GET_DEVICE :
-                        self.m_ippHandle.sendQueryReply(True, ipId, IPMeta.SUBTYPE_ZIGBEE, self.m_zbHandle.queryGetDevice()) ;
+                        self.m_ippHandle.sendQueryReply(True, ipId, IPMeta.SUBTYPE_ZIGBEE, self.m_zbHandle.queryGetDevice(None if len(argv)==1 else argv[1])) ;
                     else :
                         self.m_ippHandle.sendQueryReply(False, ipId, IPMeta.SUBTYPE_ZIGBEE, 'Unknown Query(%s)' % payload) ;
 

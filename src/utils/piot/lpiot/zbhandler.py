@@ -413,4 +413,10 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
 
     # Query
     def queryGetDevice(self, uid=None) :
-        pass ;
+        devList = [] ;
+        for node in self.m_nodeArray :
+            if uid == None :
+                devList.append(node.m_sensorDevice) ;
+            elif uid == node.getId() :
+                devList.append(node.m_sensorDevice) ;
+        return devList ;
