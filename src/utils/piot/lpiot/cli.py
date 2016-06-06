@@ -24,15 +24,15 @@ class Cli :
         self.m_thid = threading.Thread(target=self.cliMain);
         self.m_thid.start() ;
         self.command = {
-            "quit" :        __cmdQuit ,
-            Cli.CT_EMBER :  __cmdEmber ,
-            Cli.CT_PAIR :   __cmdPair ,
-            Cli.CT_PRINT :  __cmdPrint ,
+            'quit' :        self.__cmdQuit ,
+            Cli.CT_EMBER :  self.__cmdEmber ,
+            Cli.CT_PAIR :   self.__cmdPair ,
+            Cli.CT_PRINT :  self.__cmdPrint ,
         } ;
         self.commandPrint = {
-            "db" :          __cmdPrintDatabase ,
-            "zigbee" :      __cmdPrintZigbee ,
-            "device" :      __cmdPrintSensorDevice ,
+            "db" :          self.__cmdPrintDatabase ,
+            "zigbee" :      self.__cmdPrintZigbee ,
+            "device" :      self.__cmdPrintSensorDevice ,
         } ;
 
     def __cmdQuit(self, argv) :
@@ -43,7 +43,7 @@ class Cli :
     def __cmdEmber(self, argv) :
         self.m_zbem.sendMsg(' '.join(argv)) ;
     def __cmdPair(self, argv) :
-        timeout = 60 if len(argv) == 1 else int(re.sub('\D', '', '0'+argv[0])) ;
+        timeout = int(re.sub('\D', '', '0'+argv[0])) if argv else 60 ;
         self.m_zbem.sendMsg('network pjoin %d' % timeout) ;
     def __cmdPrintZigbee(self, argv) :
         self.m_zbem.dump() ;
@@ -59,7 +59,7 @@ class Cli :
                     print ('%3d, %s' % (ii, row)) ;
     def __cmdPrintSensorDevice(self, argv) :
         print ('### Sensor Device Lists') ;
-        print json.dumps(self.m_zbem.m_zbHandle.queryGetDevice(), indent=2, default=lambda o: o.__dict__)) ;
+        print json.dumps(self.m_zbem.m_zbHandle.queryGetDevice(), indent=2, default=lambda o: o.__dict__) ;
     def __cmdPrint(self, argv) :
         try :
             self.commandPrint[argv[0]](None if len(argv)==1 else argv[1:]) ;

@@ -336,19 +336,19 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
         if sensordevice :
             if cl.getId() < ZCLCluster.ZCL_SAMPLE_MFG_SPECIFIC_CLUSTER_ID :
                 funcPool = (
-                    (ZCLCluster.ZCL_BASIC_CLUSTER_ID, (
+                    (ZCLCluster.ZCL_BASIC_CLUSTER_ID, [
                         (ZCLAttribute.ZCL_APPLICATION_VERSION_ATTRIBUTE_ID,             SensorDevice.setAppVersion) ,
                         (ZCLAttribute.ZCL_MANUFACTURER_NAME_ATTRIBUTE_ID,               SensorDevice.setManufacturer) ,
                         (ZCLAttribute.ZCL_MODEL_IDENTIFIER_ATTRIBUTE_ID,                SensorDevice.setModel) ,
-                        (ZCLAttribute.ZCL_SW_BUILD_ID_ATTRIBUTE_ID,                     SensorDevice.setSwBuild))) ,
-                    (ZCLCluster.ZCL_POWER_CONFIG_CLUSTER_ID, (
-                        (ZCLAttribute.ZCL_BATTERY_VOLTAGE_ATTRIBUTE_ID,                 SensorDevice.setBattery))) ,
-                    (ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, (
-                        (ZCLAttribute.ZCL_ZONE_STATUS_ATTRIBUTE_ID,                     SensorDevice.setZoneStatus))) ,
-                    (ZCLCluster.ZCL_TEMP_MEASUREMENT_CLUSTER_ID, (
-                        (ZCLAttribute.ZCL_TEMP_MEASURED_VALUE_ATTRIBUTE_ID,             SensorDevice.setTemperature))) ,
-                    (ZCLCluster.ZCL_RELATIVE_HUMIDITY_MEASUREMENT_CLUSTER_ID, (
-                        (ZCLAttribute.ZCL_RELATIVE_HUMIDITY_MEASURED_VALUE_ATTRIBUTE_ID,SensorDevice.setHumidity))) ,
+                        (ZCLAttribute.ZCL_SW_BUILD_ID_ATTRIBUTE_ID,                     SensorDevice.setSwBuild)]) ,
+                    (ZCLCluster.ZCL_POWER_CONFIG_CLUSTER_ID, [
+                        (ZCLAttribute.ZCL_BATTERY_VOLTAGE_ATTRIBUTE_ID,                 SensorDevice.setBattery)]) ,
+                    (ZCLCluster.ZCL_IAS_ZONE_CLUSTER_ID, [
+                        (ZCLAttribute.ZCL_ZONE_STATUS_ATTRIBUTE_ID,                     SensorDevice.setZoneStatus)]) ,
+                    (ZCLCluster.ZCL_TEMP_MEASUREMENT_CLUSTER_ID, [
+                        (ZCLAttribute.ZCL_TEMP_MEASURED_VALUE_ATTRIBUTE_ID,             SensorDevice.setTemperature)]) ,
+                    (ZCLCluster.ZCL_RELATIVE_HUMIDITY_MEASUREMENT_CLUSTER_ID, [
+                        (ZCLAttribute.ZCL_RELATIVE_HUMIDITY_MEASURED_VALUE_ATTRIBUTE_ID,SensorDevice.setHumidity)]) ,
                 ) ;
                 for clpool in funcPool :
                     if clpool[0] == cl.getId() :
@@ -358,23 +358,22 @@ class ZbHandler(ZbParse, ZbConfig, ZbCoordinator) :
                                 return ;
             else :
                 funcPool = (
-                    ( 0x110A, (0xFC02, ((0x0010, SensorDevice.setAccelActive) ,
-                                        (0x0012, SensorDevcie.setAccelX) ,
-                                        (0x0013, SensorDevcie.setAccelY) ,
-                                        (0x0014, SensorDevice.setAccelZ)))) ,
-                    ( 0x1002, (0xFC00, ((0x0010, SensorDevice.setAccelActive) ,
-                                        (0x0012, SensorDevcie.setAccelX) ,
-                                        (0x0013, SensorDevcie.setAccelY) ,
-                                        (0x0014, SensorDevice.setAccelZ)))) ,
+                    [ 0x110A, [0xFC02, [(0x0010, SensorDevice.setAccelActive) ,
+                                        (0x0012, SensorDevice.setAccelX) ,
+                                        (0x0013, SensorDevice.setAccelY) ,
+                                        (0x0014, SensorDevice.setAccelZ) ,],],] ,
+                    [ 0x1002, [0xFC00, [(0x0010, SensorDevice.setAccelActive) ,
+                                        (0x0012, SensorDevice.setAccelX) ,
+                                        (0x0013, SensorDevice.setAccelY) ,
+                                        (0x0014, SensorDevice.setAccelZ) ,],],] ,
                 ) ;
                 for mfgPool in funcPool :
                     if mfgPool[0] == node.getMfgId() :
-                        for clpool in mfgPool[1] :
-                            if clpool[0] == cl.getId() :
-                                for item in clpool[1] :
-                                    if item[0] == attr.getId() :
-                                        item[1](sensordevice, attr.getValue()) ;
-                                        return ;
+                        if mfgPool[1][0] == cl.getId() :
+                            for item in mfgPool[1][1] :
+                                if item[0] == attr.getId() :
+                                    item[1](sensordevice, attr.getValue()) ;
+                                    return ;
 
     def upsertAttribute(self, node, ep, cl, attrList, notify=True) :
         fgChanged = False ;

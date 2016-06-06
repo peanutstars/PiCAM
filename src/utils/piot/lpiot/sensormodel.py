@@ -49,7 +49,7 @@ class SensorEvent :
         return toStr ;
 
 class SensorDevice :
-    def __init__(self, uid, model, appversion, swbuild) :
+    def __init__(self, uid) :
         self.uid = uid ;
     def setName(self, name) :
         self.name = name ;
@@ -82,6 +82,6 @@ class SensorDevice :
     def setAccelZ(self, z) :
         if not hasattr(self, 'acceleration') :
             self.acceleration = {} ;
-        self.acceleration['z'] = x ;
+        self.acceleration['z'] = z ;
     def setZoneStatus(self, zone) :
         self.zonestatus = zone ;
